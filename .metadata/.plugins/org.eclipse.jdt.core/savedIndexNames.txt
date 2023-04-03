@@ -1,4 +1,0 @@
-INDEX VERSION 1.131+/Users/josecamilolozanocetina/eclipse-workspace/.metadata/.plugins/org.eclipse.jdt.core
-30038764.index
-1865797976.index
-3484064742.index
