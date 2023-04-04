@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashMap;
 
+import com.autovend.software.WeightDiscrepancy;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,7 +43,7 @@ public class ScanItemsTest {
 	private int maxScaleWeight, sensitivity;
 	private double expectedBaggingWeight;
 	private ScanItems scanItems;
-	private PurchasedItems itemsPurchased;
+	private WeightDiscrepancy weightDiscrepancy;
 	private ArrayList<BarcodedProduct> itemList;
 	private boolean scanFailed1, scanFailed2, scanFailed3;
 	
@@ -101,25 +102,24 @@ public class ScanItemsTest {
 		// create the station
 		selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations, maxScaleWeight, sensitivity);
 		
-		// initialize purchased items constructor
-		itemsPurchased = new PurchasedItems();
-		
 		// initialize constructor and add each product to the list of products being scanned
-		scanItems = new ScanItems(selfCheckoutStation, itemsPurchased);
+		scanItems = new ScanItems(selfCheckoutStation);
+		weightDiscrepancy = new WeightDiscrepancy(selfCheckoutStation);
 		
 		//register the observer and enable scanners
-		selfCheckoutStation.mainScanner.register(scanItems);
 		selfCheckoutStation.mainScanner.enable();
+		selfCheckoutStation.mainScanner.register(scanItems);
 		selfCheckoutStation.handheldScanner.enable();
 		selfCheckoutStation.handheldScanner.register(scanItems);
+		selfCheckoutStation.baggingArea.register(weightDiscrepancy);
 		
-		selfCheckoutStation.baggingArea.register(scanItems);
+		//selfCheckoutStation.baggingArea.register(scanItems);
 	}
 	
 	@After
 	public void tearDown() {
 		selfCheckoutStation = null;
-		itemsPurchased = null;
+		PurchasedItems.reset();
 	}
 	
 	@Test
@@ -141,7 +141,7 @@ public class ScanItemsTest {
 		expectedCartPrice = expectedCartPrice.add(itemProduct2.getPrice());
 		selfCheckoutStation.baggingArea.add(unitItem2);
 		
-		Assert.assertEquals(expectedCartPrice, itemsPurchased.getTotalPrice());
+		Assert.assertEquals(expectedCartPrice, PurchasedItems.getTotalPrice());
 	}
 	
 	// make sure the baggingArea total weight matches the expected weight
@@ -243,8 +243,18 @@ public class ScanItemsTest {
 		scanFailed2 = selfCheckoutStation.mainScanner.scan(unitItem2);
 		}
 		selfCheckoutStation.baggingArea.add(unitItem2);
-		Assert.assertEquals(itemProduct1, itemsPurchased.getListOfProducts().get(0));
-		Assert.assertEquals(itemProduct2, itemsPurchased.getListOfProducts().get(1));
+		Assert.assertEquals(itemProduct1, PurchasedItems.getListOfProducts().get(0));
+		Assert.assertEquals(itemProduct2, PurchasedItems.getListOfProducts().get(1));
+	}
+	
+	@Test
+	public void paidFullyItShouldNotLetYouAddMore() {
+		
+	}
+	
+	@Test
+	public void paidPartiallyItShouldLetYouAddMore() {
+		
 	}
 
 }

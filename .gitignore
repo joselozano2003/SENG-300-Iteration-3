@@ -1,1 +1,10 @@
 /.metadata/
+com.autovend.software/.classpath
+com.autovend.software/.project
+
+com.autovend.software.test/.classpath
+com.autovend.software.test/.project
+
+com.autovend.hardware_0.3/.classpath
+com.autovend.hardware_0.3/.project
+
