@@ -13,7 +13,6 @@ public class CashPayment extends PaymentMethod {
     @Override
     public void processPayment(BigDecimal amount) {
         currentSession.addPayment(amount);
-
     }
 
     @Override

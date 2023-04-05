@@ -12,6 +12,8 @@ import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.Bag;
+import com.autovend.software.BagsDataBase;
 import com.autovend.software.model.CustomerSession;
 import com.autovend.software.model.CustomerSession.State;
 
@@ -23,6 +25,7 @@ public class AddItemController implements BarcodeScannerObserver, ElectronicScal
     public AddItemController(MainController mainController, CustomerSession currentSession) {
         this.mainController = mainController;
         this.currentSession = currentSession;
+        BagsDataBase.initialize();
     }
 
     @Override
@@ -43,6 +46,21 @@ public class AddItemController implements BarcodeScannerObserver, ElectronicScal
         currentSession.addItem(barcodedProduct, 1);
         currentSession.setState(State.WEIGHING_ITEMS);
 
+    }
+
+    public void reactToBagAddedEvent(Bag bagType) {
+        if (BagsDataBase.isInDatabase(bagType)) { //Checks that the bag is in the database
+            currentSession.addItem(bagType, bagType.getWeight());
+            currentSession.setState(State.WEIGHING_ITEMS);
+        }
+        else{
+            throw new IllegalArgumentException("Bag not in database");
+        }
+
+    }
+
+    public void reactToOwnBagAddedEvent() {
+        currentSession.setState(State.WEIGHING_ITEMS);
     }
 
     public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
