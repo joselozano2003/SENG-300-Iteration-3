@@ -1,19 +1,43 @@
-
+/* P3-4 Group Members
+ * 
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
 package com.autovend.software;
-
-import java.lang.reflect.Array;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.math.BigDecimal;
 
-public class ChangeCalculator{
+public class ChangeCalculator {
 
     private static HashMap<Problem, ArrayList<BigDecimal> > solvedProblems = new HashMap<>();;
     
-    private static void solveSubProblem(Problem currentProblem)
-    {
+    private static void solveSubProblem(Problem currentProblem) {
         // base case, if sum is 0 then we can reach the sum no matter what the set
         if(currentProblem.sum.compareTo(new BigDecimal(0)) == 0)
         {
@@ -58,8 +82,7 @@ public class ChangeCalculator{
         // sub problem where item is not used, sum remains the same
         Problem doesNotContainItem = new Problem(subSet,currentProblem.sum);
         // see if solution has been found, if not solve for solution
-        if(!solvedProblems.containsKey(doesNotContainItem))
-        {
+        if(!solvedProblems.containsKey(doesNotContainItem)) {
             solveSubProblem(doesNotContainItem);
         }
        
@@ -75,8 +98,7 @@ public class ChangeCalculator{
         solvedProblems.put(currentProblem , new ArrayList<BigDecimal>(Arrays.asList(new BigDecimal(-1))));
         return;
     }
-    public static ArrayList<BigDecimal> calculateChange(ArrayList<BigDecimal> inputList, BigDecimal target)
-    {
+    public static ArrayList<BigDecimal> calculateChange(ArrayList<BigDecimal> inputList, BigDecimal target) {
         solvedProblems = new HashMap<Problem, ArrayList<BigDecimal>>();
         Problem mainProblem = new Problem(inputList, target);
         solveSubProblem(mainProblem);

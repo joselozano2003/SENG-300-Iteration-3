@@ -1,3 +1,31 @@
+/* P3-4 Group Members
+ * 
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
 package com.autovend.software.ach;
 
 import java.math.BigDecimal;
@@ -12,40 +40,41 @@ import com.autovend.devices.BillValidator;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.CoinValidator;
 import com.autovend.devices.ElectronicScale;
-import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.*;
-import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.products.Product;
 import com.autovend.software.ach.virtual.OutOfBagsException;
 import com.autovend.software.ach.virtual.VirtualBagDispenser;
-/*
- * Group Members: Achraf Abdelrhafour: (30022366), Marianna Ferreira (30147733),
- * Ryan Chrumka (30144174), Alireza Vafisani (30150496), Ali Savab Pour
- * (30154744), Aryan Nambiar (30140671), Shijia Wang (30018276), Carson Bergen
- * (30127827), Md Abdullah Mehedi Patwary (30154770), Vita Vysochina (30118374),
- * Michael Kacmar, (30113919), Deepshikha Dhammi (30140157)
- */
 
 /*
- * This class, CustomerSessionController, is responsible for managing the customer session in a self-checkout station. It acts as a mediator between the self-checkout station devices and the CustomerSession. The class implements various observer interfaces to react to events triggered by devices such as the bill validator, coin validator, card reader, barcode scanner, electronic scale, and receipt printer.
-
-The CustomerSessionController has an enumeration State which defines the various stages of a customer session: INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISABLE_STATION, and FINISHED.
-
-The constructor of CustomerSessionController takes a SelfCheckoutStation, a ReusableBag, and a VirtualBagDispenser as arguments. It initializes the instance variables and calls the registerObservers() method to register itself as an observer to the appropriate devices.
-
-The class has several public methods to control the customer session's state, such as startNewSession(), resetCurrentSession(), startPayingForItems(), addMoreItems(), and setState().
-
-The class also implements various observer methods to handle events triggered by the self-checkout station's devices. For example, when a barcode is scanned, the reactToBarcodeScannedEvent() method is called, which adds the corresponding item to the customer session's cart.
-
-Two additional methods, onAddOwnBagsSelection() and onPurchaseBagsSelection(int amount), handle user interactions related to adding their own bags or purchasing bags at the self-checkout station.
-
-In summary, the CustomerSessionController class is responsible for managing the customer session during a self-checkout process and reacting to events triggered by the self-checkout station's devices.
+ * This class, CustomerSessionController, is responsible for managing the customer session in a self-checkout station.
+ * 
+ * It acts as a mediator between the self-checkout station devices and the CustomerSession. The class implements
+ * various observer interfaces to react to events triggered by devices such as the bill validator, coin validator,
+ * card reader, barcode scanner, electronic scale, and receipt printer.
+ * 
+ * The CustomerSessionController has an enumeration State which defines the various stages of a customer session:
+ * INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISABLE_STATION, and FINISHED.
+ * 
+ * The constructor of CustomerSessionController takes a SelfCheckoutStation, a ReusableBag, and a VirtualBagDispenser
+ * as arguments. It initializes the instance variables and calls the registerObservers() method to register itself as
+ * an observer to the appropriate devices.
+ * 
+ * The class has several public methods to control the customer session's state, such as startNewSession(),
+ * resetCurrentSession(), startPayingForItems(), addMoreItems(), and setState(). The class also implements
+ * various observer methods to handle events triggered by the self-checkout station's devices. For example,
+ * when a barcode is scanned, the reactToBarcodeScannedEvent() method is called, which adds the corresponding
+ * item to the customer session's cart.
+ * 
+ * Two additional methods, onAddOwnBagsSelection() and onPurchaseBagsSelection(int amount), handle user
+ * interactions related to adding their own bags or purchasing bags at the self-checkout station.
+ * 
+ * In summary, the CustomerSessionController class is responsible for managing the customer session during
+ * a self-checkout process and reacting to events triggered by the self-checkout station's devices.
  */
 public class CustomerSessionController implements BillValidatorObserver, CoinValidatorObserver, CardReaderObserver,
 		BarcodeScannerObserver, ElectronicScaleObserver, ReceiptPrinterObserver {
@@ -201,19 +230,16 @@ public class CustomerSessionController implements BillValidatorObserver, CoinVal
 	@Override
 	public void reactToCardRemovedEvent(CardReader reader) {
 		// eventually will display message to user
-
 	}
 
 	@Override
 	public void reactToCardTappedEvent(CardReader reader) {
 		// eventually will display message to user
-
 	}
 
 	@Override
 	public void reactToCardSwipedEvent(CardReader reader) {
 		// eventually will display message to user
-
 	}
 
 	@Override
@@ -260,14 +286,12 @@ public class CustomerSessionController implements BillValidatorObserver, CoinVal
 	@Override
 	public void reactToInvalidBillDetectedEvent(BillValidator validator) {
 		// eventually will display message to user
-
 	}
 
 	@Override
 	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
 		// handle use case here
 		setState(State.DISABLE_STATION);
-
 	}
 
 	@Override
@@ -276,16 +300,10 @@ public class CustomerSessionController implements BillValidatorObserver, CoinVal
 	}
 
 	@Override
-	public void reactToPaperAddedEvent(ReceiptPrinter printer) {
-		
-
-	}
+	public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
 
 	@Override
-	public void reactToInkAddedEvent(ReceiptPrinter printer) {
-		// TODO Auto-generated method stub
-
-	}
+	public void reactToInkAddedEvent(ReceiptPrinter printer) {}
 
 	@Override
 	public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {

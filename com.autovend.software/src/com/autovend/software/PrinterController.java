@@ -1,6 +1,33 @@
-
-
+/* P3-4 Group Members
+ * 
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
 package com.autovend.software;
+
 import com.autovend.devices.*;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ReceiptPrinterObserver;
@@ -11,27 +38,28 @@ import java.util.ArrayList;
 public class PrinterController implements ReceiptPrinterObserver {
 
     private String receipt;
-    ReceiptPrinter printer;
-    int inkAdded;
-    int paperAdded;
-    int inkUsed;
-    int paperUsed;
-    boolean canPrint;
+    private ReceiptPrinter printer;
+    private int inkAdded;
+    private int paperAdded;
+    private int inkUsed;
+    private int paperUsed;
+    private boolean canPrint;
     private boolean hasInk;
     private boolean hasPaper;
-
-
-    public PrinterController(SelfCheckoutStation station) {
-    	if (station == null)
+    
+    /**
+     * Basic constructor.
+     * @param printer The printer to control
+     */
+    public PrinterController(ReceiptPrinter printer) {
+    	if (printer == null)
     		throw new NullPointerException();
-        printer = station.printer;
-        station.printer.register(this);
+        printer.register(this);
         inkAdded = 0;
         paperAdded = 0;
         inkUsed = 0;
         paperUsed = 0;
     }
-
 
     public void printReceipt() throws OverloadException, InsufficientResourcesException {
         ArrayList<BarcodedProduct> items = PurchasedItems.getListOfProducts();
@@ -43,7 +71,7 @@ public class PrinterController implements ReceiptPrinterObserver {
         StringBuilder receiptItems = new StringBuilder();
 
         // Iterates through the ArrayList and adds the items and their price to the receipt
-        for (BarcodedProduct item : items){
+        for (BarcodedProduct item : items) {
             String price = item.getPrice().toString();
             String description = item.getDescription();
             receiptItems.append(String.format("%-10s %18s$\n", description, price));
@@ -81,11 +109,8 @@ public class PrinterController implements ReceiptPrinterObserver {
         else {
             // Notify the user that there are not enough resources to print the receipt
             throw new InsufficientResourcesException("There are not enough resources to print the receipt.");
-
         }
     }
-
-    public String getReceipt() { return receipt; }
 
     public void insertPaper(int amount) throws OverloadException {
         paperAdded += amount;
@@ -119,40 +144,52 @@ public class PrinterController implements ReceiptPrinterObserver {
             return false;
         }
     }
-    
-    public boolean hasPaper() { return hasPaper; }
-
-    public boolean hasInk() { return hasInk; }
-
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
 
 	@Override
 	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
-		//Notify attendant
+		hasPaper = false;
+		//Notify Attendant
+		//Disable Station
 	}
-
-
+	
 	@Override
 	public void reactToOutOfInkEvent(ReceiptPrinter printer) {
-		//Notify attendant
+		hasInk = false;
+		//Notify Attendant
+		//Disable Station
 	}
-
-
+	
 	@Override
 	public void reactToPaperAddedEvent(ReceiptPrinter printer) {
-		
+		hasPaper = true;
+		//Enable Station
 	}
-
-
+	
 	@Override
-	public void reactToInkAddedEvent(ReceiptPrinter printer) {}
+	public void reactToInkAddedEvent(ReceiptPrinter printer) {
+		hasInk = true;
+		//Enable Station
+	}
 	
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	
-
+	/*
+	 * Getters and Setters
+	 */
+	
+	public String getReceipt() {
+    	return receipt;
+    }
+	
+	public boolean hasPaper() {
+    	return hasPaper;
+    }
+	
+    public boolean hasInk() {
+    	return hasInk;
+    }
+    
 }
