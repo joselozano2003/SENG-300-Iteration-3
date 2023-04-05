@@ -36,7 +36,6 @@ public class PrintReceiptTest {
     private ArrayList<BarcodedProduct> itemList;
     private ScanItems scanItems;
     private WeightDiscrepancy weightDiscrepancy;
-    private ReceiptPrinterObserverStub observer;
     private PurchasedItems itemsPurchased;
 
     // initializing some barcodes to use during tests
@@ -98,9 +97,6 @@ public class PrintReceiptTest {
         scanItems = new ScanItems(station);
         weightDiscrepancy = new WeightDiscrepancy(station);
 
-        //register the observer and enable scanners
-        observer = new ReceiptPrinterObserverStub();
-        station.printer.register(observer);
         station.mainScanner.register(scanItems);
         station.mainScanner.enable();
         station.handheldScanner.enable();
@@ -114,7 +110,6 @@ public class PrintReceiptTest {
     @After
     public void tearDown() {
         receiptController = null;
-        observer = null;
         station = null;
         PurchasedItems.reset();
     }
@@ -192,6 +187,6 @@ public class PrintReceiptTest {
         station.baggingArea.add(unitItem2);
 
         receiptController.printReceipt();
-        assertFalse(observer.hasInk());
+        assertFalse(receiptController.hasInk());
     }
 }

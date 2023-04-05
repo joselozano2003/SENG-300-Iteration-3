@@ -2,25 +2,30 @@
 
 package com.autovend.software;
 import com.autovend.devices.*;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.products.BarcodedProduct;
 
 import java.util.ArrayList;
 
-public class PrinterController {
+public class PrinterController implements ReceiptPrinterObserver {
 
     private String receipt;
-    private final ReceiptPrinterObserverStub rpo;
     ReceiptPrinter printer;
     int inkAdded;
     int paperAdded;
     int inkUsed;
     int paperUsed;
     boolean canPrint;
+    private boolean hasInk;
+    private boolean hasPaper;
 
 
     public PrinterController(SelfCheckoutStation station) {
+    	if (station == null)
+    		throw new NullPointerException();
         printer = station.printer;
-        rpo = new ReceiptPrinterObserverStub();
+        station.printer.register(this);
         inkAdded = 0;
         paperAdded = 0;
         inkUsed = 0;
@@ -57,10 +62,10 @@ public class PrinterController {
                 // Print the receipt content, if it runs out of ink or paper then disable the printer
                 for (int i = 0; i < finalReceipt.length(); i++) {
                     // These should notify an attendant and disable the printer
-                    if (!rpo.hasPaper()) {
+                    if (!hasPaper()) {
                         printer.disable();
                     }
-                    if (!rpo.hasInk()) {
+                    if (!hasInk()) {
                         printer.disable();
                     }
                     printer.print(finalReceipt.charAt(i));
@@ -114,5 +119,40 @@ public class PrinterController {
             return false;
         }
     }
+    
+    public boolean hasPaper() { return hasPaper; }
+
+    public boolean hasInk() { return hasInk; }
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+
+
+	@Override
+	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
+		//Notify attendant
+	}
+
+
+	@Override
+	public void reactToOutOfInkEvent(ReceiptPrinter printer) {
+		//Notify attendant
+	}
+
+
+	@Override
+	public void reactToPaperAddedEvent(ReceiptPrinter printer) {
+		
+	}
+
+
+	@Override
+	public void reactToInkAddedEvent(ReceiptPrinter printer) {}
+	
+	
 
 }
