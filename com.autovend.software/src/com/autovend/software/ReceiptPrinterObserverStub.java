@@ -1,5 +1,5 @@
 
-package com.autovend.software.test;
+package com.autovend.software;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ReceiptPrinter;
