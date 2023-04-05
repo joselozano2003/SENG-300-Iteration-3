@@ -101,12 +101,12 @@ public abstract class Card implements Serializable, IBarcoded {
 		}
 	}
 
-	private static final ThreadLocalRandom random = ThreadLocalRandom.current();
+	protected static final ThreadLocalRandom random = ThreadLocalRandom.current();
 	private static final double PROBABILITY_OF_MAGNETIC_STRIPE_FAILURE = 0.01;
 	private static final double PROBABILITY_OF_TAP_FAILURE = 0.005;
 	private static final double PROBABILITY_OF_INSERT_FAILURE = 0.001;
 	private static final double PROBABILITY_OF_MAGNETIC_STRIPE_CORRUPTION = 0.001;
-	private static final double PROBABILITY_OF_CHIP_CORRUPTION = 0.00001;
+	protected static final double PROBABILITY_OF_CHIP_CORRUPTION = 0.00001;
 
 	@Override
 	public final Barcode getBarcode() throws UnsupportedOperationException {
@@ -177,7 +177,7 @@ public abstract class Card implements Serializable, IBarcoded {
 			if(random.nextDouble(0.0, 1.0) <= PROBABILITY_OF_INSERT_FAILURE)
 				throw new ChipFailureException();
 
-			return new CardInsertData(pin);
+			return createCardInsertData(pin);
 		}
 
 		return null;
@@ -298,29 +298,29 @@ public abstract class Card implements Serializable, IBarcoded {
 	/**
 	 * The data from inserting a card.
 	 */
-	public final class CardInsertData implements CardData {
+	public class CardInsertData implements CardData {
 		CardInsertData(String pin) throws InvalidPINException {
 			if(!testPIN(pin))
 				throw new InvalidPINException();
 		}
 
 		@Override
-		public String getType() {
+		public final String getType() {
 			return randomize(type, PROBABILITY_OF_CHIP_CORRUPTION);
 		}
 
 		@Override
-		public String getNumber() {
+		public final String getNumber() {
 			return randomize(number, PROBABILITY_OF_CHIP_CORRUPTION);
 		}
 
 		@Override
-		public String getCardholder() {
+		public final String getCardholder() {
 			return randomize(cardholder, PROBABILITY_OF_CHIP_CORRUPTION);
 		}
 
 		@Override
-		public String getCVV() {
+		public final String getCVV() {
 			return randomize(cvv, PROBABILITY_OF_CHIP_CORRUPTION);
 		}
 
@@ -335,5 +335,20 @@ public abstract class Card implements Serializable, IBarcoded {
 
 			return false;
 		}
+	}
+
+	/**
+	 * Factory method for creating a CardInsertData object. The intention is to
+	 * permit subclasses to specialize this functionality.
+	 * 
+	 * @param pin
+	 *            The personal identification number in order to validate this
+	 *            request.
+	 * @return The object requested.
+	 * @throws InvalidPINException
+	 *             If the pin is not valid.
+	 */
+	public CardInsertData createCardInsertData(String pin) throws InvalidPINException {
+		return new CardInsertData(pin);
 	}
 }

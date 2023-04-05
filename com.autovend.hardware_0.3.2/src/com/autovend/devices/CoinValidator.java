@@ -167,7 +167,7 @@ public final class CoinValidator extends AbstractDevice<CoinValidatorObserver> i
 	 * sink channel corresponding to the denomination of the coin.
 	 * </p>
 	 * <p>
-	 * If the coin is valid, it should be passed to the rejection sink channel. If
+	 * If the coin is invalid, it should be passed to the rejection sink channel. If
 	 * there is no space in the machine to store it, the coin is ejected to the
 	 * overflow sink channel. If the channel representing the correct routing fails
 	 * to accept the coin, an exception will result.
@@ -207,9 +207,9 @@ public final class CoinValidator extends AbstractDevice<CoinValidatorObserver> i
 				return true;
 			}
 			else {
-				if(rejectionSink.hasSpace()) {
+				if(overflowSink.hasSpace()) {
 					try {
-						rejectionSink.deliver(coin);
+						overflowSink.deliver(coin);
 					}
 					catch(OverloadException e) {
 						// Should never happen
@@ -217,13 +217,9 @@ public final class CoinValidator extends AbstractDevice<CoinValidatorObserver> i
 					}
 				}
 				else {
-					try {
-						overflowSink.deliver(coin);
-					}
-					catch(OverloadException e) {
-						// Last option failed: something is broken
-						throw new SimulationException(e);
-					}
+					throw new SimulationException("Overflow sink is full; unable to determine route forward. "
+						+ "In the real world, this would mean that coins are spewing out of the machine, "
+						+ "or that the machine is otherwise jammed or even broken.");
 				}
 
 				return false;
@@ -233,12 +229,32 @@ public final class CoinValidator extends AbstractDevice<CoinValidatorObserver> i
 			for(CoinValidatorObserver observer : observers)
 				observer.reactToInvalidCoinDetectedEvent(this);
 
-			try {
-				rejectionSink.deliver(coin);
+			if(rejectionSink.hasSpace()) {
+				try {
+					rejectionSink.deliver(coin);
+				}
+				catch(OverloadException e) {
+					// Should never happen
+					throw new SimulationException(e);
+				}
 			}
-			catch(OverloadException e) {
-				// Should never happen
-				throw new SimulationException(e);
+			else {
+				if(overflowSink.hasSpace()) {
+					try {
+						overflowSink.deliver(coin);
+					}
+					catch(OverloadException e) {
+						// Should never happen
+						throw new SimulationException(e);
+					}
+				}
+				else {
+					throw new SimulationException("Overflow sink is full; unable to determine route forward. "
+						+ "In the real world, this would mean that coins are spewing out of the machine, "
+						+ "or that the machine is otherwise jammed or even broken.");
+				}
+
+				return false;
 			}
 
 			return false;
