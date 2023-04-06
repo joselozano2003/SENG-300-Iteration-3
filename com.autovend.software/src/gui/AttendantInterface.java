@@ -10,6 +10,7 @@ import javax.swing.*;
 public class AttendantInterface {
 	JFrame attendantFrame;
 	JPanel attendantPanel;
+	String lang_code;			// Language code for interface.
 	
 	// Interface can support any number of stations. Window will
 	// consist of rows representing each station. First column
@@ -20,19 +21,21 @@ public class AttendantInterface {
 	JButton[] approveButtons;
 	JButton[] refuseButtons;
 	
-	public AttendantInterface(int number_stations) {
+	public AttendantInterface(int number_stations, String language) {
 		num_stations = number_stations;
+		lang_code = language;
 		discrepancyLabels = new JLabel[num_stations];
 		approveButtons = new JButton[num_stations];
 		refuseButtons = new JButton[num_stations];
 		
-		attendantFrame = new JFrame("Attendant Interface");
+		attendantFrame = new JFrame(Translate.translate("Attendant Interface", lang_code));
 		attendantPanel = new JPanel();
 		attendantPanel.setLayout(new GridLayout(num_stations, 3));
 		
 		// Set up each row. Initially, no weight discrepancies.
 		for (int i = 0; i < num_stations; ++i) {
-			discrepancyLabels[i] = new JLabel("Station " + (i + 1) + ": Working normally...");
+			discrepancyLabels[i] = new JLabel(Translate.translate("Station", lang_code)
+					+ " " + (i + 1) + ": " + Translate.translate("Working normally", lang_code) + "...");
 			approveButtons[i] = new JButton("");
 			refuseButtons[i] = new JButton("");
 			
@@ -56,7 +59,7 @@ public class AttendantInterface {
 
 	// Main - only will be used for testing.
 	public static void main(String args[]) {
-		AttendantInterface A = new AttendantInterface(20);
+		AttendantInterface A = new AttendantInterface(20, "LLL");
 		for (int i = 1; i <= 10; ++i) A.notifyBagApproval(i);
 		for (int i = 11; i <= 20; ++i) A.notifyWeightDiscrepancy(i, 10.0);
 	}
@@ -139,7 +142,8 @@ public class AttendantInterface {
 	// This is done whenever issues have been resolved and station should now be
 	// working normally.
 	public void deregisterButtonListeners(int station_number) {
-		discrepancyLabels[station_number - 1].setText("Station " + station_number + ": Working normally...");
+		discrepancyLabels[station_number - 1].setText(Translate.translate("Station", lang_code)
+				+ " " + station_number + ": " + Translate.translate("Working normally", lang_code) + "...");
 		// Lastly, de-register this listener and reset button text...
 		approveButtons[station_number - 1].setText("");
 		refuseButtons[station_number - 1].setText("");
@@ -160,9 +164,10 @@ public class AttendantInterface {
 	//
 	// NOTE: STATION NUMBER IS AN INT >= 1, MUST SUBTRACT ONE TO INDEX INTO COMPONENT ARRAYS.
 	public void notifyWeightDiscrepancy(int station_number, double discrepancy) {
-		discrepancyLabels[station_number - 1].setText("Station " + station_number
-				+ ": Weight discrepancy of " + discrepancy + " grams");
-		approveButtons[station_number - 1].setText("Override");
+		discrepancyLabels[station_number - 1].setText(Translate.translate("Station", lang_code) +" " + station_number
+				+ ": " + Translate.translate("Weight discrepancy of", lang_code) + " " + discrepancy + " " 
+				+ Translate.translate("grams", lang_code));
+		approveButtons[station_number - 1].setText(Translate.translate("Override", lang_code));
 		
 		// Set up and add button listener.
 		OverrideListener rl = new OverrideListener(station_number);
@@ -186,10 +191,10 @@ public class AttendantInterface {
 	// updates expected weight and continues checout. If refuse, then call method
 	// in customer interface to prompt customer to remove bags.
 	public void notifyBagApproval(int station_number) {
-		discrepancyLabels[station_number - 1].setText("Station " + station_number
-				+ ": Bag approval needed.");
-		approveButtons[station_number - 1].setText("Approve");
-		refuseButtons[station_number - 1].setText("Refuse");
+		discrepancyLabels[station_number - 1].setText(Translate.translate("Station", lang_code) +" " + station_number
+				+ ": " + Translate.translate("Bag approval needed", lang_code));
+		approveButtons[station_number - 1].setText(Translate.translate("Approve", lang_code));
+		refuseButtons[station_number - 1].setText(Translate.translate("Refuse", lang_code));
 		
 		// Set up and add button listeners.
 		ApproveBagsListener abl = new ApproveBagsListener(station_number);
