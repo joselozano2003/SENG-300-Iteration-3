@@ -54,7 +54,18 @@ public interface AbstractListener {
 	 */
 	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device);
 	/**
+	 * Announces that a device should be disabled.
+	 * 
+	 * @param device
+	 *            The device to disable.
+	 */
+	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device);
+	/**
 	 * Announces that the entire station should be disabled.
 	 */
-	void reactToDisableStationRequest();
+	public void reactToDisableStationRequest();
+	/**
+	 * Announces that the entire station should be disabled.
+	 */
+	public void reactToEnableStationRequest();
 }
