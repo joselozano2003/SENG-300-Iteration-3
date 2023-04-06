@@ -29,7 +29,9 @@
 package com.autovend.software.attendant;
 
 public class AttendantView {
-	
-	//view for attendant
+
+	public void setVisible(boolean b) {
+		
+	}
 
 }

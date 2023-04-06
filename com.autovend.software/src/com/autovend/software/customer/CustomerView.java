@@ -29,6 +29,11 @@
 package com.autovend.software.customer;
 
 public class CustomerView {
+
+	public void setVisible(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	//view for customer
 

@@ -28,8 +28,26 @@
  */
 package com.autovend.software.attendant;
 
+import java.util.List;
+
+import com.autovend.software.customer.CustomerStation;
+
 public class AttendantController {
 	
-	//controller for attendant
+	private static List<CustomerStation> customerStations;
+	private AttendantModel model;
+	private AttendantView view;
 
+	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStation> list) {
+		if (model == null || view == null)
+			throw new NullPointerException("Null arguments given");
+		this.model = model;
+		this.view = view;
+		customerStations = list;
+	}
+	
+	public void startupStation(/*station*/) {
+		
+	}
+	
 }

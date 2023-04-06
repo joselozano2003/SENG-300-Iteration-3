@@ -29,6 +29,10 @@
 package com.autovend.software.customer;
 
 public class CustomerController {
+
+	public CustomerController(CustomerModel model, CustomerView view) {
+		// TODO Auto-generated constructor stub
+	}
 	
 	//controller for customer
 	
