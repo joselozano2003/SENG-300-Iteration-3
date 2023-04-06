@@ -28,8 +28,53 @@
  */
 package com.autovend.software.customer;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.Product;
+
 public class CustomerModel {
 	
-	//model for customer
+	SelfCheckoutStation station;
+    private Map<Product, Double> shoppingCart;
+    private double expectedWeight;
+    private BigDecimal totalCost;
+    private BigDecimal totalPaid;
+    private boolean receiptPrinted;
+
+    public CustomerModel(SelfCheckoutStation station) {
+        this.station = station;
+        shoppingCart = new HashMap<>();
+        expectedWeight = 0.0;
+        totalCost = BigDecimal.ZERO;
+        totalPaid = BigDecimal.ZERO;
+        receiptPrinted = false;
+    }
+
+    public boolean isReceiptPrinted() {
+        return receiptPrinted;
+    }
+
+    public Map getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public double getExpectedWeight() {
+        return expectedWeight;
+    }
+
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public BigDecimal getTotalPaid() {
+        return totalPaid;
+    }
+
+    public BigDecimal getAmountLeft() {
+        return totalCost.subtract(totalPaid);
+    }
 	
 }
