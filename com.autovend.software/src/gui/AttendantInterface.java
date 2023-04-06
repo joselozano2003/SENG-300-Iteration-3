@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
@@ -28,7 +30,7 @@ public class AttendantInterface {
 		
 		// Set up each row. Initially, no weight discrepancies.
 		for (int i = 0; i < num_stations; ++i) {
-			discrepancyLabels[i] = new JLabel("Station " + (i + 1) + " working normally...");
+			discrepancyLabels[i] = new JLabel("Station " + (i + 1) + ": Working normally...");
 			resolveButtons[i] = new JButton("");
 			
 			attendantPanel.add(discrepancyLabels[i]);
@@ -42,9 +44,42 @@ public class AttendantInterface {
     	attendantFrame.setVisible(true);
 	}
 
-	// Only will be used for testing.
+	// Main - only will be used for testing.
 	public static void main(String args[]) {
 		AttendantInterface A = new AttendantInterface(5);
+		A.notifyWeightDiscrepancy(1, 10.0);
+	}
+	
+	
+	// Listener class used to listen for resolve button being pressed.
+	private class ResolveListener implements ActionListener {
+
+		private AttendantInterface ai;
+		private int station_number;
+		
+		public ResolveListener(AttendantInterface a, int n) {
+			// Listener needs to track interface and station number so that the
+			// interface can be properly updated. Will probably need to track the
+			// station too so that it can resolve weight discrepancy and continue checkout.
+			ai = a;
+			station_number = n;
+		}
+		
+		
+		// When button is pressed...
+		public void actionPerformed(ActionEvent e) {
+			// When button is pressed, resolve weight discrepancy so that checkout
+			// can continue.
+			
+			// SOFTWARE: CALL SOMETHING TO RESOLVE WD.
+			
+			// Set back to normal on interface.
+			discrepancyLabels[station_number - 1].setText("Station " + station_number + ": Working normally...");
+			// Lastly, de-register this listener and reset button text...
+			resolveButtons[station_number - 1].setText("");
+			resolveButtons[station_number - 1].removeActionListener(this);
+		}
+		
 	}
 	
 	
@@ -56,8 +91,16 @@ public class AttendantInterface {
 	// No matter what happens, when the discrepancy has been resolved
 	// and the expected weight has been updated the attendant will be able
 	// to press the "resolved" button in this row to continue the checkout.
-	public void notifyWeightDiscrepancy() {
+	//
+	// NOTE: STATION NUMBER IS AN INT >= 1, MUST SUBTRACT ONE TO INDEX INTO COMPONENT ARRAYS.
+	public void notifyWeightDiscrepancy(int station_number, double discrepancy) {
+		discrepancyLabels[station_number - 1].setText("Station " + station_number
+				+ ": Weight discrepancy of " + discrepancy);
+		resolveButtons[station_number - 1].setText("Resolve");
 		
+		// Set up and add button listener.
+		ResolveListener rl = new ResolveListener(this, station_number);
+		resolveButtons[station_number - 1].addActionListener(rl);
 	}
 	
 }
