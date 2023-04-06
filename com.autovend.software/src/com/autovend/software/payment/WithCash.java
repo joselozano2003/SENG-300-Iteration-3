@@ -29,7 +29,7 @@
 package com.autovend.software.payment;
 
 @SuppressWarnings("serial")
-public class WithCash extends Payment{
+public class WithCash extends Payment {
 	
 	
 	

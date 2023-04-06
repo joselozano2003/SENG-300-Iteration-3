@@ -28,6 +28,7 @@
  */
 package com.autovend.software.payment;
 
-public class WithCard {
+@SuppressWarnings("serial")
+public class WithCard extends Payment {
 
 }
