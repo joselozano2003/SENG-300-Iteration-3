@@ -28,11 +28,28 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
+import com.autovend.software.Model_Customer;
 
 @SuppressWarnings("serial")
-public abstract class AddItem extends AbstractSoftware<ItemListener> {
+public abstract class AddItem extends AbstractSoftware<ItemListener>{
 	
 	//Create list of children.
+    public void addProduct(Product product, double quantityOrWeight) {
+//        if (shoppingCart.containsKey(product)) {
+//            double currentProductAmount = shoppingCart.get(product);
+//            shoppingCart.put(product, currentProductAmount + quantityOrWeight);
+//        } else {
+//            shoppingCart.put(product, quantityOrWeight);
+//        }
+//
+//        if (product instanceof BarcodedProduct) {
+//            expectedWeight += ((BarcodedProduct) product).getExpectedWeight();
+//        } else if (product instanceof PLUCodedProduct) {
+//            expectedWeight += quantityOrWeight;
+//        }
+    }
 	
 }
