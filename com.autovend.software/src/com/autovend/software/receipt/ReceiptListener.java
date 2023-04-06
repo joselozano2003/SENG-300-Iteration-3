@@ -26,26 +26,16 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software;
+package com.autovend.software.receipt;
 
-import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.products.BarcodedProduct;
+import com.autovend.software.AbstractFacadeListener;
 
-public abstract class AddItem {
+public interface ReceiptListener extends AbstractFacadeListener {
 	
-	SelfCheckoutStation check;
+	void onPrinted();
 	
-	public AddItem(SelfCheckoutStation station) {
-		if (station == null)
-    		throw new NullPointerException("Cannot be null");
-		this.check = station;
-	}
+	void onLowInk();
 
-	protected void addBag(Bag bag) {
-		PurchasedItems.addBag(bag);
-	}
+	void onLowPaper();
 
-	protected void addBarcodedProduct(BarcodedProduct unit) {
-		PurchasedItems.addProduct(unit);
-	}
 }

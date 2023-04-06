@@ -26,17 +26,13 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.ach.virtual;
+package com.autovend.software.communication;
+
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class OutOfBagsException  extends Exception {
-    //  Basic constructor for no message
-    public OutOfBagsException() {}
-    /*  Basic constructor that allows for a message to be passed in
-        @param message
-                - Message to be shown
-    */
-    public OutOfBagsException(String message) {
-        super(message);
-    }
+public class CustomerIO extends AbstractFacade<CustomerIOListener> {
+	
+	//Implements Hardware
+	
 }

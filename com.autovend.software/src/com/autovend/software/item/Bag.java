@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- * 
+ *
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,8 +26,31 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.ach;
+package com.autovend.software.item;
 
-public class WeightDiscrepancyException extends Exception {
+import java.math.BigDecimal;
+
+import com.autovend.products.Product;
+
+public class Bag extends Product {
+    private final String description;
+    private final double bagWeight;
+
+    public Bag(String description, BigDecimal price, double expectedWeight) {
+        super(price, true);
+        if (price == null || expectedWeight <= 0 || description == null){
+            throw new IllegalArgumentException("Parameters cannot be null");
+        }
+        this.bagWeight = expectedWeight;
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double getWeight() {
+        return bagWeight;
+    }
 
 }

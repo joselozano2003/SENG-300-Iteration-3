@@ -26,58 +26,46 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software;
-
-import java.math.BigDecimal;
+package com.autovend.software.payment;
 
 import com.autovend.Card.CardData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.SimulationException;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
-import com.autovend.external.CardIssuer;
 
 @SuppressWarnings("serial")
-public class PayWithCard extends Pay implements CardReaderObserver {
-	
-	private BigDecimal amountToPay;
-	private CardIssuer cardIssuer;
-	
-	public PayWithCard(SelfCheckoutStation station, CardIssuer cardIssuer) {
-		super(station);
-		BigDecimal amountToPay = PurchasedItems.getAmountLeftToPay();
-		
-		if (cardIssuer == null) {
-            throw new SimulationException(new NullPointerException("No argument may be null."));
-        }
-		
-		// Ensure that no change is produced when paying with card
-		if (amountToPay.compareTo(super.getAmountDue().subtract(PurchasedItems.getAmountPaid())) > 0) {
-			this.amountToPay = super.getAmountDue().subtract(PurchasedItems.getAmountPaid());
-		} else this.amountToPay = amountToPay;
+class WithCard extends Payment implements CardReaderObserver {
 
-		this.cardIssuer = cardIssuer;
+	public WithCard(SelfCheckoutStation station) {
+		super(station);
+		try {
+			station.cardReader.register(this);
+		} catch (Exception e) {
+			for (PaymentListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
 	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {}
+
 	@Override
 	public void reactToCardRemovedEvent(CardReader reader) {}
+
 	@Override
 	public void reactToCardTappedEvent(CardReader reader) {}
+
 	@Override
 	public void reactToCardSwipedEvent(CardReader reader) {}
+
 	@Override
-	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-		int holdNumber = cardIssuer.authorizeHold(data.getNumber(), PurchasedItems.getAmountLeftToPay()); 						  	// Contact card issuer and attempt to place a hold
-		if (holdNumber == -1) return; 																		// Return if hold is unable to be placed
-		boolean transactionPosted = cardIssuer.postTransaction(data.getNumber(), holdNumber, PurchasedItems.getAmountLeftToPay()); 	// Contact card issuer to attempt to post transaction
-		if (transactionPosted) super.pay(PurchasedItems.getAmountLeftToPay()); 														// If transaction is posted, pay the amount
-	}
+	public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+
 }

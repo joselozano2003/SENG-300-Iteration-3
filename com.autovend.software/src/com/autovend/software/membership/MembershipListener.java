@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- * 
+ *
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,17 +26,19 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software;
+package com.autovend.software.membership;
 
-import java.util.ArrayList;
-import java.math.BigDecimal;
+import com.autovend.software.AbstractListener;
 
-public class Problem{
-	public ArrayList<BigDecimal> set;
-	public BigDecimal sum;
+public interface MembershipListener extends AbstractListener {
+	/**
+	 * Announces that a valid membership number has been entered by the user.
+	 * @param number The String number entered
+	 */
+	public void reactToValidMembershipEntered(String number);
 	
-	public Problem(ArrayList<BigDecimal> inputList, BigDecimal inputSum) {
-		set = (ArrayList)inputList.clone();
-		sum = inputSum;
-	}
+	/**
+	 * Announces that an invalid membership number has been entered by the user.
+	 */
+	public void reactToInvalidMembershipEntered();
 }
