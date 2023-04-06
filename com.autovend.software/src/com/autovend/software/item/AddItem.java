@@ -57,4 +57,18 @@ public abstract class AddItem extends AbstractSoftware<ItemListener>{
 		
     }
 	
+	/**
+	 * @return List of active subclasses.
+	 */
+	protected List<AddItem> getChildren() {
+		return children;
+	}
+	
+	/**
+	 * @return This current active instance of this class. Could be null.
+	 */
+	public static AddItem getInstance() {
+		return instance;
+	}
+	
 }

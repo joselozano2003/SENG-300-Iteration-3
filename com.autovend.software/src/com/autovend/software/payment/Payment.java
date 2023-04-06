@@ -51,10 +51,16 @@ public class Payment extends AbstractSoftware<PaymentListener> {
 		}
 	}
 	
+	/**
+	 * @return List of active subclasses.
+	 */
 	protected List<Payment> getChildren() {
 		return children;
 	}
 	
+	/**
+	 * @return This current active instance of this class. Could be null.
+	 */
 	public static Payment getInstance() {
 		return instance;
 	}
