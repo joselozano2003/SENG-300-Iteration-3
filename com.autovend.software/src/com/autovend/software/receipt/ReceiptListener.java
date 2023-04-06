@@ -31,9 +31,13 @@ package com.autovend.software.receipt;
 import com.autovend.software.AbstractListener;
 
 public interface ReceiptListener extends AbstractListener {
-	
-	//Printed
-	//OutofInk
-	//OutOfPaper
-
+	/**
+	 * Signals an event in which a full receipt has been printed.
+	 * @param receipt The receipt that was printed.
+	 */
+	public void reactToReceiptPrinted(String receipt);
+	/**
+	 * Signals an event in which a receipt failed to finish printing.
+	 */
+	public void reactToReceiptFailed();
 }

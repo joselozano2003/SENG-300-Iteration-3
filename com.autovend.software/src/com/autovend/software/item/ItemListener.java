@@ -28,10 +28,14 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.products.Product;
 import com.autovend.software.AbstractListener;
 
 public interface ItemListener extends AbstractListener {
-	
-	//reactToItemAdded
+	/**
+	 * Signals an event in which a product was successfully added.
+	 * @param product
+	 */
+	public void reactToItemAdded(Product product);
 
 }

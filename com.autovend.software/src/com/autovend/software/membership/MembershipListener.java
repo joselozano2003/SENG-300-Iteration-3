@@ -31,7 +31,14 @@ package com.autovend.software.membership;
 import com.autovend.software.AbstractListener;
 
 public interface MembershipListener extends AbstractListener {
+	/**
+	 * Announces that a valid membership number has been entered by the user.
+	 * @param number The String number entered
+	 */
+	public void reactToValidMembershipEntered(String number);
 	
-	//Valid Membership number entered
-	
+	/**
+	 * Announces that an invalid membership number has been entered by the user.
+	 */
+	public void reactToInvalidMembershipEntered();
 }
