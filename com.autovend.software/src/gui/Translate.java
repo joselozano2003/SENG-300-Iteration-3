@@ -1,6 +1,5 @@
 package gui;
 
-import java.util.Arrays;
 
 // Class containing static translate methods.
 // All of these methods take as arguments strings in english, and return
