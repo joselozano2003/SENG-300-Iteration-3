@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.autovend.Barcode;
 import com.autovend.Bill;
@@ -43,44 +44,34 @@ import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
-import com.autovend.software.PurchasedItems;
+import com.autovend.software.payment.Payment;
 
 public class PayWithCashTest {
 
     private SelfCheckoutStation station;
+    private Payment payment;
 
     @Before
     public void setup() {
-        Currency currency = Currency.getInstance(Locale.CANADA);
-        int[] billDenominations = {5, 10 , 15, 20, 50, 100};
-        BigDecimal fiveCent = new BigDecimal("0.05");
-        BigDecimal tenCent = new BigDecimal("0.10");
-        BigDecimal twentyFiveCent = new BigDecimal("0.25");
-        BigDecimal loonie = new BigDecimal("1");
-        BigDecimal toonie = new BigDecimal("2");
-        BigDecimal[] coinDenominations = {fiveCent, tenCent, twentyFiveCent, loonie, toonie};
-        station = new SelfCheckoutStation(currency, billDenominations, coinDenominations,10,1);
-
-        Coin coin = new Coin(fiveCent,currency);
-        Coin coinTwo = new Coin (toonie,currency);
-        Bill bill = new Bill(5,currency);
-        Bill billTwenty = new Bill(20,currency);
-        BillDispenser fiveDollarDispenser = station.billDispensers.get(5);
-        CoinDispenser fiveCentDispenser = station.coinDispensers.get(fiveCent);
-
-        Barcode barcode = new Barcode(Numeral.zero, Numeral.two, Numeral.three, Numeral.two, Numeral.seven);
-        BarcodedProduct product = new BarcodedProduct(barcode,"product name", new BigDecimal("12.95"),1);
-        BarcodedProduct anotherProduct = new BarcodedProduct(barcode,"product name", new BigDecimal("1.95"),1);
-
-
+    	//Setup and create station
+		int[] billDenoms = {5, 10 , 15, 20, 50, 100};
+		BigDecimal[] coinDenoms = {new BigDecimal("0.05"), new BigDecimal("0.10"), 
+				new BigDecimal("0.25"), new BigDecimal("1"), new BigDecimal("2")};
+		int scaleMaximumWeight = 50;
+		int scaleSensitivity = 10;
+		station = new SelfCheckoutStation(Currency.getInstance("CAD"),
+				billDenoms, coinDenoms, scaleMaximumWeight, scaleSensitivity);
+		payment = new Payment(station);
     }
 
     @After
     public void teardown() {
-        station = null;
-        PurchasedItems.reset();
+        payment = null;
     }
 
-    //Test completing a purchase using bills
+    @Test
+    public void test() {
+    	payment = Payment.getInstance();
+    }
 }
 

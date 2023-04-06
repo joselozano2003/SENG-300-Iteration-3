@@ -31,6 +31,8 @@ package com.autovend.software;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.autovend.devices.SelfCheckoutStation;
+
 /**
  * Ported from hardware and changed a bit for software use.
  * 
@@ -52,7 +54,10 @@ import java.util.ArrayList;
  */
 public abstract class AbstractFacade<T extends AbstractFacadeListener> implements Serializable {
 	private static final long serialVersionUID = -5835508997720707884L;
-
+	/**
+	 * The SelfCheckoutStation to perform logic on.
+	 */
+	private final SelfCheckoutStation station;
 	/**
 	 * A list of the registered listeners on this software.
 	 */
@@ -89,6 +94,17 @@ public abstract class AbstractFacade<T extends AbstractFacadeListener> implement
 	 */
 	public final void register(T listener) {
 		listeners.add(listener);
+	}
+	
+	/**
+	 * Basic constructor.
+	 * 
+	 * @param station
+	 */
+	protected AbstractSoftware(SelfCheckoutStation station) {
+		if (station == null)
+			throw new NullPointerException("SelfCheckoutStation cannot be null");
+		this.station = station;
 	}
 	
 }
