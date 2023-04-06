@@ -26,14 +26,12 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.weight;
+package com.autovend.software.communication;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractFacadeListener;
 
-public interface WeightListener extends AbstractListener {
+public interface CustomerIOListener extends AbstractFacadeListener {
 	
-	//Weight added
+	// Customer or attendant input/output events
 	
-	//Weight discrepancy
-
 }

@@ -28,12 +28,14 @@
  */
 package com.autovend.software.receipt;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractFacadeListener;
 
-public interface ReceiptListener extends AbstractListener {
+public interface ReceiptListener extends AbstractFacadeListener {
 	
-	//Printed
-	//OutofInk
-	//OutOfPaper
+	void onPrinted();
+	
+	void onLowInk();
+
+	void onLowPaper();
 
 }

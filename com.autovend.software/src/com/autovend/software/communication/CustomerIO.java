@@ -28,10 +28,10 @@
  */
 package com.autovend.software.communication;
 
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class CustomerIO extends AbstractSoftware<CommunicationListener> {
+public class CustomerIO extends AbstractFacade<CustomerIOListener> {
 	
 	//Implements Hardware
 	

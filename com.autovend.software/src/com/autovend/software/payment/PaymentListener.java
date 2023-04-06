@@ -1,7 +1,17 @@
 package com.autovend.software.payment;
 
-import com.autovend.software.AbstractListener;
+import java.math.BigDecimal;
 
-public interface PaymentListener extends AbstractListener {
+import com.autovend.software.AbstractFacadeListener;
+
+public interface PaymentListener extends AbstractFacadeListener {
+	
+	void onPaymentSuccessful(BigDecimal amount);
+	
+	void onPaymentFailure();
+	
+	void onChangeDispensed();
+	
+	void onChangeDispensedFailure();
 
 }

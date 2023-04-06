@@ -50,7 +50,7 @@ import java.util.ArrayList;
  *            class is X, its corresponding listener type would typically be
  *            Xlistener.
  */
-public abstract class AbstractSoftware<T extends AbstractListener> implements Serializable {
+public abstract class AbstractFacade<T extends AbstractFacadeListener> implements Serializable {
 	private static final long serialVersionUID = -5835508997720707884L;
 
 	/**
