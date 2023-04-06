@@ -54,14 +54,12 @@ public class AttendantInterface {
 	// Listener class used to listen for resolve button being pressed.
 	private class ResolveListener implements ActionListener {
 
-		private AttendantInterface ai;
 		private int station_number;
 		
-		public ResolveListener(AttendantInterface a, int n) {
+		public ResolveListener(int n) {
 			// Listener needs to track interface and station number so that the
 			// interface can be properly updated. Will probably need to track the
 			// station too so that it can resolve weight discrepancy and continue checkout.
-			ai = a;
 			station_number = n;
 		}
 		
@@ -99,7 +97,7 @@ public class AttendantInterface {
 		resolveButtons[station_number - 1].setText("Resolve");
 		
 		// Set up and add button listener.
-		ResolveListener rl = new ResolveListener(this, station_number);
+		ResolveListener rl = new ResolveListener(station_number);
 		resolveButtons[station_number - 1].addActionListener(rl);
 	}
 	
