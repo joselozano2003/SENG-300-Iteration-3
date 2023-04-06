@@ -42,7 +42,7 @@ import com.autovend.software.BankIO;
 @SuppressWarnings("serial")
 class WithCard extends PaymentFacade implements CardReaderObserver {
 
-	public WithCard(SelfCheckoutStation station) {
+	protected WithCard(SelfCheckoutStation station) {
 		super(station);
 		try {
 			station.cardReader.register(this);

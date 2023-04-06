@@ -34,8 +34,6 @@ public class ByPLUCode extends ItemFacade  {
     protected ByPLUCode(SelfCheckoutStation station) {
 		super(station);
 	}
-
-    
     
 //	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
 //        PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);

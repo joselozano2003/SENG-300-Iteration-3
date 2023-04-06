@@ -40,7 +40,7 @@ import com.autovend.products.BarcodedProduct;
 @SuppressWarnings("serial")
 public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
-    public ByScanning(SelfCheckoutStation station) {
+    protected ByScanning(SelfCheckoutStation station) {
 		super(station);
 		try {
 			station.mainScanner.register(this);
