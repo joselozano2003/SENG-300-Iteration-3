@@ -28,6 +28,14 @@
  */
 package com.autovend.software.item;
 
-public class ByPLUCode extends AddItem {
+import com.autovend.PriceLookUpCode;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.PLUCodedProduct;
 
+public class ByPLUCode extends AddItem {
+    public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
+        PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
+        double weight = weightToPurchase;
+        //addItem()
+    }
 }
