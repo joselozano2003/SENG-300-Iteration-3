@@ -40,9 +40,9 @@ import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class EnterMembership extends AbstractSoftware<MembershipListener> {
+public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 
-	public EnterMembership(SelfCheckoutStation station) {
+	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
 			InnerListener inner = new InnerListener();

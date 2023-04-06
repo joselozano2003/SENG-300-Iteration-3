@@ -28,6 +28,7 @@
  */
 package com.autovend.software.payment;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,33 +36,49 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class Payment extends AbstractSoftware<PaymentListener> {
-	private static Payment instance;
-	private List<Payment> children;
+public class PaymentFacade extends AbstractSoftware<PaymentListener> {
+	private static PaymentFacade instance;
+	private List<PaymentFacade> children;
+	private static BigDecimal amountPayed;
 	
-	public Payment(SelfCheckoutStation station) {
+	public PaymentFacade(SelfCheckoutStation station) {
 		super(station);
 		//Initialize this instance and children once.
 		if (instance == null) {
 			instance = this;
-			children = new ArrayList<Payment>();
+			children = new ArrayList<PaymentFacade>();
 			children.add(new WithCoin(station));
 			children.add(new WithBill(station));
 			children.add(new WithCard(station));
 		}
 	}
 	
+	protected void addPayment(BigDecimal amountToAdd) {
+		amountPayed.add(amountToAdd);
+	}
+	
+	protected void removePayment(BigDecimal amountToSubtract) {
+		amountPayed.subtract(amountToSubtract);
+	}
+	
+	/**
+	 * @return amountPayed
+	 */
+	public BigDecimal getAmountPayed() {
+		return amountPayed;
+	}
+	
 	/**
 	 * @return List of active subclasses.
 	 */
-	protected List<Payment> getChildren() {
+	protected List<PaymentFacade> getChildren() {
 		return children;
 	}
 	
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
-	public static Payment getInstance() {
+	public static PaymentFacade getInstance() {
 		return instance;
 	}
 	

@@ -46,7 +46,7 @@ import com.autovend.devices.observers.CoinTrayObserver;
 import com.autovend.devices.observers.CoinValidatorObserver;
 
 @SuppressWarnings("serial")
-class WithCoin extends Payment implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver, CoinTrayObserver, CoinValidatorObserver {
+class WithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver, CoinTrayObserver, CoinValidatorObserver {
 	
 	public WithCoin(SelfCheckoutStation station) {
 		super(station);

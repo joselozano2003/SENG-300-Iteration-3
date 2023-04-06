@@ -30,7 +30,7 @@ package com.autovend.software.item;
 
 import com.autovend.devices.SelfCheckoutStation;
 
-public class ByTextSearch extends AddItem {
+public class ByTextSearch extends ItemFacade {
 
 	public ByTextSearch(SelfCheckoutStation station) {
 		super(station);

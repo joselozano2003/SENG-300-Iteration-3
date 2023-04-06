@@ -36,16 +36,18 @@ import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public abstract class AddItem extends AbstractSoftware<ItemListener>{
-	private static AddItem instance;
-	private List<AddItem> children;
+public abstract class ItemFacade extends AbstractSoftware<ItemListener>{
+	private static ItemFacade instance;
+	private List<ItemFacade> children;
+	private static List<Product> itemList;
 	
-    public AddItem(SelfCheckoutStation station) {
+    public ItemFacade(SelfCheckoutStation station) {
 		super(station);
 		//Initialize this instance and children once.
 		if (instance == null) {
 			instance = this;
-			children = new ArrayList<AddItem>();
+			itemList = new ArrayList<Product>();
+			children = new ArrayList<ItemFacade>();
 			children.add(new ByScanning(station));
 			children.add(new ByBrowsing(station));
 			children.add(new ByPLUCode(station));
@@ -53,21 +55,30 @@ public abstract class AddItem extends AbstractSoftware<ItemListener>{
 		}
 	}
 
-	public void addProduct(Product product, double quantityOrWeight) {
-		
+	protected void addProduct(Product product) {
+		if (product != null)
+			itemList.add(product);
     }
+	
+	public void removeProduct(Product product) {
+		itemList.remove(product);
+	}
+	
+	public List<Product> getItemList() {
+		return itemList;
+	}
 	
 	/**
 	 * @return List of active subclasses.
 	 */
-	protected List<AddItem> getChildren() {
+	protected List<ItemFacade> getChildren() {
 		return children;
 	}
 	
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
-	public static AddItem getInstance() {
+	public static ItemFacade getInstance() {
 		return instance;
 	}
 	

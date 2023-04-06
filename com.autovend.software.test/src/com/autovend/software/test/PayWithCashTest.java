@@ -44,12 +44,12 @@ import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
-import com.autovend.software.payment.Payment;
+import com.autovend.software.payment.PaymentFacade;
 
 public class PayWithCashTest {
 
     private SelfCheckoutStation station;
-    private Payment payment;
+    private PaymentFacade payment;
 
     @Before
     public void setup() {
@@ -61,7 +61,7 @@ public class PayWithCashTest {
 		int scaleSensitivity = 10;
 		station = new SelfCheckoutStation(Currency.getInstance("CAD"),
 				billDenoms, coinDenoms, scaleMaximumWeight, scaleSensitivity);
-		payment = new Payment(station);
+		payment = new PaymentFacade(station);
     }
 
     @After
@@ -71,7 +71,7 @@ public class PayWithCashTest {
 
     @Test
     public void test() {
-    	payment = Payment.getInstance();
+    	payment = PaymentFacade.getInstance();
     }
 }
 

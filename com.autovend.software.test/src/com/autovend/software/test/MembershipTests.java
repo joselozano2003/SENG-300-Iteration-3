@@ -36,11 +36,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.software.membership.EnterMembership;
+import com.autovend.software.membership.MembershipFacade;
 
 public class MembershipTests {
 	SelfCheckoutStation station;
-	EnterMembership mem;
+	MembershipFacade mem;
 
 	@Before
 	public void setup() {
@@ -52,7 +52,7 @@ public class MembershipTests {
 		int scaleSensitivity = 10;
 		station = new SelfCheckoutStation(Currency.getInstance("CAD"),
 				billDenoms, coinDenoms, scaleMaximumWeight, scaleSensitivity);
-		mem = new EnterMembership(station);
+		mem = new MembershipFacade(station);
 	}
 
 	@After

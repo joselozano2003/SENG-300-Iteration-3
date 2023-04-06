@@ -31,7 +31,7 @@ package com.autovend.software.item;
 import com.autovend.devices.SelfCheckoutStation;
 
 @SuppressWarnings("serial")
-public class ByBrowsing extends AddItem {
+public class ByBrowsing extends ItemFacade {
 
 	protected ByBrowsing(SelfCheckoutStation station) {
 		super(station);

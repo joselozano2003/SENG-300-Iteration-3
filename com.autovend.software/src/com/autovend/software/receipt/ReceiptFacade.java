@@ -36,34 +36,31 @@ import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class ReceiptMonitor extends AbstractSoftware<ReceiptListener> implements ReceiptPrinterObserver {
+public class ReceiptFacade extends AbstractSoftware<ReceiptListener>  {
 	
-	public ReceiptMonitor(SelfCheckoutStation station) {
+	public ReceiptFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
-			station.printer.register(this);
+			station.printer.register(new InnerListener());
 		} catch (Exception e) {
 			for (ReceiptListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
-
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
-
-	@Override
-	public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
-
-	@Override
-	public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
-
-	@Override
-	public void reactToInkAddedEvent(ReceiptPrinter printer) {}
+	
+	private class InnerListener implements ReceiptPrinterObserver {
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToInkAddedEvent(ReceiptPrinter printer) {}
+	}
 
 }

@@ -36,7 +36,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 
 @SuppressWarnings("serial")
-class WithCard extends Payment implements CardReaderObserver {
+class WithCard extends PaymentFacade implements CardReaderObserver {
 
 	public WithCard(SelfCheckoutStation station) {
 		super(station);
@@ -63,7 +63,8 @@ class WithCard extends Payment implements CardReaderObserver {
 	public void reactToCardTappedEvent(CardReader reader) {}
 
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {}
+	public void reactToCardSwipedEvent(CardReader reader) {
+	}
 
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {}

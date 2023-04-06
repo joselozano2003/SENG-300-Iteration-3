@@ -33,7 +33,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
 
-public class ByPLUCode extends AddItem {
+public class ByPLUCode extends ItemFacade {
     protected ByPLUCode(SelfCheckoutStation station) {
 		super(station);
 	}

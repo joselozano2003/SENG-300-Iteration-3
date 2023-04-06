@@ -44,7 +44,7 @@ import com.autovend.devices.observers.BillStorageObserver;
 import com.autovend.devices.observers.BillValidatorObserver;
 
 @SuppressWarnings("serial")
-class WithBill extends Payment implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
+class WithBill extends PaymentFacade implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
 	
 	public WithBill(SelfCheckoutStation station) {
 		super(station);

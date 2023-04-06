@@ -36,32 +36,31 @@ import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class WeightMonitor extends AbstractSoftware<WeightListener> implements ElectronicScaleObserver{
+public class WeightFacade extends AbstractSoftware<WeightListener> {
 	
-	public WeightMonitor(SelfCheckoutStation station) {
+	public WeightFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
-			station.scale.register(this);
-			station.baggingArea.register(this);
+			InnerListener inner = new InnerListener();
+			station.scale.register(inner);
+			station.baggingArea.register(inner);
 		} catch (Exception e) {
 			for (WeightListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
-
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {}
-
-	@Override
-	public void reactToOverloadEvent(ElectronicScale scale) {}
-
-	@Override
-	public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
+	
+	private class InnerListener implements ElectronicScaleObserver {
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {}
+		@Override
+		public void reactToOverloadEvent(ElectronicScale scale) {}
+		@Override
+		public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
+	}
 	
 }
