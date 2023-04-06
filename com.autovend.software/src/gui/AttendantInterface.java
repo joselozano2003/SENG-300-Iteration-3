@@ -147,7 +147,7 @@ public class AttendantInterface {
 			refuseButtons[station_number - 1].removeActionListener(refuseButtons[station_number - 1].getActionListeners()[i]);
 		}
 		for (int i = 0; i < approveButtons[station_number - 1].getActionListeners().length; ++i) {
-			refuseButtons[station_number - 1].removeActionListener(refuseButtons[station_number - 1].getActionListeners()[i]);
+			approveButtons[station_number - 1].removeActionListener(approveButtons[station_number - 1].getActionListeners()[i]);
 		}
 	}
 	
