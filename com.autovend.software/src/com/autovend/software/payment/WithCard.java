@@ -28,12 +28,16 @@
  */
 package com.autovend.software.payment;
 
+import java.math.BigDecimal;
+
 import com.autovend.Card.CardData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
+import com.autovend.external.CardIssuer;
+import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
 class WithCard extends PaymentFacade implements CardReaderObserver {
@@ -52,21 +56,44 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
 	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {}
-
 	@Override
 	public void reactToCardRemovedEvent(CardReader reader) {}
-
 	@Override
 	public void reactToCardTappedEvent(CardReader reader) {}
-
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {
+	public void reactToCardSwipedEvent(CardReader reader) {}
+	@Override
+	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
+		BigDecimal value = getAmountDue();
+		String cardIssuerName = data.getType();
+		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
+		if (issuer == null) {
+			for (PaymentListener listener : listeners) {
+				//listener.onPaymentFailure();
+			}
+		} else {
+			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
+
+			if (holdNumber == -1) {
+				for (PaymentListener listener : listeners) {
+					//listener.onPaymentFailure();
+				}
+			} else {
+				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
+				if (transactionResult) {
+					for (PaymentListener listener : listeners) {
+						//listener.onPaymentSuccessful(value);
+					}
+
+				} else {
+					for (PaymentListener listener : listeners) {
+						//listener.onPaymentFailure();
+					}
+				}
+			}
+			this.addAmountDue(value);
+		}
 	}
-
-	@Override
-	public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
-
 }

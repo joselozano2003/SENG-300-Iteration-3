@@ -36,5 +36,6 @@ public class CustomerView {
 	}
 	
 	//view for customer
+	
 
 }

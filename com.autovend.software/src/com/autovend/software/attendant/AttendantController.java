@@ -39,7 +39,7 @@ public class AttendantController {
 	private AttendantView view;
 
 	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStation> list) {
-		if (model == null || view == null)
+		if (model == null || view == null || list == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;
 		this.view = view;

@@ -36,7 +36,7 @@ import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public abstract class ItemFacade extends AbstractSoftware<ItemListener>{
+public class ItemFacade extends AbstractSoftware<ItemListener>{
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;

@@ -28,19 +28,30 @@
  */
 package com.autovend.software.customer;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.products.Product;
+import com.autovend.software.item.ItemFacade;
+import com.autovend.software.membership.MembershipFacade;
+import com.autovend.software.payment.PaymentFacade;
+import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.weight.WeightFacade;
 
 public class CustomerModel {
 	
-	SelfCheckoutStation station;
+	private final ItemFacade itemFacade;
+	private final PaymentFacade paymentFacade;
+	private final ReceiptFacade receiptFacade;
+	private final WeightFacade baggingFacade;
+	private final MembershipFacade membershipFacade;
 
-    public CustomerModel(SelfCheckoutStation station) {
-        this.station = station;
+    public CustomerModel(ItemFacade item, PaymentFacade payment, ReceiptFacade receipt, WeightFacade bagging, MembershipFacade membership) {
+		if (item == null || payment == null || receipt == null || bagging == null || membership == null)
+			throw new NullPointerException("Arguments cannot be null");
+    	this.itemFacade = item;
+		this.paymentFacade = payment;
+		this.receiptFacade = receipt;
+		this.baggingFacade = bagging;
+		this.membershipFacade = membership;
     }
+    
+    //
 	
 }

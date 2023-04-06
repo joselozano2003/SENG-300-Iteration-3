@@ -60,5 +60,10 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
     @Override
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
         BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+        //check valid
+        //if valid then add to cart
+        // ItemAddedEvent
+        //else
+        // invalidBarcodeEvent
     }
 }

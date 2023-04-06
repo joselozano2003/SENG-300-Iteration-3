@@ -39,7 +39,7 @@ import com.autovend.software.AbstractSoftware;
 public class PaymentFacade extends AbstractSoftware<PaymentListener> {
 	private static PaymentFacade instance;
 	private List<PaymentFacade> children;
-	private static BigDecimal amountPayed;
+	private static BigDecimal amountDue;
 	
 	public PaymentFacade(SelfCheckoutStation station) {
 		super(station);
@@ -50,22 +50,25 @@ public class PaymentFacade extends AbstractSoftware<PaymentListener> {
 			children.add(new WithCoin(station));
 			children.add(new WithBill(station));
 			children.add(new WithCard(station));
+			amountDue = BigDecimal.ZERO;
 		}
 	}
 	
-	protected void addPayment(BigDecimal amountToAdd) {
-		amountPayed.add(amountToAdd);
+	public void addAmountDue(BigDecimal amountToAdd) {
+		amountDue.add(amountToAdd);
+//		for (PaymentListener listener : listeners)
+//			listener.reactToAmountDueAdded
 	}
 	
-	protected void removePayment(BigDecimal amountToSubtract) {
-		amountPayed.subtract(amountToSubtract);
+	public void subtractAmountDue(BigDecimal amountToSubtract) {
+		amountDue.subtract(amountToSubtract);
 	}
 	
 	/**
 	 * @return amountPayed
 	 */
-	public BigDecimal getAmountPayed() {
-		return amountPayed;
+	public BigDecimal getAmountDue() {
+		return amountDue;
 	}
 	
 	/**
