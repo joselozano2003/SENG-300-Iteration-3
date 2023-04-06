@@ -28,6 +28,28 @@
  */
 package com.autovend.software.item;
 
-public class ByScan {
+import com.autovend.Barcode;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BarcodeScanner;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.BarcodeScannerObserver;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
 
+public class ByScan implements BarcodeScannerObserver {
+
+    @Override
+    public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+        BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+    }
 }
