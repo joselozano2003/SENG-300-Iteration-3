@@ -143,6 +143,7 @@ public class AttendantInterface {
 		// Lastly, de-register this listener and reset button text...
 		approveButtons[station_number - 1].setText("");
 		refuseButtons[station_number - 1].setText("");
+		// Remove all button listeners so that action of buttons can be reset.
 		for (int i = 0; i < refuseButtons[station_number - 1].getActionListeners().length; ++i) {
 			refuseButtons[station_number - 1].removeActionListener(refuseButtons[station_number - 1].getActionListeners()[i]);
 		}
