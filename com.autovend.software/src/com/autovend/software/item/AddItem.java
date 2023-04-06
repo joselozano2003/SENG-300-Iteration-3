@@ -31,7 +31,7 @@ package com.autovend.software.item;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
-import com.autovend.software.Model_Customer;
+import com.autovend.software.customer.CustomerModel;
 
 @SuppressWarnings("serial")
 public abstract class AddItem extends AbstractSoftware<ItemListener>{
