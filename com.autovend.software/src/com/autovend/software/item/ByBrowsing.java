@@ -28,9 +28,13 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.devices.SelfCheckoutStation;
+
 @SuppressWarnings("serial")
 public class ByBrowsing extends AddItem {
-	
-	// Implements Hardware
+
+	protected ByBrowsing(SelfCheckoutStation station) {
+		super(station);
+	}
 	
 }

@@ -28,6 +28,12 @@
  */
 package com.autovend.software.item;
 
-public class ByTextSearch {
+import com.autovend.devices.SelfCheckoutStation;
+
+public class ByTextSearch extends AddItem {
+
+	public ByTextSearch(SelfCheckoutStation station) {
+		super(station);
+	}
 
 }

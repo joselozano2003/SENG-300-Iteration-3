@@ -30,6 +30,7 @@ package com.autovend.software.receipt;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ReceiptPrinter;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.software.AbstractSoftware;
@@ -37,48 +38,32 @@ import com.autovend.software.AbstractSoftware;
 @SuppressWarnings("serial")
 public class ReceiptMonitor extends AbstractSoftware<ReceiptListener> implements ReceiptPrinterObserver {
 	
-	ReceiptMonitor(ReceiptPrinter printer) {
-		if (printer == null)
-			throw new NullPointerException("Printer cannot be null");
-		printer.register(null);
+	public ReceiptMonitor(SelfCheckoutStation station) {
+		super(station);
+		try {
+			station.printer.register(this);
+		} catch (Exception e) {
+			for (ReceiptListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
 
 	@Override
-	public void reactToOutOfInkEvent(ReceiptPrinter printer) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
 
 	@Override
-	public void reactToPaperAddedEvent(ReceiptPrinter printer) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
 
 	@Override
-	public void reactToInkAddedEvent(ReceiptPrinter printer) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
+	public void reactToInkAddedEvent(ReceiptPrinter printer) {}
 
 }

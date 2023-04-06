@@ -28,11 +28,50 @@
  */
 package com.autovend.software.membership;
 
+import com.autovend.Barcode;
+import com.autovend.Card.CardData;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BarcodeScanner;
+import com.autovend.devices.CardReader;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.BarcodeScannerObserver;
+import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public abstract class EnterMembership extends AbstractSoftware<MembershipListener> {
+public class EnterMembership extends AbstractSoftware<MembershipListener> {
+
+	public EnterMembership(SelfCheckoutStation station) {
+		super(station);
+		try {
+			InnerListener inner = new InnerListener();
+			station.mainScanner.register(inner);
+			station.handheldScanner.register(inner);
+			station.cardReader.register(inner);
+		} catch (Exception e) {
+			for (MembershipListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
+	}
 	
-	
+	private class InnerListener implements BarcodeScannerObserver, CardReaderObserver {
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {}
+		@Override
+		public void reactToCardInsertedEvent(CardReader reader) {}
+		@Override
+		public void reactToCardRemovedEvent(CardReader reader) {}
+		@Override
+		public void reactToCardTappedEvent(CardReader reader) {}
+		@Override
+		public void reactToCardSwipedEvent(CardReader reader) {}
+		@Override
+		public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+	}
 
 }

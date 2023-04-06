@@ -28,28 +28,33 @@
  */
 package com.autovend.software.item;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
 public abstract class AddItem extends AbstractSoftware<ItemListener>{
+	private static AddItem instance;
+	private List<AddItem> children;
 	
-	//Create list of children.
-	
-	
-    public void addProduct(Product product, double quantityOrWeight) {
-//        if (shoppingCart.containsKey(product)) {
-//            double currentProductAmount = shoppingCart.get(product);
-//            shoppingCart.put(product, currentProductAmount + quantityOrWeight);
-//        } else {
-//            shoppingCart.put(product, quantityOrWeight);
-//        }
-//
-//        if (product instanceof BarcodedProduct) {
-//            expectedWeight += ((BarcodedProduct) product).getExpectedWeight();
-//        } else if (product instanceof PLUCodedProduct) {
-//            expectedWeight += quantityOrWeight;
-//        }
+    public AddItem(SelfCheckoutStation station) {
+		super(station);
+		//Initialize this instance and children once.
+		if (instance == null) {
+			instance = this;
+			children = new ArrayList<AddItem>();
+			children.add(new ByScanning(station));
+			children.add(new ByBrowsing(station));
+			children.add(new ByPLUCode(station));
+			children.add(new ByTextSearch(station));
+		}
+	}
+
+	public void addProduct(Product product, double quantityOrWeight) {
+		
     }
 	
 }

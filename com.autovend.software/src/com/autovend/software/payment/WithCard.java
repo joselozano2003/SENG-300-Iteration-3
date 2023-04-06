@@ -28,7 +28,44 @@
  */
 package com.autovend.software.payment;
 
+import com.autovend.Card.CardData;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.CardReader;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.CardReaderObserver;
+
 @SuppressWarnings("serial")
-public class WithCard extends Payment {
+class WithCard extends Payment implements CardReaderObserver {
+
+	public WithCard(SelfCheckoutStation station) {
+		super(station);
+		try {
+			station.cardReader.register(this);
+		} catch (Exception e) {
+			for (PaymentListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
+	}
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+
+	@Override
+	public void reactToCardInsertedEvent(CardReader reader) {}
+
+	@Override
+	public void reactToCardRemovedEvent(CardReader reader) {}
+
+	@Override
+	public void reactToCardTappedEvent(CardReader reader) {}
+
+	@Override
+	public void reactToCardSwipedEvent(CardReader reader) {}
+
+	@Override
+	public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
 
 }

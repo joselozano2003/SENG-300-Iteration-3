@@ -31,22 +31,31 @@ package com.autovend.software.item;
 import com.autovend.Barcode;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.BarcodeScanner;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 
-public class ByScan implements BarcodeScannerObserver {
+@SuppressWarnings("serial")
+public class ByScanning extends AddItem implements BarcodeScannerObserver {
+
+    public ByScanning(SelfCheckoutStation station) {
+		super(station);
+		try {
+			station.mainScanner.register(this);
+			station.handheldScanner.register(this);
+		} catch (Exception e) {
+			for (ItemListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
+	}
+
+	@Override
+    public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
     @Override
-    public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-        // TODO Auto-generated method stub
-    }
+    public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
     @Override
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {

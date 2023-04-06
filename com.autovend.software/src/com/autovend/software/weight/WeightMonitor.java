@@ -30,6 +30,7 @@ package com.autovend.software.weight;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ElectronicScale;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.software.AbstractSoftware;
@@ -37,40 +38,30 @@ import com.autovend.software.AbstractSoftware;
 @SuppressWarnings("serial")
 public class WeightMonitor extends AbstractSoftware<WeightListener> implements ElectronicScaleObserver{
 	
-	WeightMonitor(ElectronicScale scale) {
-		if (scale == null)
-			throw new NullPointerException("Printer cannot be null");
-		scale.register(null);
+	public WeightMonitor(SelfCheckoutStation station) {
+		super(station);
+		try {
+			station.scale.register(this);
+			station.baggingArea.register(this);
+		} catch (Exception e) {
+			for (WeightListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {}
 
 	@Override
-	public void reactToOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOverloadEvent(ElectronicScale scale) {}
 
 	@Override
-	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
 	
 }

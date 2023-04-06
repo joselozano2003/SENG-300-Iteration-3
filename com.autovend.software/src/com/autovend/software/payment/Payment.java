@@ -28,11 +28,35 @@
  */
 package com.autovend.software.payment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public abstract class Payment extends AbstractSoftware<PaymentListener> {
+public class Payment extends AbstractSoftware<PaymentListener> {
+	private static Payment instance;
+	private List<Payment> children;
 	
+	public Payment(SelfCheckoutStation station) {
+		super(station);
+		//Initialize this instance and children once.
+		if (instance == null) {
+			instance = this;
+			children = new ArrayList<Payment>();
+			children.add(new WithCoin(station));
+			children.add(new WithBill(station));
+			children.add(new WithCard(station));
+		}
+	}
 	
+	protected List<Payment> getChildren() {
+		return children;
+	}
+	
+	public static Payment getInstance() {
+		return instance;
+	}
 	
 }

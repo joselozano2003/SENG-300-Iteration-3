@@ -41,11 +41,8 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 public interface AbstractListener {
 	/**
 	 * Announces that the indicated software failed to complete due to a hardware failure.
-	 * 
-	 * @param device
-	 *            The device that failed.
 	 */
-	public void reactToHardwareFailure(AbstractDevice<? extends AbstractDeviceObserver> device);
+	public void reactToHardwareFailure();
 	/**
 	 * Announces that a device should be disabled.
 	 * 

@@ -28,10 +28,15 @@
  */
 package com.autovend.software.communication;
 
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
 public class CustomerIO extends AbstractSoftware<CommunicationListener> {
+
+	protected CustomerIO(SelfCheckoutStation station) {
+		super(station);
+	}
 	
 	//Implements Hardware
 	
