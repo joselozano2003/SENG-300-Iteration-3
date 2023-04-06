@@ -31,6 +31,8 @@ package com.autovend.software.communication;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class AttendantIO extends AbstractSoftware<CommunicationListener>{
+public class AttendantIO extends AbstractSoftware<CommunicationListener> {
+	
+	// Implements Hardware
 
 }

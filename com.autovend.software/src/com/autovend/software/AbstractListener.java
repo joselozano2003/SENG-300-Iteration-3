@@ -56,5 +56,5 @@ public interface AbstractListener {
 	/**
 	 * Announces that the entire station should be disabled.
 	 */
-	default void reactToDisableStationRequest() {};
+	void reactToDisableStationRequest();
 }

@@ -26,13 +26,11 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.communication;
-
-import com.autovend.software.AbstractSoftware;
+package com.autovend.software.item;
 
 @SuppressWarnings("serial")
-public class CustomerIO extends AbstractSoftware<CommunicationListener> {
+public class ByBrowsing extends AddItem {
 	
-	//Implements Hardware
+	// Implements Hardware
 	
 }
