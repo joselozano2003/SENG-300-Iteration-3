@@ -52,4 +52,28 @@ public class Model_Customer {
         receiptPrinted = false;
     }
 
+    public boolean isReceiptPrinted() {
+        return receiptPrinted;
+    }
+
+    public Map getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public double getExpectedWeight() {
+        return expectedWeight;
+    }
+
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public BigDecimal getTotalPaid() {
+        return totalPaid;
+    }
+
+    public BigDecimal getAmountLeft() {
+        return totalCost.subtract(totalPaid);
+    }
+
 }
