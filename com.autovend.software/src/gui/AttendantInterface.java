@@ -160,7 +160,7 @@ public class AttendantInterface {
 	// NOTE: STATION NUMBER IS AN INT >= 1, MUST SUBTRACT ONE TO INDEX INTO COMPONENT ARRAYS.
 	public void notifyWeightDiscrepancy(int station_number, double discrepancy) {
 		discrepancyLabels[station_number - 1].setText("Station " + station_number
-				+ ": Weight discrepancy of " + discrepancy);
+				+ ": Weight discrepancy of " + discrepancy + " grams");
 		approveButtons[station_number - 1].setText("Override");
 		
 		// Set up and add button listener.
