@@ -26,7 +26,7 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.weight;
+package com.autovend.software.bagging;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ElectronicScale;
@@ -36,16 +36,16 @@ import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class WeightFacade extends AbstractSoftware<WeightListener> {
+public class BaggingFacade extends AbstractSoftware<BaggingListener> {
 	
-	public WeightFacade(SelfCheckoutStation station) {
+	public BaggingFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
 			InnerListener inner = new InnerListener();
 			station.scale.register(inner);
 			station.baggingArea.register(inner);
 		} catch (Exception e) {
-			for (WeightListener listener : listeners)
+			for (BaggingListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}

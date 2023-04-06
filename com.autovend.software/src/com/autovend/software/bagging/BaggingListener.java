@@ -26,11 +26,11 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.weight;
+package com.autovend.software.bagging;
 
 import com.autovend.software.AbstractListener;
 
-public interface WeightListener extends AbstractListener {
+public interface BaggingListener extends AbstractListener {
 	/**
 	 * Signals that the weight on a scale increased.
 	 * @param amount

@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.item.ItemFacade;
 import com.autovend.software.membership.MembershipFacade;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptFacade;
-import com.autovend.software.weight.WeightFacade;
 
 public class CustomerStation {
 	
@@ -25,7 +25,7 @@ public class CustomerStation {
 		ItemFacade item = new ItemFacade(station);
 		PaymentFacade payment = new PaymentFacade(station);
 		ReceiptFacade receipt = new ReceiptFacade(station);
-		WeightFacade bagging = new WeightFacade(station);
+		BaggingFacade bagging = new BaggingFacade(station);
 		MembershipFacade membership = new MembershipFacade(station);
 		//Initiate station with MVC design.
 		model = new CustomerModel(item, payment, receipt, bagging, membership);
