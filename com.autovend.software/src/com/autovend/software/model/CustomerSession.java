@@ -19,7 +19,7 @@ public class CustomerSession {
     private BigDecimal totalPaid;
     private PaymentMethod paymentMethod;
 
-    public CustomerSession() {
+    public CustomerSession(SelfCheckoutStation station) {
         shoppingCart = new HashMap<>();
         state = State.INITIAL;
         paymentMethod = null;
@@ -40,6 +40,8 @@ public class CustomerSession {
         }
     }
 
+
+    // TODO: Add a method to remove an item from the cart
     public void removeItem(Product product) {
         shoppingCart.remove(product);
     }
