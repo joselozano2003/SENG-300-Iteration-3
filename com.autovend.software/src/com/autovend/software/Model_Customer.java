@@ -1,6 +1,7 @@
 package com.autovend.software;
 
 import com.autovend.devices.SelfCheckoutStation;
+import java.math.BigDecimal;
 
 public class Model_Customer {
     SelfCheckoutStation station;
