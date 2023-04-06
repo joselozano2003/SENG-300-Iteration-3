@@ -28,15 +28,15 @@
  */
 package com.autovend.software.item;
 
-import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractSoftware;
-import com.autovend.software.Model_Customer;
 
 @SuppressWarnings("serial")
 public abstract class AddItem extends AbstractSoftware<ItemListener>{
 	
 	//Create list of children.
+	
+	
     public void addProduct(Product product, double quantityOrWeight) {
 //        if (shoppingCart.containsKey(product)) {
 //            double currentProductAmount = shoppingCart.get(product);
