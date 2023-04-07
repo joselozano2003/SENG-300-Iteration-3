@@ -5,26 +5,26 @@ import com.autovend.devices.EmptyException;
 public class AttendantAccount {
 	private String userName;
 	private String password;
-	public AttendantAccount (String userName, String password) throws EmptyException {
-		if(userName==null) {
-			throw new EmptyException("userName is empty!");
+	public AttendantAccount (String userName, String password){
+		try {
+			setUserName(userName);
+			setPassword(password);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		if(password==null) {
-			throw new EmptyException("password is empty!");
-		}
-		setUserName(userName);
-		setPassword(password);
 	}
 	private String getUserName() {
 		return userName;
 	}
-	private void setUserName(String userName) {
+	private void setUserName(String userName) throws EmptyException {
+		if(userName==null) throw new EmptyException("User name is empty!");
 		this.userName = userName;
 	}
 	private String getPassword() {
 		return password;
 	}
-	private void setPassword(String password) {
+	private void setPassword(String password) throws EmptyException {
+		if(password==null) throw new EmptyException("Password is empty!");
 		this.password = password;
 	}
 	@Override
