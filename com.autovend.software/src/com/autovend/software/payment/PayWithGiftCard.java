@@ -46,7 +46,7 @@ import com.autovend.software.BankIO;
 public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithGiftCard(SelfCheckoutStation station) {
-		super(station, true);
+		super(station, false);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
@@ -76,9 +76,10 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 		if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
 			for (PaymentEventListener listener : listeners) {
 				listener.onPaymentFailure();
-//		}
+		}
 			return;
 		}
+		
 		data = (GiftCard.GiftCardInsertData) data;
 		
 		System.out.println(value.toString());
@@ -92,7 +93,7 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 				subtractAmountDue(value);
 			} else {
 				for (PaymentEventListener listener : listeners) {
-					//listener.onPaymentFailure();
+					listener.onPaymentFailure();
 				}
 				System.out.println("Payment unsuccessful");
 			}
@@ -103,5 +104,4 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 		}
 		
 	}
-}
 }

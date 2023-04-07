@@ -34,7 +34,7 @@ public class tempTestGift {
 		PayWithGiftCard readerob = new PayWithGiftCard(scs);
 		readerob.addAmountDue(new BigDecimal("50"));
 
-//		scs.cardReader.register(readerob);
+		scs.cardReader.register(readerob);
 		
 		try {
 			scs.cardReader.insert(card, "2001");
