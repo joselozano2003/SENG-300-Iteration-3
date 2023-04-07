@@ -53,38 +53,52 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
+
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
+
 	@Override
-	public void reactToCardInsertedEvent(CardReader reader) {}
+	public void reactToCardInsertedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardRemovedEvent(CardReader reader) {}
+	public void reactToCardRemovedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardTappedEvent(CardReader reader) {}
+	public void reactToCardTappedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {}
+	public void reactToCardSwipedEvent(CardReader reader) {
+	}
+
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
 		BigDecimal value = getAmountDue();
 		String cardIssuerName = data.getType();
-		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
+		CardIssuer issuer = BankIO.CARD_ISSUER_DATABASE.get(cardIssuerName);
 		if (issuer == null) {
 			for (PaymentEventListener listener : listeners) {
 				listener.onPaymentFailure();
 			}
 		} else {
 			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
-
 			if (holdNumber == -1) {
 				for (PaymentEventListener listener : listeners) {
 					listener.onPaymentFailure();
 				}
 			} else {
+
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
 					for (PaymentEventListener listener : listeners) {
+
 						listener.onPaymentAddedEvent(value);
+
 					}
 
 				} else {

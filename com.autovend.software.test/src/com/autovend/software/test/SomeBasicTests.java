@@ -2,6 +2,7 @@ package com.autovend.software.test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Currency;
@@ -14,6 +15,7 @@ import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
+import com.autovend.CreditCard;
 import com.autovend.Numeral;
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
@@ -21,10 +23,13 @@ import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
+import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.BankIO;
 import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
 
 public class SomeBasicTests {
@@ -41,6 +46,8 @@ public class SomeBasicTests {
 
 	public BarcodedProduct barcodeProduct;
 	public PLUCodedProduct pluProduct;
+	public CardIssuer credit;
+	public CreditCard creditCard;
 
 	@Before
 	public void setUp() throws Exception {
@@ -67,8 +74,15 @@ public class SomeBasicTests {
 		barcodeProduct = new BarcodedProduct(barcode, "product 1", new BigDecimal("1.00"), 10);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
 		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
+		
+		credit = new CardIssuer("credit");
+		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
+		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
+		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
+
 
 		customerSessionController = new CustomerController(selfCheckoutStation);
+		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
 		// Add 100 bills to each dispenser
@@ -108,7 +122,7 @@ public class SomeBasicTests {
 		Coin coin = new Coin(BigDecimal.valueOf(0.05), currency);
 		selfCheckoutStation.coinSlot.accept(coin);
 
-		assertEquals(currentSession.getTotalPaid(), coin.getValue());
+		assertEquals(coin.getValue(), currentSession.getTotalPaid());
 
 	}
 
@@ -123,22 +137,70 @@ public class SomeBasicTests {
 	}
 
 	@Test
+	public void payWithCardTap() throws IOException {
+		customerSessionController.startAddingItems();
+
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		customerSessionController.startPaying();
+		
+		
+		selfCheckoutStation.cardReader.tap(creditCard);
+
+		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost()); // eventually should change it to amountDue
+		
+
+	}
+
+	@Test
 	public void addItemByScanning() {
 		customerSessionController.startAddingItems();
 
 		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-	    assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
-	    
+
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
 		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
-	}
+		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 	
-	@Test 
-	public void payWithCard() {
-		
+	}
+
+	@Test
+	public void weightChangedBaggingArea() {
+		customerSessionController.startAddingItems();
+
+		// Scan first unit, and add to bagging
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		selfCheckoutStation.baggingArea
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		try {
+			assertEquals(barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(), 0.1);
+		} catch (OverloadException e) {
+
+		}
+		assertEquals(State.ADDING_ITEMS, customerSessionController.getCurrentState());
+
+		// Scan second unit, and also add to bagging
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		selfCheckoutStation.baggingArea
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		try {
+			assertEquals(2 * barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(),
+					0.1);
+		} catch (OverloadException e) {
+
+		}
+
 	}
 
 }

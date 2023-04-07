@@ -62,12 +62,13 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 
 	
 	public void addAmountDue(BigDecimal amountToAdd) {
-		amountDue.add(amountToAdd);
+		amountDue = amountDue.add(amountToAdd);
+		
   
 	}
 	
 	public void subtractAmountDue(BigDecimal amountToSubtract) {
-		amountDue.subtract(amountToSubtract);
+		amountDue = amountDue.subtract(amountToSubtract);
 	}
 	
 	/**
