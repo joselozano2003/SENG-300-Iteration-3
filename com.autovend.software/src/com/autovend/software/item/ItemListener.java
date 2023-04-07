@@ -28,6 +28,7 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.Barcode;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractListener;
 
@@ -37,5 +38,11 @@ public interface ItemListener extends AbstractListener {
 	 * @param product
 	 */
 	public void reactToItemAdded(Product product);
+	
+	/**
+	 * Signals an event in which an invalid barcode is scanned.
+	 * @param barcode
+	 */
+	public void reactToInvalidBarcodScanned(Barcode barcode);
 
 }
