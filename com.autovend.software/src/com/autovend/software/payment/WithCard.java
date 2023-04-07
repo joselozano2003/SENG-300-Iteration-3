@@ -83,8 +83,10 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 			} else {
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
+					this.subtractAmountDue(value);
+					reader.remove();
 					for (PaymentListener listener : listeners) {
-						//listener.onPaymentSuccessful(value);
+//						listener.onPaymentSuccessful(value);
 					}
 
 				} else {
@@ -93,7 +95,6 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 					}
 				}
 			}
-			this.addAmountDue(value);
 		}
 	}
 }
