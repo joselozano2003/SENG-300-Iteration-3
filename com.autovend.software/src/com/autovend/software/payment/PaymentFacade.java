@@ -32,6 +32,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.autovend.GiftCard.GiftCardInsertData;
+import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractSoftware;
 
@@ -50,6 +52,7 @@ public class PaymentFacade extends AbstractSoftware<PaymentListener> {
 			children.add(new WithCoin(station));
 			children.add(new WithBill(station));
 			children.add(new WithCard(station));
+			children.add(new WithGiftCard(station));
 			amountDue = BigDecimal.ZERO;
 		}
 	}

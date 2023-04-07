@@ -31,6 +31,9 @@ package com.autovend.software.payment;
 import java.math.BigDecimal;
 
 import com.autovend.Card.CardData;
+import com.autovend.ChipFailureException;
+import com.autovend.GiftCard;
+import com.autovend.GiftCard.GiftCardInsertData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
@@ -40,9 +43,13 @@ import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
-class WithCard extends PaymentFacade implements CardReaderObserver {
+public class WithGiftCard extends PaymentFacade implements CardReaderObserver {
+	
+	private String pinInput;
+	public BigDecimal value;
 
-	protected WithCard(SelfCheckoutStation station) {
+
+	public WithGiftCard(SelfCheckoutStation station) {
 		super(station);
 		try {
 			station.cardReader.register(this);
@@ -50,7 +57,19 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 			for (PaymentListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
+		
+		pinInput = null;
 	}
+	
+	public void setPinInput(String aPin) {
+		pinInput = aPin;
+	}
+	
+	public void setValue(BigDecimal val) {
+		value = val;
+	}
+	
+	
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
@@ -66,34 +85,33 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-//		BigDecimal value = getAmountDue();
-//		String cardIssuerName = data.getType();
-//		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
-//		if (issuer == null) {
+		if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
+			//giftcard not in database
 //			for (PaymentListener listener : listeners) {
-//				//listener.onPaymentFailure();
-//			}
-//		} else {
-//			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
-//
-//			if (holdNumber == -1) {
+//			//listener.onPaymentFailure();
+//		}
+			return;
+		}
+		data = (GiftCard.GiftCardInsertData) data;
+
+		try {
+			if (((GiftCardInsertData) data).deduct(value)) {
+//				for (PaymentListener listener : listeners) {
+//					listener.onPaymentSuccessful(value);
+//				}
+				System.out.println("Payment successful");
+				value = new BigDecimal("0");
+			} else {
 //				for (PaymentListener listener : listeners) {
 //					//listener.onPaymentFailure();
 //				}
-//			} else {
-//				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
-//				if (transactionResult) {
-//					for (PaymentListener listener : listeners) {
-//						//listener.onPaymentSuccessful(value);
-//					}
-//
-//				} else {
-//					for (PaymentListener listener : listeners) {
-//						//listener.onPaymentFailure();
-//					}
-//				}
-//			}
-//			this.addAmountDue(value);
-//		}
+				System.out.println("Payment unsuccessful");
+			}
+		} catch (ChipFailureException e) {
+			// TODO Auto-generated catch block
+			//maybe call attendant for maintenance
+			e.printStackTrace();
+		}
+		
 	}
 }
