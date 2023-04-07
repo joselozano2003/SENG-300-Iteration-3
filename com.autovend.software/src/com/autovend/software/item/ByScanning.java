@@ -59,8 +59,10 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
     @Override
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
-        BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
-        if (barcodedProduct != null) {
+    	//check if the barcode exists in the database
+    	if (ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)) {
+    		BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+    		
         	addProduct(barcodedProduct); //add item to item list
 			adjustExpectedWeight(barcodedProduct.getExpectedWeight()); //updated expected weight
 			adjustTotalCost(barcodedProduct.getPrice()); //updated total cost of item list
@@ -68,11 +70,12 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 			//announce event of an item being added
 			for (ItemListener listener : listeners)
 				listener.reactToItemAdded(barcodedProduct);
-        } else {
+    	} else {
         	//announce event of an invalid barcode being scanned
 			for (ItemListener listener : listeners)
 				listener.reactToInvalidBarcodScanned(barcode);
-        }
+    	}
+    	
         //check valid
         //if valid then add to cart
         // ItemAddedEvent
