@@ -28,8 +28,11 @@
  */
 package com.autovend.software.payment;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 
+import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
@@ -47,8 +50,70 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
-			for (PaymentListener listener : listeners)
-				listener.reactToHardwareFailure();
+//			for (PaymentListener listener : listeners) {
+//				listener.reactToHardwareFailure();
+//		
+//			}
+		}
+	}
+	
+	public boolean payByTap(Card card) throws IOException {
+		BigDecimal value = getAmountDue();
+		if(card == null) {
+			throw new NullPointerException("Argument cannot be null!");
+		}
+		
+		CardReader reader = this.station.cardReader;
+		CardData cardData = reader.tap(card);
+		
+		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
+			return reactToCardDataReadEvent(reader, cardData);
+		}
+		else {
+//			for (PaymentListener listener : listeners) {
+//				listener.onPaymentFailureEvent(value);
+//			}
+			return false;
+		}
+	}
+	
+	public boolean payBySwipe(Card card, BufferedImage signature) throws IOException {
+		BigDecimal value = getAmountDue();
+		if(card == null) {
+			throw new NullPointerException("Argument cannot be null!");
+		}
+		
+		CardReader reader = this.station.cardReader;
+		CardData cardData = reader.swipe(card, signature);
+		
+		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
+			return reactToCardDataReadEvent(reader, cardData);
+		}
+		else {
+//			for (PaymentListener listener : listeners) {
+//				listener.onPaymentFailureEvent(value);
+//			}
+			return false;
+		}
+	}
+	
+	public boolean payByInsert(Card card, String pin) throws IOException{
+		BigDecimal value = getAmountDue();
+		if(card == null) {
+			throw new NullPointerException("Argument cannot be null!");
+		}
+		
+		CardReader reader = this.station.cardReader;
+		CardData cardData = reader.insert(card, pin);
+		
+		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
+			return reactToCardDataReadEvent(reader, cardData);
+		}
+		else {
+//			for (PaymentListener listener : listeners) {
+//				listener.onPaymentFailureEvent(value);
+//			}
+			return false;
 		}
 	}
 
@@ -65,36 +130,50 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 	@Override
 	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
+	public boolean reactToCardDataReadEvent(CardReader reader, CardData data) {
 		BigDecimal value = getAmountDue();
 		String cardIssuerName = data.getType();
 		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
 		if (issuer == null) {
-			for (PaymentListener listener : listeners) {
-				//listener.onPaymentFailure();
-			}
+//			for (PaymentListener listener : listeners) {
+//				listener.onPaymentFailureEvent(value);
+//			}
+			return false;
 		} else {
 			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
 
 			if (holdNumber == -1) {
-				for (PaymentListener listener : listeners) {
-					//listener.onPaymentFailure();
-				}
+//				for (PaymentListener listener : listeners) {
+//					listener.onPaymentFailureEvent(value);
+//				}
+				return false;
 			} else {
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
 					this.subtractAmountDue(value);
 					reader.remove();
-					for (PaymentListener listener : listeners) {
-//						listener.onPaymentSuccessful(value);
-					}
-
+//					for (PaymentListener listener : listeners) {
+//						listener.onPaymentSuccessfulEvent(value);
+//						listener.onCardRemovedEvent();
+//					}
+					return true;
 				} else {
-					for (PaymentListener listener : listeners) {
-						//listener.onPaymentFailure();
-					}
+//					for (PaymentListener listener : listeners) {
+//						listener.onPaymentFailureEvent(value);
+//					}
+					return false;
 				}
 			}
 		}
+	}
+
+	public void reactToEnabledEvent(AbstractDevice device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reactToDisabledEvent(AbstractDevice device) {
+		// TODO Auto-generated method stub
+		
 	}
 }
