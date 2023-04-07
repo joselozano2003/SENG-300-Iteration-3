@@ -32,7 +32,7 @@ public class AttendantAccount {
 		}
 	}
 
-	private String getUserName() {
+	public String getUserName() {
 		return userName;
 	}
 

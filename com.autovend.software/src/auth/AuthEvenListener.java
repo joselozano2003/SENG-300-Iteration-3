@@ -4,8 +4,8 @@ import com.autovend.software.AbstractEventListener;
 
 public interface AuthEvenListener extends AbstractEventListener {
 
-	public void onLogIn();
+	public void reactToLogIn(AttendantAccount attendantAccount);
 
-	public void onLogOut();
+	public void reactToLogOut(AttendantAccount attendantAccount);
 
 }
