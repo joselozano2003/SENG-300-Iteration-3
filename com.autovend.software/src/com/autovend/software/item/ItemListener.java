@@ -44,5 +44,11 @@ public interface ItemListener extends AbstractListener {
 	 * @param barcode
 	 */
 	public void reactToInvalidBarcodScanned(Barcode barcode);
+	
+	/**
+	 * Signal an event in which the product that is trying to be added to the customer's purchase list is null
+	 * @param product
+	 */
+	public void reactToNullProductEvent(Product product);
 
 }
