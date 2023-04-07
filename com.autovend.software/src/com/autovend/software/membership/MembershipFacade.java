@@ -66,17 +66,38 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
 			//if valid
 			membershipEntered = true;
+			if (MemberShipDatabase.userExists(barcode.toString()) == false) {
+				System.out.println("Invalid Membership Card detetected. Please try again");
+				membershipEntered = false;
+			}
 		}
 		@Override
-		public void reactToCardInsertedEvent(CardReader reader) {}
+		public void reactToCardInsertedEvent(CardReader reader) {
+			
+		}
 		@Override
-		public void reactToCardRemovedEvent(CardReader reader) {}
+		public void reactToCardRemovedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardTappedEvent(CardReader reader) {}
+		public void reactToCardTappedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardSwipedEvent(CardReader reader) {}
+		public void reactToCardSwipedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
+			//if valid
+			membershipEntered = true;
+			if (MemberShipDatabase.userExists(data.getNumber()) == false) {
+				System.out.println("Invalid Membership Card detetected. Please try again");
+				membershipEntered = false;
+			}
+		}
+			
+	
 	}
 	
 	/**
