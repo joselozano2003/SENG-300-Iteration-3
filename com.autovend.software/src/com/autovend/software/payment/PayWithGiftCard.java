@@ -53,6 +53,7 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 			for (PaymentEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
+	}
 		
 	
 
