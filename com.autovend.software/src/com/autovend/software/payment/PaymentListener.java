@@ -44,4 +44,6 @@ public interface PaymentListener extends AbstractListener {
 	 */
 	public void onPaymentReturnedEvent(BigDecimal amount);
 	
+	public void onAmountDueAddedEvent();
+	
 }
