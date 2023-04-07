@@ -41,6 +41,8 @@ import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractSoftware<MembershipListener> {
+	
+	private boolean membershipEntered = false;
 
 	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);
@@ -61,7 +63,10 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		@Override
 		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 		@Override
-		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {}
+		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+			//if valid
+			membershipEntered = true;
+		}
 		@Override
 		public void reactToCardInsertedEvent(CardReader reader) {}
 		@Override
@@ -72,6 +77,13 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		public void reactToCardSwipedEvent(CardReader reader) {}
 		@Override
 		public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+	}
+	
+	/**
+	 * @return True or false if a valid membership number has been entered.
+	 */
+	public boolean membershipEntered() {
+		return membershipEntered;
 	}
 
 }
