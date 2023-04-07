@@ -14,17 +14,19 @@ public class AuthFacade extends AbstractFacade<ItemEventListener> implements Aut
 
 	public boolean logIn(AttendantAccount attendantAccount) {
 		if (AttendantAccountDatabases.ATTENDANT_ACCOUNTS.contains(attendantAccount)) {
-			reactToLogIn(attendantAccount);
+			reactToLogInSuccesfully(attendantAccount);
 			return true;
 		}
+		reactToLogInUnsuccesfully(attendantAccount);
 		return false;
 	}
 
 	public boolean logOut(AttendantAccount attendantAccount) {
 		if (AttendantAccountDatabases.ATTENDANT_ACCOUNTS.contains(attendantAccount)) {
-			reactToLogIn(attendantAccount);
+			reactToLogOutSuccesfully(attendantAccount);
 			return true;
 		}
+		reactToLogOutUnsuccesfully(attendantAccount);
 		return false;
 	}
 
@@ -59,14 +61,26 @@ public class AuthFacade extends AbstractFacade<ItemEventListener> implements Aut
 	}
 
 	@Override
-	public void reactToLogIn(AttendantAccount attendantAccount) {
+	public void reactToLogInSuccesfully(AttendantAccount attendantAccount) {
 		// TODO Auto-generated method stub
 		System.out.println(attendantAccount.getUserName() + " has succsesfully logged in.");
 	}
 
 	@Override
-	public void reactToLogOut(AttendantAccount attendantAccount) {
+	public void reactToLogOutSuccesfully(AttendantAccount attendantAccount) {
 		// TODO Auto-generated method stub
 		System.out.println(attendantAccount.getUserName() + " has succsesfully logged out.");
+	}
+
+	@Override
+	public void reactToLogInUnsuccesfully(AttendantAccount attendantAccount) {
+		// TODO Auto-generated method stub
+		System.out.println(attendantAccount.getUserName() + " has failed to log in.");
+	}
+
+	@Override
+	public void reactToLogOutUnsuccesfully(AttendantAccount attendantAccount) {
+		// TODO Auto-generated method stub
+		System.out.println(attendantAccount.getUserName() + " has failed to log in.");
 	}
 }
