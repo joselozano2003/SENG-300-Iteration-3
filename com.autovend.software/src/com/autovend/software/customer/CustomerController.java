@@ -59,10 +59,16 @@ public class CustomerController
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
 
+	public enum State {
+		INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED, DISABLED,
+
+	}
+
+	private State currentState;
 
 	public CustomerController(SelfCheckoutStation selfCheckoutStation) {
 		this.selfCheckoutStation = selfCheckoutStation;
-		this.currentSession = new CustomerSession();
+		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
 		this.itemAdditionFacade = new ItemFacade(selfCheckoutStation, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
@@ -71,16 +77,42 @@ public class CustomerController
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
 		paymentMethods = paymentFacade.getChildren();
-		for(PaymentFacade child : paymentMethods) {
+		for (PaymentFacade child : paymentMethods) {
 			child.register(this);
 		}
 		itemAdditionFacade.register(this);
 		itemAdditionMethods = itemAdditionFacade.getChildren();
-		for(ItemFacade child : itemAdditionMethods) {
+		for (ItemFacade child : itemAdditionMethods) {
 			child.register(this);
 		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
+	}
+	
+	public void setState(State newState) {
+		this.currentState = newState;
+		
+		switch(newState) {
+		case INITIAL:
+			break;
+		case ADDING_ITEMS:
+			break;
+		case CHECKING_WEIGHT:
+			break;
+		case PAYING:
+			break;
+		case DISPENSING_CHANGE:
+			break;
+		case PRINTING_RECEIPT:
+			break;
+		case FINISHED:
+			break;
+		case DISABLED:
+			break;
+		default:
+			break;
+		
+		}
 	}
 
 	public void startNewSession() {
@@ -91,19 +123,20 @@ public class CustomerController
 	}
 
 	public void startPaying() {
-		BigDecimal amountDue = currentSession.getTotalCost();
+		BigDecimal amountDue = currentSession.getAmountLeft();
 		paymentFacade.addAmountDue(amountDue);
+		
 	}
 
 	@Override
 	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		device.disable();
+		// device.disable();
 
 	}
 
 	@Override
 	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		device.enable();
+		// device.enable();
 
 	}
 
@@ -121,33 +154,31 @@ public class CustomerController
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
 		currentSession.addItemToCart(product, quantity);
+		setState(State.CHECKING_WEIGHT);
 
 	}
-	
+
 	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
 	}
-	
+
 	@Override
 	public void onPaymentFailure() {
 		// TODO Auto-generated method stub
 
 	}
 
-
 	@Override
 	public void onReceiptPrintedEvent() {
 
 	}
-	
 
 	@Override
 	public void onChangeDispensedEvent() {
 
 	}
 
-	
 	@Override
 	public void onChangeDispensedFailure() {
 		// TODO Auto-generated method stub
@@ -162,21 +193,16 @@ public class CustomerController
 
 	@Override
 	public void onLowPaper() {
-		
+
 	}
 
 	@Override
 	public void onWeightChanged(double weightInGrams) {
-		try {
-			boolean expectedWeightEqualsActual = (currentSession.getExpectedWeight() == selfCheckoutStation.baggingArea
-					.getCurrentWeight());
-			if (expectedWeightEqualsActual) {
-				// set state back to adding items
-			} else {
-				// should disable station, notify attendant
-			}
-		} catch (OverloadException e) {
-
+		boolean expectedWeightEqualsActual = (currentSession.getExpectedWeight() == weightInGrams);
+		if (expectedWeightEqualsActual) {
+			setState(State.ADDING_ITEMS);
+		} else {
+			setState(State.DISABLED);
 		}
 
 	}
@@ -194,37 +220,26 @@ public class CustomerController
 	}
 
 	@Override
-	public void reactToWeightIncreased(double amount) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToWeightDecreased(double amount) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToWeightDiscrepancy() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void onReceiptPrinterFailed() {
 		// TODO Auto-generated method stub
 
 	}
 	
-	public CustomerSession getCurrentSession() {
-		return this.currentSession;
-	}
-
 	@Override
 	public void onItemNotFoundEvent() {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	public CustomerSession getCurrentSession() {
+		return this.currentSession;
+	}
+	
+	public State getCurrentState() {
+		return this.currentState;
+	}
+	
+
+	
 
 }

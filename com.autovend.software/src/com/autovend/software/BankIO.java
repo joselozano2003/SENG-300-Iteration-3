@@ -1,19 +1,18 @@
 package com.autovend.software;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import com.autovend.Barcode;
+import com.autovend.CreditCard;
+import com.autovend.DebitCard;
+import com.autovend.PriceLookUpCode;
 import com.autovend.external.CardIssuer;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 
 public class BankIO {
-	
-	private static Map<String, CardIssuer> cardIssuers;
 
-	public static Map<String, CardIssuer> getCardIssuers() {
-		return cardIssuers;
-	}
-
-	public static void setCardIssuers(Map<String, CardIssuer> cardIssuers) {
-		BankIO.cardIssuers = cardIssuers;
-	}
+	public static final Map<String, CardIssuer> CARD_ISSUER_DATABASE = new HashMap<>();
 
 }
