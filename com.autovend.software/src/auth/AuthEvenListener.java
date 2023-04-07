@@ -1,5 +1,11 @@
 package auth;
 
-public class AuthEvenListener {
+import com.autovend.software.AbstractEventListener;
+
+public interface AuthEvenListener extends AbstractEventListener {
+
+	public void onLogIn();
+
+	public void onLogOut();
 
 }
