@@ -108,7 +108,25 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 			}
 		}
 			
-	
+		/**
+		 * Manually activated event. to be called when the user inputs their membership code via a keyboard / touch screen.
+		 * Checks if the specified input string is a membership number stored in the data base, if yes, membershipEntered is true, 
+		 * otherwise false.
+		 * @param input
+		 */
+		
+		@SuppressWarnings("unused")
+		public void reactToCodeInputEvent(String input) {
+			//if valid
+			membershipEntered = true;
+			if (scanningForMembership) {
+				if (MemberShipDatabase.userExists(input)) {
+					System.out.println("Invalid Membership Card detetected. Please try again");
+					membershipEntered = false;
+				}
+			}
+		}
+		
 	}
 	
 	/**
