@@ -66,34 +66,35 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-//		BigDecimal value = getAmountDue();
-//		String cardIssuerName = data.getType();
-//		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
-//		if (issuer == null) {
-//			for (PaymentListener listener : listeners) {
-//				//listener.onPaymentFailure();
-//			}
-//		} else {
-//			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
-//
-//			if (holdNumber == -1) {
-//				for (PaymentListener listener : listeners) {
-//					//listener.onPaymentFailure();
-//				}
-//			} else {
-//				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
-//				if (transactionResult) {
-//					for (PaymentListener listener : listeners) {
-//						//listener.onPaymentSuccessful(value);
-//					}
-//
-//				} else {
-//					for (PaymentListener listener : listeners) {
-//						//listener.onPaymentFailure();
-//					}
-//				}
-//			}
-//			this.addAmountDue(value);
-//		}
+		BigDecimal value = getAmountDue();
+		String cardIssuerName = data.getType();
+		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
+		if (issuer == null) {
+			for (PaymentListener listener : listeners) {
+				//listener.onPaymentFailure();
+			}
+		} else {
+			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
+
+			if (holdNumber == -1) {
+				for (PaymentListener listener : listeners) {
+					//listener.onPaymentFailure();
+				}
+			} else {
+				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
+				if (transactionResult) {
+					this.subtractAmountDue(value);
+					reader.remove();
+					for (PaymentListener listener : listeners) {
+//						listener.onPaymentSuccessful(value);
+					}
+
+				} else {
+					for (PaymentListener listener : listeners) {
+						//listener.onPaymentFailure();
+					}
+				}
+			}
+		}
 	}
 }
