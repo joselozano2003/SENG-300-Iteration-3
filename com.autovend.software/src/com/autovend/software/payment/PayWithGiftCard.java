@@ -31,6 +31,9 @@ package com.autovend.software.payment;
 import java.math.BigDecimal;
 
 import com.autovend.Card.CardData;
+import com.autovend.ChipFailureException;
+import com.autovend.GiftCard;
+import com.autovend.GiftCard.GiftCardInsertData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
@@ -40,10 +43,10 @@ import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
-class PayWithCard extends PaymentFacade implements CardReaderObserver {
+public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
 
-	public PayWithCard(SelfCheckoutStation station) {
-		super(station, true);
+	public PayWithGiftCard(SelfCheckoutStation station) {
+		super(station, false);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
@@ -51,62 +54,54 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 				listener.reactToHardwareFailure();
 		}
 	}
+		
+	
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToCardInsertedEvent(CardReader reader) {
-	}
-
+	public void reactToCardInsertedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardRemovedEvent(CardReader reader) {
-	}
-
+	public void reactToCardRemovedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardTappedEvent(CardReader reader) {
-	}
-
+	public void reactToCardTappedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {
-	}
-
+	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
 		BigDecimal value = getAmountDue();
-		String cardIssuerName = data.getType();
-		CardIssuer issuer = BankIO.CARD_ISSUER_DATABASE.get(cardIssuerName);
-		if (issuer == null) {
+
+		if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
 			for (PaymentEventListener listener : listeners) {
 				listener.onPaymentFailure();
-			}
-		} else {
-			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
-			if (holdNumber == -1) {
+		}
+			return;
+		}
+		
+		data = (GiftCard.GiftCardInsertData) data;
+		
+		System.out.println(value.toString());
+
+		try {
+			if (((GiftCardInsertData) data).deduct(value)) {
+				for (PaymentEventListener listener : listeners) {
+					listener.onPaymentSuccessful(value);
+				}
+				System.out.println("Payment successful");
+				subtractAmountDue(value);
+			} else {
 				for (PaymentEventListener listener : listeners) {
 					listener.onPaymentFailure();
 				}
-			} else {
-
-				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
-				if (transactionResult) {
-					for (PaymentEventListener listener : listeners) {
-
-						listener.onPaymentAddedEvent(value);
-
-					}
-
-				} else {
-					for (PaymentEventListener listener : listeners) {
-						listener.onPaymentFailure();
-					}
-				}
+				System.out.println("Payment unsuccessful");
 			}
+		} catch (ChipFailureException e) {
+			// TODO Auto-generated catch block
+			//maybe call attendant for maintenance
+			e.printStackTrace();
 		}
+		
 	}
 }

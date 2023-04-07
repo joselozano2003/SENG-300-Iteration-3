@@ -36,31 +36,48 @@ import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class BaggingFacade extends AbstractFacade<BaggingEventListener> {
-	
+public class BaggingFacade extends AbstractFacade<BaggingEventListener> implements ElectronicScaleObserver {
+
 	public BaggingFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
-			InnerListener inner = new InnerListener();
-			station.scale.register(inner);
-			station.baggingArea.register(inner);
+
+			station.scale.register(this);
+			station.baggingArea.register(this);
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
-	
-	private class InnerListener implements ElectronicScaleObserver {
-		@Override
-		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-		@Override
-		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-		@Override
-		public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {}
-		@Override
-		public void reactToOverloadEvent(ElectronicScale scale) {}
-		@Override
-		public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		
 	}
-	
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
+		for (BaggingEventListener listener : listeners)
+			listener.onWeightChanged(weightInGrams);;
+
+	}
+
+	@Override
+	public void reactToOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

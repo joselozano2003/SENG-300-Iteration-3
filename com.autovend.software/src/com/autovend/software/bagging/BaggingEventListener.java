@@ -35,16 +35,6 @@ public interface BaggingEventListener extends AbstractEventListener {
 	 * Signals that the weight on a scale increased.
 	 * @param amount
 	 */
-	public void reactToWeightIncreased(double amount);
-	/**
-	 * Signals that the weight an a scale decreased.
-	 * @param amount
-	 */
-	public void reactToWeightDecreased(double amount);
-	/**
-	 * Signals that a weight discrepancy has been detected.
-	 */
-	public void reactToWeightDiscrepancy();
 	
 	public void onWeightChanged(double weightInGrams);
 }
