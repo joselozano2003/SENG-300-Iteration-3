@@ -41,12 +41,12 @@ import com.autovend.products.BarcodedProduct;
 public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
     public ByScanning(SelfCheckoutStation station) {
-		super(station);
+		super(station, true);
 		try {
 			station.mainScanner.register(this);
 			station.handheldScanner.register(this);
 		} catch (Exception e) {
-			for (ItemListener listener : listeners)
+			for (ItemEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
@@ -60,10 +60,9 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
     @Override
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
         BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
-        //check valid
-        //if valid then add to cart
-        // ItemAddedEvent
-        //else
-        // invalidBarcodeEvent
+        if(barcodedProduct != null) {
+        	for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(barcodedProduct, 1);;
+        }
     }
 }

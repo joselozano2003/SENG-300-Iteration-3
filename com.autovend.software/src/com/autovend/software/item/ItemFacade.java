@@ -33,19 +33,22 @@ import java.util.List;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class ItemFacade extends AbstractSoftware<ItemListener>{
+public class ItemFacade extends AbstractFacade<ItemEventListener>{
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
+    private SelfCheckoutStation selfCheckoutStation; 
+
 	
-    public ItemFacade(SelfCheckoutStation station) {
+    public ItemFacade(SelfCheckoutStation station, boolean isChild) {
 		super(station);
+		this.selfCheckoutStation = station;
 		//Initialize this instance and children once.
-		if (instance == null) {
-			instance = this;
+		
+		if (!isChild) {
 			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
 			children.add(new ByScanning(station));
@@ -71,7 +74,7 @@ public class ItemFacade extends AbstractSoftware<ItemListener>{
 	/**
 	 * @return List of active subclasses.
 	 */
-	protected List<ItemFacade> getChildren() {
+	public List<ItemFacade> getChildren() {
 		return children;
 	}
 	

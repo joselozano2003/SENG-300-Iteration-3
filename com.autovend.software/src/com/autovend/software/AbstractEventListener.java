@@ -38,7 +38,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
  * All subclasses should add their own event notification methods, the first
  * parameter of which should always be the software affected.
  */
-public interface AbstractListener {
+public interface AbstractEventListener {
 	/**
 	 * Announces that the indicated software failed to complete due to a hardware failure.
 	 */

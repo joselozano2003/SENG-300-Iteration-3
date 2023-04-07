@@ -28,9 +28,9 @@
  */
 package com.autovend.software.membership;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractListener {
+public interface MembershipListener extends AbstractEventListener {
 	/**
 	 * Announces that a valid membership number has been entered by the user.
 	 * @param number The String number entered

@@ -32,7 +32,7 @@ import com.autovend.devices.SelfCheckoutStation;
 
 public class ByPLUCode extends ItemFacade  {
     protected ByPLUCode(SelfCheckoutStation station) {
-		super(station);
+		super(station, true);
 	}
 
     

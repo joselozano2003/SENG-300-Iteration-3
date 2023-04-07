@@ -28,9 +28,9 @@
  */
 package com.autovend.software.bagging;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface BaggingListener extends AbstractListener {
+public interface BaggingEventListener extends AbstractEventListener {
 	/**
 	 * Signals that the weight on a scale increased.
 	 * @param amount
@@ -45,4 +45,6 @@ public interface BaggingListener extends AbstractListener {
 	 * Signals that a weight discrepancy has been detected.
 	 */
 	public void reactToWeightDiscrepancy();
+	
+	public void onWeightChanged(double weightInGrams);
 }

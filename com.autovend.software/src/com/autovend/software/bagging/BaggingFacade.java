@@ -33,10 +33,10 @@ import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ElectronicScaleObserver;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class BaggingFacade extends AbstractSoftware<BaggingListener> {
+public class BaggingFacade extends AbstractFacade<BaggingEventListener> {
 	
 	public BaggingFacade(SelfCheckoutStation station) {
 		super(station);
@@ -45,7 +45,7 @@ public class BaggingFacade extends AbstractSoftware<BaggingListener> {
 			station.scale.register(inner);
 			station.baggingArea.register(inner);
 		} catch (Exception e) {
-			for (BaggingListener listener : listeners)
+			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}

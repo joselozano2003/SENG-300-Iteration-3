@@ -30,9 +30,9 @@ package com.autovend.software.payment;
 
 import java.math.BigDecimal;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface PaymentListener extends AbstractListener {
+public interface PaymentEventListener extends AbstractEventListener {
 	/**
 	 * Signals an event in which valid payment has been entered.
 	 * @param amount The amount added for payment.
@@ -43,5 +43,12 @@ public interface PaymentListener extends AbstractListener {
 	 * @param amount The amount removed.
 	 */
 	public void onPaymentReturnedEvent(BigDecimal amount);
+	
+	public void onPaymentFailure();
+	
+	public void onChangeDispensedEvent();
+	
+	public void onChangeDispensedFailure();
+	
 	
 }

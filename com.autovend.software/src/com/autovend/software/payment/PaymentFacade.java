@@ -32,32 +32,38 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
+import com.autovend.devices.DisabledException;
+import com.autovend.devices.EmptyException;
+import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class PaymentFacade extends AbstractSoftware<PaymentListener> {
+public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	private static PaymentFacade instance;
 	private List<PaymentFacade> children;
 	private static BigDecimal amountDue;
+    private SelfCheckoutStation selfCheckoutStation; 
 	
-	public PaymentFacade(SelfCheckoutStation station) {
-		super(station);
-		//Initialize this instance and children once.
-		if (instance == null) {
-			instance = this;
-			children = new ArrayList<PaymentFacade>();
-			children.add(new WithCoin(station));
-			children.add(new WithBill(station));
-			children.add(new WithCard(station));
-			amountDue = BigDecimal.ZERO;
-		}
-	}
+    public PaymentFacade(SelfCheckoutStation station, boolean isChild) {
+        super(station);
+        this.selfCheckoutStation = station;
+        if (!isChild) {
+            children = new ArrayList<PaymentFacade>();
+            children.add(new PayWithCoin(selfCheckoutStation));
+            children.add(new PayWithBill(selfCheckoutStation));
+            children.add(new PayWithCard(selfCheckoutStation));
+            amountDue = BigDecimal.ZERO;
+        }
+    }
+
+
 	
 	public void addAmountDue(BigDecimal amountToAdd) {
 		amountDue.add(amountToAdd);
-//		for (PaymentListener listener : listeners)
-//			listener.reactToAmountDueAdded
+  
 	}
 	
 	public void subtractAmountDue(BigDecimal amountToSubtract) {
@@ -74,7 +80,7 @@ public class PaymentFacade extends AbstractSoftware<PaymentListener> {
 	/**
 	 * @return List of active subclasses.
 	 */
-	protected List<PaymentFacade> getChildren() {
+	public List<PaymentFacade> getChildren() {
 		return children;
 	}
 	
@@ -83,6 +89,69 @@ public class PaymentFacade extends AbstractSoftware<PaymentListener> {
 	 */
 	public static PaymentFacade getInstance() {
 		return instance;
+	}
+	
+	public void dispenseChange(BigDecimal changeDue) {
+
+
+		if (changeDue.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("Change required must be non-negative.");
+		}
+
+		// Dispense bills
+		for (int i = selfCheckoutStation.billDenominations.length - 1; i >= 0; i--) {
+			int billDenomination = selfCheckoutStation.billDenominations[i];
+			BillDispenser billDispenser = selfCheckoutStation.billDispensers.get(billDenomination);
+			BigDecimal billValue = BigDecimal.valueOf(billDenomination);
+			while (changeDue.compareTo(billValue) >= 0 && billDispenser.size() > 0) {
+				try {
+					billDispenser.emit();
+					changeDue = changeDue.subtract(billValue);
+				} catch (DisabledException | OverloadException | EmptyException e) {
+					for (PaymentEventListener listener : listeners) {
+						listener.onChangeDispensedFailure();
+					}
+				}
+			}
+		}
+
+		// Dispense coins
+		for (int i = selfCheckoutStation.coinDenominations.size() - 1; i >= 0; i--) {
+			BigDecimal coinDenomination = selfCheckoutStation.coinDenominations.get(i);
+			CoinDispenser coinDispenser = selfCheckoutStation.coinDispensers.get(coinDenomination);
+
+			while (changeDue.compareTo(coinDenomination) >= 0 && coinDispenser.size() > 0) {
+
+				try {
+					coinDispenser.emit();
+					changeDue = changeDue.subtract(coinDenomination);
+				} catch (DisabledException | OverloadException | EmptyException e) {
+					for (PaymentEventListener listener : listeners) {
+						listener.onChangeDispensedFailure();
+					}
+				}
+			}
+		}
+
+		// Edge case for if the change due is less than the smallest coin denomination
+		if (changeDue.compareTo(BigDecimal.ZERO) > 0) {
+			BigDecimal smallestCoinDenomination = selfCheckoutStation.coinDenominations.get(0);
+			CoinDispenser smallestCoinDispenser = selfCheckoutStation.coinDispensers.get(smallestCoinDenomination);
+			try {
+				smallestCoinDispenser.emit();
+			} catch (DisabledException | OverloadException | EmptyException e) {
+				for (PaymentEventListener listener : listeners) {
+					listener.onChangeDispensedFailure();
+				}
+
+			}
+
+		}
+
+		for (PaymentEventListener listener : listeners) {
+			listener.onChangeDispensedEvent();
+		}
+
 	}
 	
 }

@@ -26,16 +26,22 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.item;
+package com.autovend.software.receipt;
 
-import com.autovend.products.Product;
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface ItemListener extends AbstractListener {
+public interface ReceiptEventListener extends AbstractEventListener {
 	/**
-	 * Signals an event in which a product was successfully added.
-	 * @param product
+	 * Signals an event in which a full receipt has been printed.
+	 * @param receipt The receipt that was printed.
 	 */
-	public void reactToItemAdded(Product product);
-
+	public void onReceiptPrintedEvent();
+	/**
+	 * Signals an event in which a receipt failed to finish printing.
+	 */
+	public void onReceiptPrinterFailed();
+	
+	public void onLowPaper();
+	
+	public void onLowInk();
 }

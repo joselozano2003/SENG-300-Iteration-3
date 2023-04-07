@@ -6,7 +6,7 @@ import java.util.Currency;
 import java.util.List;
 
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.software.customer.CustomerStation;
+import com.autovend.software.customer.CustomerStationLogic;
 
 public class Main {
 
@@ -22,8 +22,8 @@ public class Main {
 	 * Set up the physical customer stations in the Company's store. 
 	 * @param amount The amount of fixed stations available.
 	 */
-	public static List<CustomerStation> setupCustomerStations(int amount) {
-		ArrayList<CustomerStation> stationList = new ArrayList<CustomerStation>();
+	public static List<CustomerStationLogic> setupCustomerStations(int amount) {
+		ArrayList<CustomerStationLogic> stationList = new ArrayList<CustomerStationLogic>();
 		for (int i = 0; i < amount; i++) {
 			int[] billDenoms = {5, 10 , 15, 20, 50, 100};
 			BigDecimal[] coinDenoms = {new BigDecimal("0.05"), new BigDecimal("0.10"), 
@@ -32,7 +32,7 @@ public class Main {
 			int scaleSensitivity = 10;
 			SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"),
 					billDenoms, coinDenoms, scaleMaximumWeight, scaleSensitivity);
-			stationList.add(CustomerStation.InstallOn(station));
+			stationList.add(CustomerStationLogic.installOn(station));
 		}
 		return stationList;
 	}

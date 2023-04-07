@@ -33,7 +33,7 @@ import com.autovend.devices.SelfCheckoutStation;
 public class ByTextSearch extends ItemFacade {
 
 	public ByTextSearch(SelfCheckoutStation station) {
-		super(station);
+		super(station, true);
 	}
 
 }

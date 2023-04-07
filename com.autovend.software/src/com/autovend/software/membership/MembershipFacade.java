@@ -37,10 +37,10 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class MembershipFacade extends AbstractSoftware<MembershipListener> {
+public class MembershipFacade extends AbstractFacade<MembershipListener> {
 
 	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);

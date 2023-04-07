@@ -30,15 +30,15 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
-import com.autovend.software.customer.CustomerStation;
+import com.autovend.software.customer.CustomerStationLogic;
 
 public class AttendantController {
 	
-	private static List<CustomerStation> customerStations;
+	private static List<CustomerStationLogic> customerStations;
 	private AttendantModel model;
 	private AttendantView view;
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStation> list) {
+	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
 		if (model == null || view == null || list == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;

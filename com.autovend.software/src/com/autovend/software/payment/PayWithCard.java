@@ -40,14 +40,14 @@ import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
-class WithCard extends PaymentFacade implements CardReaderObserver {
+class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
-	public WithCard(SelfCheckoutStation station) {
-		super(station);
+	public PayWithCard(SelfCheckoutStation station) {
+		super(station, true);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
-			for (PaymentListener listener : listeners)
+			for (PaymentEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
@@ -70,30 +70,29 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 		String cardIssuerName = data.getType();
 		CardIssuer issuer = BankIO.getCardIssuers().get(cardIssuerName);
 		if (issuer == null) {
-			for (PaymentListener listener : listeners) {
-				//listener.onPaymentFailure();
+			for (PaymentEventListener listener : listeners) {
+				listener.onPaymentFailure();
 			}
 		} else {
 			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
 
 			if (holdNumber == -1) {
-				for (PaymentListener listener : listeners) {
-					//listener.onPaymentFailure();
+				for (PaymentEventListener listener : listeners) {
+					listener.onPaymentFailure();
 				}
 			} else {
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
-					for (PaymentListener listener : listeners) {
-						//listener.onPaymentSuccessful(value);
+					for (PaymentEventListener listener : listeners) {
+						listener.onPaymentAddedEvent(value);
 					}
 
 				} else {
-					for (PaymentListener listener : listeners) {
-						//listener.onPaymentFailure();
+					for (PaymentEventListener listener : listeners) {
+						listener.onPaymentFailure();
 					}
 				}
 			}
-			this.addAmountDue(value);
 		}
 	}
 }

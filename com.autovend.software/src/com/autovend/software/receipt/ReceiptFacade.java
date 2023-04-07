@@ -33,17 +33,17 @@ import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ReceiptPrinterObserver;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class ReceiptFacade extends AbstractSoftware<ReceiptListener>  {
+public class ReceiptFacade extends AbstractFacade<ReceiptEventListener>  {
 	
 	public ReceiptFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
 			station.printer.register(new InnerListener());
 		} catch (Exception e) {
-			for (ReceiptListener listener : listeners)
+			for (ReceiptEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
