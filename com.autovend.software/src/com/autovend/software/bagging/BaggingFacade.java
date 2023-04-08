@@ -30,37 +30,111 @@ package com.autovend.software.bagging;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ElectronicScale;
+import com.autovend.devices.EmptyException;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ElectronicScaleObserver;
+import com.autovend.devices.observers.ReusableBagDispenserObserver;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class BaggingFacade extends AbstractFacade<BaggingEventListener> {
-	
-	public BaggingFacade(SelfCheckoutStation station) {
+public class BaggingFacade extends AbstractFacade<BaggingEventListener>
+		implements ElectronicScaleObserver, ReusableBagDispenserObserver {
+
+	ReusableBagDispenser bagDispenser;
+
+	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
 		super(station);
 		try {
-			InnerListener inner = new InnerListener();
-			station.scale.register(inner);
-			station.baggingArea.register(inner);
+
+			station.scale.register(this);
+			station.baggingArea.register(this);
+
+			// station.bagDispenser.register(this);
+
+			bagDispenser.register(this);
+			this.bagDispenser = bagDispenser;
+
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
-	
-	private class InnerListener implements ElectronicScaleObserver {
-		@Override
-		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-		@Override
-		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-		@Override
-		public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {}
-		@Override
-		public void reactToOverloadEvent(ElectronicScale scale) {}
-		@Override
-		public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
+
+	/**
+	 * Method called when customer indicates the number of reusable bags they want
+	 * to purchase
+	 * 
+	 * @param numberOfBags: number of reusable bags customer wants to purchase
+	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is
+	 *                         thrown
+	 */
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
 	}
-	
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
+		for (BaggingEventListener listener : listeners)
+			listener.onWeightChanged(weightInGrams);
+
+	}
+
+	@Override
+	public void reactToOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void bagDispensed(ReusableBagDispenser dispenser) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void outOfBags(ReusableBagDispenser dispenser) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void bagsLoaded(ReusableBagDispenser dispenser, int count) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dispenseBags(int amount) {
+
+		while (amount > 0) {
+			try {
+				bagDispenser.dispense();
+				amount--;
+			} catch (EmptyException e) {
+				for (BaggingEventListener listener : listeners)
+					listener.onBagsDispensedFailure(amount);
+				break;
+			}
+		}
+
+		for (BaggingEventListener listener : listeners)
+			listener.onBagsDispensedEvent(amount);
+
+	}
+
 }

@@ -28,98 +28,77 @@
  */
 package com.autovend.software.customer;
 
-import com.autovend.BarcodedUnit;
-import com.autovend.PriceLookUpCodedUnit;
-import com.autovend.SellableUnit;
+import com.autovend.ReusableBag;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
-import com.autovend.software.GUI.MainScreen;
-import com.autovend.software.GUI.StartScreen;
+import com.autovend.software.item.ProductsDatabase2;
 
-import javax.swing.*;
-import java.awt.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CustomerSession {
 	private Map<Product, Double> shoppingCart;
+	private int bagsPurchased;
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
-	private boolean receiptPrinted;
-	private boolean addingItems;
-	private SelfCheckoutStation station;
-	private ArrayList<SellableUnit> barcodedProduct;
-	private ArrayList<SellableUnit> pluCodedProduct;
-	private ArrayList<SellableUnit> barcodedProductInBaggingArea;
-	private ArrayList<SellableUnit> pluCodedProductInBaggingArea;
-	private ArrayList<SellableUnit> personalBags;
-	private String receipt;
-	BigDecimal amountLeft;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
+		bagsPurchased = 0;
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
-		receiptPrinted = false;
-		station = null;
-		addingItems = false;
-
-		barcodedProduct  = new ArrayList<SellableUnit>();
-		pluCodedProduct = new ArrayList<SellableUnit>();
-
-		barcodedProductInBaggingArea = new ArrayList<SellableUnit>();
-		pluCodedProductInBaggingArea = new ArrayList<SellableUnit>();
-		personalBags = new ArrayList<SellableUnit>();
-		BigDecimal amountLeft = getAmountLeft();
-
-
-
-
-
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
 
-	    // Checks if item has been previously added to cart
-	    if (shoppingCart.containsKey(product)) {
-	        double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
-	        shoppingCart.put(product, updatedQuantity);
-	    } else {
-	        shoppingCart.put(product, quantityToAdd);
-	    }
+		// Checks if item has been previously added to cart
+		if (shoppingCart.containsKey(product)) {
+			double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
+			shoppingCart.put(product, updatedQuantity);
+		} else {
+			shoppingCart.put(product, quantityToAdd);
+		}
 
-	    // Checks if product is barcoded
-	    if (product instanceof BarcodedProduct) {
-	        BarcodedProduct barcodedProduct = (BarcodedProduct) product;
-	        expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
-	        totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    // Checks if product is PLU coded
-	    else if (product instanceof PLUCodedProduct pluCodedProduct) {
+		// Checks if product is barcoded
+		if (product instanceof BarcodedProduct) {
+			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
+			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
+			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+		// Checks if product is PLU coded
+		else if (product instanceof PLUCodedProduct) {
+			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
 			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
-	        totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    
+			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+
+	}
+	
+	/**
+	 * Updates customer session info after customer chooses to purchase reusable bags
+	 * 
+	 * @param numberOfBags: number of bags customer chose to purchase
+	 */
+	public void addBagsPurchasedToCustomerSession(int numberOfBags) {
+		bagsPurchased += numberOfBags; 
+		
+		ReusableBag reusableBag = new ReusableBag();
+		for (int i = 1; i <= numberOfBags; i++) {
+			expectedWeight += reusableBag.getWeight();
+			totalCost = totalCost.add(ProductsDatabase2.costOfReusableBag);
+		}
 	}
 
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
 	}
 
-	public void setPrintStatus(boolean status) {
-		receiptPrinted = status;
-	}
-	public boolean isReceiptPrinted() {
-		return receiptPrinted;
-	}
-
-	public Map getShoppingCart() {
+	public Map<Product, Double> getShoppingCart() {
 		return shoppingCart;
 	}
 
@@ -139,74 +118,16 @@ public class CustomerSession {
 		return totalCost.subtract(totalPaid);
 	}
 
+	public BigDecimal getChangeDue() {
+		return totalPaid.subtract(totalCost);
+	}
 
-
-
-
-
-	//GUI
-	public void resetCart(){
-		barcodedProduct.clear();
-		pluCodedProduct.clear();
-		for (SellableUnit i : barcodedProductInBaggingArea){
-			station.baggingArea.remove(i);
+	public boolean isPaymentComplete() {
+		if (totalPaid.compareTo(totalCost) >= 0) {
+			return true;
+		} else {
+			return false;
 		}
-		for(SellableUnit i: pluCodedProductInBaggingArea){
-			station.baggingArea.remove(i);
-		}
-		personalBags.clear();
-		totalCost = new BigDecimal("0");
-		receipt = null;
-		totalPaid = new BigDecimal("0");
-		amountLeft = new BigDecimal("0");
-
-
-
-
-
 	}
-
-
-
-
-
-	public void loadStartGUI(){
-		JFrame jFrame = station.screen.getFrame();
-		station.screen.setVisible(false);
-		jFrame.getContentPane().removeAll();
-		jFrame.setLayout(new BorderLayout());
-		StartScreen startScreen = new StartScreen(this);
-		JPanel newPanel = new JPanel(new GridBagLayout());
-		newPanel.setBackground(new Color(65,73,96));
-		newPanel.add(startScreen);
-		jFrame.getContentPane().add(startScreen);
-		jFrame.validate();
-		jFrame.repaint();
-		station.screen.setVisible(true);
-		resetCart();
-		addingItems = false;
-
-	}
-
-
-	public void loadMainGUI(){
-		JFrame frame = station.screen.getFrame();
-		station.screen.setVisible(false);
-		frame.getContentPane().removeAll();
-		frame.setLayout(new BorderLayout());
-		MainScreen mainScreen = new MainScreen();
-		JPanel container  = new JPanel(new GridBagLayout());
-		container.setPreferredSize(frame.getSize());
-		container.setBackground(new Color(9,11,16));
-		container.add(mainScreen);
-		frame.getContentPane().add(container);
-		frame.validate();
-		frame.repaint();
-
-		station.screen.setVisible(true);
-
-
-	}
-
 
 }

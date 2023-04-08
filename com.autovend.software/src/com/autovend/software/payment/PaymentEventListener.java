@@ -30,27 +30,24 @@ package com.autovend.software.payment;
 
 import java.math.BigDecimal;
 
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface PaymentListener extends AbstractListener {
+public interface PaymentEventListener extends AbstractEventListener {
 	/**
 	 * Signals an event in which valid payment has been entered.
 	 * @param amount The amount added for payment.
 	 */
 	public void onPaymentAddedEvent(BigDecimal amount);
+	
 	/**
-	 * Signals an event in which funds have been returned.
-	 * @param amount The amount removed.
-	 */
-	public void onPaymentReturnedEvent(BigDecimal amount);
+	 * Signals an event in which invalid payment has been entered.
+	 * @param 
+	 */	
+	public void onPaymentFailure();
 	
-	public void onPaymentFailureEvent(BigDecimal amount);
+	public void onChangeDispensedEvent();
 	
-	public void onPaymentSuccessfulEvent(BigDecimal amount);
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
 	
-	public void onAmountDueAddedEvent();
-	
-	
-	public void onCardRemovedEvent();
 	
 }

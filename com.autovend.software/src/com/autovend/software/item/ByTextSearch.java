@@ -29,27 +29,18 @@
 package com.autovend.software.item;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
 
 public class ByTextSearch extends ItemFacade {
-	
-	//map with keywords that correspond to a product
-	//will need to populate this map with all products that we want the attendant to be able to search up
-	public static Map<String, Product> Products_Textsearch_Keywords_Database = new HashMap<>();
 
-	protected ByTextSearch(SelfCheckoutStation station) {
-		super(station);
+	public ByTextSearch(SelfCheckoutStation station) {
+		super(station, true);
 	}
 	
 	/**
-	 * Method that takes in a string of 
+	 * Method that takes in a string of what the attendant typed in as input for the search, and finds products that match the input keywords.
 	 * 
 	 * @param attendantInputString: string that the attendant types in, and searches for any products that match the input. 
 	 * @return: an arraylist of products that are a match, which the attendant station displays as the search result 
@@ -58,15 +49,27 @@ public class ByTextSearch extends ItemFacade {
 		ArrayList<Product> productsToShow = new ArrayList<Product>();
 		String[] InputStringWords = attendantInputString.split(" ");
 		
-		for(String keywords: Products_Textsearch_Keywords_Database.keySet()) {
+		for(String keywords: ProductsDatabase2.Products_Textsearch_Keywords_Database.keySet()) {
 			for(String eachWord: InputStringWords) {
-				if(keywords.contains(eachWord) && !productsToShow.contains(Products_Textsearch_Keywords_Database.get(keywords))){
-					productsToShow.add(Products_Textsearch_Keywords_Database.get(keywords));
+				if(keywords.contains(eachWord) && !productsToShow.contains(ProductsDatabase2.Products_Textsearch_Keywords_Database.get(keywords))){
+					productsToShow.add(ProductsDatabase2.Products_Textsearch_Keywords_Database.get(keywords));
 				}
 			}
 		}
 		
 		return productsToShow;
+	}
+	
+	/**
+	 * Method is called when the customer gui detects an attendant selecting a product from text search to be added to a customer's session.
+	 * 
+	 * @param product: product the attendant selected from text search
+	 */
+	public void productFromTextSearchSelected(Product product) {
+		if(product != null) {
+        	for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(product, 1);;
+		}
 	}
 
 }

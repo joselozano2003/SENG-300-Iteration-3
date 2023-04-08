@@ -28,45 +28,25 @@
  */
 package com.autovend.software.item;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JButton;
-
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 
 @SuppressWarnings("serial")
 public class ByBrowsing extends ItemFacade  {
-	
-	//Database for products shown on the visual catalogue and their corresponding JButton.
-	//The products displayed in the visual catalogue does not have a barcode or PLU code available to the customer. 
-	//Type BarcodedProduct is used for convenience, but the barcode is random and does not mean anything since these are not actually barcoded products.
-	public static Map<JButton, BarcodedProduct> Products_In_Visual_Catalogue_Database = new HashMap<>();
 
 	protected ByBrowsing(SelfCheckoutStation station) {
 		super(station, true);
 	}
 	
 	/**
-	 * This method is called when a customer selects a product from the visual catalogue to add to their items to purchase.
+	 * Method is called when the customer gui detects a customer selecting an item from the visual catalogue
 	 * 
-	 * @param product: product that the customer has selected from the visual catalogue
+	 * @param product: product the customer selected from the visual catalogue 
 	 */
-	public void addProductFromVisualCataloguToItemList(BarcodedProduct product) {
-		if (product != null) {
-        	addProduct(product); //add item to item list
-			adjustExpectedWeight(product.getExpectedWeight()); //updated expected weight
-			adjustTotalCost(product.getPrice()); //updated total cost of item list
-			
-			//announce event of an item being added
-			for (ItemListener listener : listeners)
-				listener.reactToItemAdded(product);
-		} else {
-        	//announce event of a null product is trying to be added
-			for (ItemListener listener : listeners)
-				listener.reactToNullProductEvent(product);
+	public void productFromVisualCatalogueSelected(Product product) {
+		if(product != null) {
+        	for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(product, 1);;
 		}
 	}
 	

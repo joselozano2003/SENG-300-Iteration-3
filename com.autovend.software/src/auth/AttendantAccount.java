@@ -1,7 +1,6 @@
 package auth;
 
 import com.autovend.devices.EmptyException;
-import com.autovend.devices.SimulationException;
 
 public class AttendantAccount {
 	private String userName;
@@ -12,27 +11,10 @@ public class AttendantAccount {
 			setUserName(userName);
 			setPassword(password);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
-	public void addAccount(AttendantAccount addedAccount) {
-		if (this.equals(AttendantAccountDatabases.godAccount())) {
-			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.add(addedAccount);
-		} else {
-			throw new SimulationException("The attendant does not have access to add account!");
-		}
-	}
-
-	public void deleteAccount(AttendantAccount removedAccount) {
-		if (this.equals(AttendantAccountDatabases.godAccount())) {
-			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.remove(removedAccount);
-		} else {
-			throw new SimulationException("The attendant does not have access to delete account!");
-		}
-	}
-
-	private String getUserName() {
+	public String getUserName() {
 		return userName;
 	}
 
