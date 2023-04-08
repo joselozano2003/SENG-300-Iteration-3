@@ -28,25 +28,102 @@
  */
 package com.autovend.software.receipt;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ReceiptPrinterObserver;
+import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.attendant.AttendantModel;
+import com.autovend.software.attendant.AttendantView;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerSession;
+import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.test.Setup;
 
 public class ReceiptFacadeTest {
+	private List<ReceiptEventListener> testListeners;
 	private SelfCheckoutStation station;
-	private ReceiptFacade receiptFacade;
+	private ReceiptFacade facade;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		receiptFacade = new ReceiptFacade(station);
+		facade = new ReceiptFacade(station);
+		testListeners = new ArrayList<>();
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
+	public void testNullConstruction() {
 		new ReceiptFacade(null);
+	}
+	
+	@Test
+	public void testReactToHardwareFailure() {
+
+	}
+	
+	@Test
+	public void testLowInk() {
+		
+	}
+	@Test
+	public void testLowPaper() {
+		
+	}
+	// ------------ STUBS --------------
+	public class ReceiptEventListenerStub implements ReceiptEventListener {
+		private boolean reactToHardwareFailureCalled = false;
+		@Override
+		public void reactToHardwareFailure() {
+			reactToHardwareFailureCalled = true;
+		}
+		@Override
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisableStationRequest() {}
+		@Override
+		public void reactToEnableStationRequest() {}
+		@Override
+		public void onReceiptPrintedEvent() {}
+		@Override
+		public void onReceiptPrinterFailed() {}
+		@Override
+		public void onLowPaper() {}
+		@Override
+		public void onLowInk() {}
+	
+		public boolean isReactToHardwareFailureCalled() {
+			return reactToHardwareFailureCalled;
+		}
+	}
+	public class ReceiptPrinterObserverStub implements ReceiptPrinterObserver {
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToInkAddedEvent(ReceiptPrinter printer) {}
 	}
 }
