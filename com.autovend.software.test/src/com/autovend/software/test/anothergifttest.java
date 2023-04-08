@@ -105,8 +105,8 @@ public class anothergifttest {
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
 		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
 		
-		
-		GiftCardDatabase.addCard("12345678");
+		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
+		GiftCardDatabase.addCard("12345678", giftCard);
 
 		customerSessionController = new CustomerController(selfCheckoutStation);
 		customerSessionController.startNewSession();
@@ -144,8 +144,6 @@ public class anothergifttest {
 	
 	@Test
 	public void payWithGiftCardPass() throws IOException {
-		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
-
 		customerSessionController.startAddingItems();
 
 		selfCheckoutStation.mainScanner
@@ -154,7 +152,8 @@ public class anothergifttest {
 		customerSessionController.startPaying();
 		
 		
-		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+		selfCheckoutStation.cardReader.insert(card, "2001");
 
 		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost());
 		
@@ -164,6 +163,7 @@ public class anothergifttest {
 	@Test
 	public void payWithGiftCardFail() throws IOException {
 		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("0.1"));
+		GiftCardDatabase.addCard("12345678", giftCard);
 
 		customerSessionController.startAddingItems();
 
@@ -172,8 +172,8 @@ public class anothergifttest {
 
 		customerSessionController.startPaying();
 		
-		
-		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+		selfCheckoutStation.cardReader.insert(card, "2001");
 
 		assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
 		
@@ -182,7 +182,25 @@ public class anothergifttest {
 	
 	@Test
 	public void payWithGiftCardBadPin() throws IOException {
-		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("300"));
+		customerSessionController.startAddingItems();
+
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		customerSessionController.startPaying();
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+
+		try { 
+			selfCheckoutStation.cardReader.insert(card, "123");
+		} catch (InvalidPINException ipe) {
+			assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
+		}
+
+	}
+	
+	@Test
+	public void payWithGiftCardNotInDatabase() throws IOException {
+		giftCard = new GiftCard("Gift", "87654321", "2001", currency, new BigDecimal("100"));
 
 		customerSessionController.startAddingItems();
 
@@ -191,14 +209,10 @@ public class anothergifttest {
 
 		customerSessionController.startPaying();
 		
-		try { 
-			selfCheckoutStation.cardReader.insert(giftCard, "123");
-		} catch (InvalidPINException ipe) {
-			assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
-		}
+		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+
+		assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
 
 	}
-
-
 
 }

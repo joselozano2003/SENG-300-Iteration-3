@@ -32,7 +32,6 @@ import java.util.ArrayList;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
-import com.autovend.software.item.TextSearchVisualCatalogueDatabase;
 
 public class ByTextSearch extends ItemFacade {
 
@@ -50,10 +49,10 @@ public class ByTextSearch extends ItemFacade {
 		ArrayList<Product> productsToShow = new ArrayList<Product>();
 		String[] InputStringWords = attendantInputString.split(" ");
 		
-		for(String keywords: TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.keySet()) {
+		for(String keywords: ProductsDatabase2.Products_Textsearch_Keywords_Database.keySet()) {
 			for(String eachWord: InputStringWords) {
-				if(keywords.contains(eachWord) && !productsToShow.contains(TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.get(keywords))){
-					productsToShow.add(TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.get(keywords));
+				if(keywords.contains(eachWord) && !productsToShow.contains(ProductsDatabase2.Products_Textsearch_Keywords_Database.get(keywords))){
+					productsToShow.add(ProductsDatabase2.Products_Textsearch_Keywords_Database.get(keywords));
 				}
 			}
 		}
