@@ -32,8 +32,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.OverloadException;
-import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.Product;
@@ -53,7 +51,8 @@ public class CustomerController
 	private CustomerSession currentSession;
 
 	private PaymentFacade paymentFacade;
-	private ItemFacade itemAdditionFacade;
+	private ItemFacade itemFacade;
+
 	private ReceiptFacade receiptPrinterFacade;
 	private BaggingFacade baggingFacade;
 	List<PaymentFacade> paymentMethods;
@@ -70,7 +69,7 @@ public class CustomerController
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
-		this.itemAdditionFacade = new ItemFacade(selfCheckoutStation, false);
+		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
 		this.baggingFacade = new BaggingFacade(selfCheckoutStation);
 
@@ -80,19 +79,19 @@ public class CustomerController
 		for (PaymentFacade child : paymentMethods) {
 			child.register(this);
 		}
-		itemAdditionFacade.register(this);
-		itemAdditionMethods = itemAdditionFacade.getChildren();
+		itemFacade.register(this);
+		itemAdditionMethods = itemFacade.getChildren();
 		for (ItemFacade child : itemAdditionMethods) {
 			child.register(this);
 		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 	}
-	
+
 	public void setState(State newState) {
 		this.currentState = newState;
-		
-		switch(newState) {
+
+		switch (newState) {
 		case INITIAL:
 			break;
 		case ADDING_ITEMS:
@@ -111,7 +110,7 @@ public class CustomerController
 			break;
 		default:
 			break;
-		
+
 		}
 	}
 
@@ -125,7 +124,11 @@ public class CustomerController
 	public void startPaying() {
 		BigDecimal amountDue = currentSession.getAmountLeft();
 		paymentFacade.addAmountDue(amountDue);
-		
+
+	}
+
+	public ItemFacade getItemFacade() {
+		return itemFacade;
 	}
 
 	@Override
@@ -224,7 +227,7 @@ public class CustomerController
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void onItemNotFoundEvent() {
 		// TODO Auto-generated method stub
@@ -234,12 +237,21 @@ public class CustomerController
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;
 	}
-	
+
 	public State getCurrentState() {
 		return this.currentState;
 	}
-	
 
-	
+	@Override
+	public void onPaymentSuccessful(BigDecimal value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onCardRemovedEvent() {
+		// TODO Auto-generated method stub
+
+	}
 
 }
