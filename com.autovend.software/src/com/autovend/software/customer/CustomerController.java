@@ -40,6 +40,7 @@ import com.autovend.external.ProductDatabases;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
+import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ItemFacade;
 import com.autovend.software.payment.PaymentEventListener;
@@ -63,7 +64,8 @@ public class CustomerController
 	List<ItemFacade> itemAdditionMethods;
 
 	public enum State {
-		INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED, DISABLED,
+		INITIAL, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
+		DISABLED,
 	}
 
 	private State currentState;
@@ -97,20 +99,74 @@ public class CustomerController
 
 		switch (newState) {
 		case INITIAL:
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+
+			selfCheckoutStation.cardReader.disable();
+
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.mainScanner.disable();
+
+			selfCheckoutStation.printer.disable();
 			break;
+		case ADDING_OWN_BAGS:
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.scale.enable();
 		case ADDING_ITEMS:
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.scale.enable();
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
+			selfCheckoutStation.billInput.enable();
+			selfCheckoutStation.coinSlot.enable();
+			selfCheckoutStation.cardReader.enable();
 			break;
 		case DISPENSING_CHANGE:
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.cardReader.disable();
+
+			selfCheckoutStation.billOutput.enable();
+			selfCheckoutStation.coinTray.enable();
+
+			paymentFacade.dispenseChange(currentSession.getChangeDue());
+
 			break;
 		case PRINTING_RECEIPT:
+			selfCheckoutStation.printer.enable();
+
+			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
 			break;
 		case FINISHED:
+			startNewSession();
 			break;
 		case DISABLED:
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+
+			selfCheckoutStation.cardReader.disable();
+
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.mainScanner.disable();
+			selfCheckoutStation.printer.disable();
 			break;
 		default:
 			break;
@@ -118,44 +174,87 @@ public class CustomerController
 		}
 	}
 
+	// In reaction to UI
 	public void startNewSession() {
 		currentSession = new CustomerSession();
 	}
 
+	// In reaction to UI
+	public void startAddingOwnBags() {
+		setState(State.ADDING_OWN_BAGS);
+		// Signal customer to add their own bags (e.g., via customerIO)
+	}
+
+	// In reaction to UI
+	public void finishAddingOwnBags() {
+		// Require attendant approval before changing state
+		// Signal attendant to approve the added bags (e.g., via attendantIO)
+	}
+
+	// In reaction to UI
 	public void startAddingItems() {
+		setState(State.ADDING_ITEMS);
 	}
 
+	// In reaction to UI
+	public void addMoreItems() {
+		if (currentState == State.PAYING) {
+			setState(State.ADDING_ITEMS);
+		}
+	}
+
+	// In reaction to UI
 	public void startPaying() {
-		BigDecimal amountDue = currentSession.getAmountLeft();
-		paymentFacade.addAmountDue(amountDue);
+		setState(State.PAYING);
+		BigDecimal amountDue = currentSession.getTotalCost();
+		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
 
 	}
 
-	public ItemFacade getItemFacade() {
-		return itemFacade;
+	// In reaction to UI
+	public void purchaseBags(int amount) {
+		baggingFacade.dispenseBags(amount);
+	}
+
+	@Override
+	public void onBagsDispensedEvent(int amount) {
+		// I don't see a reusableBagProduct - just the sellable unit, where should we
+		// set this price?
+		// currentSession.addItemToCart(bag, amount);
+	}
+
+	@Override
+	public void onBagsDispensedFailure(int amount) {
+		// notify attendant
 	}
 
 	@Override
 	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// comes from the attendant
 		// device.disable();
 
 	}
 
 	@Override
 	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// comes from the attendant
 		// device.enable();
 
 	}
 
 	@Override
 	public void reactToDisableStationRequest() {
-
+		// comes from the attendant
 	}
 
 	@Override
 	public void reactToEnableStationRequest() {
-		// TODO Auto-generated method stub
+		// comes from the attendant
+	}
 
+	@Override
+	public void reactToHardwareFailure() {
+		// notify attendant
 	}
 
 	@Override
@@ -166,51 +265,46 @@ public class CustomerController
 	}
 
 	@Override
+	public void onItemNotFoundEvent() {
+		// notify attendant
+
+	}
+
+	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
+		boolean paymentComplete = currentSession.isPaymentComplete();
+		if (paymentComplete) {
+			setState(State.DISPENSING_CHANGE);
+
+		}
 	}
 
 	@Override
 	public void onPaymentFailure() {
-		// TODO Auto-generated method stub
+		// display a try again message in UI and maybe keep track of the number of
+		// successive failures in the session object
+		// if currentSession.numberOfFailedPayments > 5 {notify attendant}
+	}
+
+	@Override
+	public void onReceiptPrintedEvent(StringBuilder receiptText) {
+		setState(State.FINISHED);
+
+		// To "see" the receipt, uncomment the line below
+		// System.out.println(receiptText.toString());
 
 	}
 
 	@Override
-	public void onReceiptPrintedEvent() {
+	public void onReceiptPrinterFixed() {
+		setState(State.PRINTING_RECEIPT);
 
 	}
 
 	@Override
-	public void onChangeDispensedEvent() {
-
-	}
-
-	@Override
-	public void onChangeDispensedFailure() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onLowInk() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onLowPaper() {
-
-	}
-
-	@Override
-	public void onWeightChanged(double weightInGrams) {
-		boolean expectedWeightEqualsActual = (currentSession.getExpectedWeight() == weightInGrams);
-		if (expectedWeightEqualsActual) {
-			setState(State.ADDING_ITEMS);
-		} else {
-			setState(State.DISABLED);
-		}
+	public void onReceiptPrinterFailed() {
+		setState(State.DISABLED);
 
 	}
 	
@@ -220,26 +314,34 @@ public class CustomerController
 	}
 
 	@Override
-	public void reactToHardwareFailure() {
-		// TODO Auto-generated method stub
-
+	public void onChangeDispensedEvent() {
+		setState(State.PRINTING_RECEIPT);
 	}
 
 	@Override
-	public void onPaymentReturnedEvent(BigDecimal amount) {
-		// TODO Auto-generated method stub
-
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
+		// eventually method to dispense change left (not dispensed) should be called
+		// here, or just tell
+		// the attendant this value
+		// paymentFacade.dispenseChange(totalChangeLeft);
 	}
 
 	@Override
-	public void onReceiptPrinterFailed() {
-		// TODO Auto-generated method stub
+	public void onWeightChanged(double weightInGrams) {
+		boolean expectedWeightEqualsActual = (currentSession.getExpectedWeight() == weightInGrams);
 
-	}
+		if (currentState == State.ADDING_OWN_BAGS) {
+			// do nothing
+		} else {
+			if (expectedWeightEqualsActual) {
+				setState(State.ADDING_ITEMS);
+			} else {
+				setState(State.DISABLED);
+				// notify attendant
 
-	@Override
-	public void onItemNotFoundEvent() {
-		// TODO Auto-generated method stub
+			}
+
+		}
 
 	}
 
@@ -249,18 +351,6 @@ public class CustomerController
 
 	public State getCurrentState() {
 		return this.currentState;
-	}
-
-	@Override
-	public void onPaymentSuccessful(BigDecimal value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onCardRemovedEvent() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
