@@ -59,7 +59,7 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 		}
 	}
 
-	protected void addProduct(Product product) {
+	public void addProduct(Product product) {
 		if (product != null)
 			itemList.add(product);
 	}

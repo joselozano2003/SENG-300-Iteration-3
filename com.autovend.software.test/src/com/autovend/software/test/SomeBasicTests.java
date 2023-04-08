@@ -1,11 +1,15 @@
 package com.autovend.software.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,16 +31,26 @@ import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
+import com.autovend.products.Product;
 import com.autovend.software.BankIO;
+import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.attendant.AttendantModel;
+import com.autovend.software.attendant.AttendantView;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
+import com.autovend.software.customer.CustomerStationLogic;
 
 public class SomeBasicTests {
 
 	public SelfCheckoutStation selfCheckoutStation;
 	public CustomerController customerSessionController;
 	public CustomerSession currentSession;
+
+	public AttendantModel model;
+	public AttendantView view;
+	public List<CustomerStationLogic> customerStations;
+	public AttendantController attendantController;
 
 	public int[] billDenominations;
 	public BigDecimal[] coinDenominations;
@@ -74,17 +88,20 @@ public class SomeBasicTests {
 		barcodeProduct = new BarcodedProduct(barcode, "product 1", new BigDecimal("1.00"), 10);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
 		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
-		
+
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
 
-
 		customerSessionController = new CustomerController(selfCheckoutStation);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
+		model = new AttendantModel();
+		view = new AttendantView();
+		customerStations = new ArrayList<>();
+		attendantController = new AttendantController(model, view, customerStations);
 		// Add 100 bills to each dispenser
 		for (int i = 0; i < billDenominations.length; i++) {
 			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
@@ -144,12 +161,11 @@ public class SomeBasicTests {
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-		
-		
+
 		selfCheckoutStation.cardReader.tap(creditCard);
 
-		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost()); // eventually should change it to amountDue
-		
+		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost()); // eventually should change it to
+																					// amountDue
 
 	}
 
@@ -166,7 +182,18 @@ public class SomeBasicTests {
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
-	
+
+	}
+
+	@Test
+	public void removeItem() {
+		Barcode barcode = new Barcode(Numeral.eight, Numeral.one, Numeral.two, Numeral.three);
+		BarcodedProduct product = new BarcodedProduct(barcode, "Milk", new BigDecimal("20"), 2.5);
+		customerSessionController.getItemFacade().addProduct(product);
+		Product addedPrdocut = customerSessionController.getItemFacade().getItemList().get(0);
+		assertFalse(addedPrdocut == null);
+		assertTrue(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product));
+		assertEquals(0, customerSessionController.getItemFacade().getItemList().size());
 	}
 
 	@Test
