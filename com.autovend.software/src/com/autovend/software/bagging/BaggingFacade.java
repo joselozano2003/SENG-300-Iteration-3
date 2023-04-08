@@ -64,8 +64,8 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is thrown
 	 */
 	public void purchaseReusableBags(int numberOfBags) throws EmptyException {
-		//notifies of reusable bags purchased event, which adds bags to customer bill list 
 		if(numberOfBags > 0) {
+			//notifies of reusable bags purchased event, which adds bags to customer bill list 
 			for (BaggingEventListener listener : listeners) {
 				listener.onReusableBagsPurchased(numberOfBags);
 			}
