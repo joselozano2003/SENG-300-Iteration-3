@@ -68,6 +68,6 @@ public class AttendantController {
 	}
 
 	public boolean startDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removeAccount) {
-		return auth.addAccount(attendantAccount, removeAccount);
+		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 }

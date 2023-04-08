@@ -92,4 +92,17 @@ public class AttendantAuthTest {
 		assertFalse(attendantController.startLogOut(fakeAttendant));
 	}
 
+	@Test
+	public void SuccesfulAddingAndDeletingAccountTest() {
+		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
+		assertTrue(attendantController.startAddAccount(AttendantAccountDatabases.godAccount(), addedAccount));
+		assertTrue(attendantController.startDeleteAccount(AttendantAccountDatabases.godAccount(), addedAccount));
+	}
+
+	@Test
+	public void UnsuccesfulAddingAndDeletingAccountTest() {
+		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
+		assertFalse(attendantController.startAddAccount(AttendantAccountDatabases.demoAccount(), addedAccount));
+		assertFalse(attendantController.startDeleteAccount(AttendantAccountDatabases.demoAccount(), addedAccount));
+	}
 }

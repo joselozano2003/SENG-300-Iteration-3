@@ -22,7 +22,7 @@ public class AuthFacade implements AuthEvenListener {
 	}
 
 	public boolean addAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
-		if (this.equals(AttendantAccountDatabases.godAccount())) {
+		if (attendantAccount.equals(AttendantAccountDatabases.godAccount())) {
 			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.add(addedAccount);
 			reactToAddAccount(attendantAccount, addedAccount);
 			return true;
@@ -32,7 +32,7 @@ public class AuthFacade implements AuthEvenListener {
 	}
 
 	public boolean deleteAccount(AttendantAccount attendantAccount, AttendantAccount removedAccount) {
-		if (this.equals(AttendantAccountDatabases.godAccount())) {
+		if (attendantAccount.equals(AttendantAccountDatabases.godAccount())) {
 			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.remove(removedAccount);
 			reactToDeleteAccount(attendantAccount, removedAccount);
 			return true;
