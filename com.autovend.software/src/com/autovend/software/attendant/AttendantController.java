@@ -63,4 +63,11 @@ public class AttendantController {
 		return auth.logOut(attendantAccount);
 	}
 
+	public boolean startAddAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
+		return auth.addAccount(attendantAccount, addedAccount);
+	}
+
+	public boolean startDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removeAccount) {
+		return auth.addAccount(attendantAccount, removeAccount);
+	}
 }
