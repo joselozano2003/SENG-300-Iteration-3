@@ -1,33 +1,47 @@
 package auth;
 
 import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
-import com.autovend.software.AbstractFacade;
-import com.autovend.software.item.ItemEventListener;
 
-public class AuthFacade extends AbstractFacade<ItemEventListener> implements AuthEvenListener {
-	public AuthFacade(SelfCheckoutStation station) {
-		super(station);
+public class AuthFacade implements AuthEvenListener {
+	public AuthFacade() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public boolean logIn(AttendantAccount attendantAccount) {
 		if (AttendantAccountDatabases.ATTENDANT_ACCOUNTS.contains(attendantAccount)) {
-			reactToLogInSuccesfully(attendantAccount);
+			reactToLogIn(attendantAccount);
 			return true;
 		}
-		reactToLogInUnsuccesfully(attendantAccount);
 		return false;
 	}
 
 	public boolean logOut(AttendantAccount attendantAccount) {
 		if (AttendantAccountDatabases.ATTENDANT_ACCOUNTS.contains(attendantAccount)) {
-			reactToLogOutSuccesfully(attendantAccount);
+			reactToLogOut(attendantAccount);
 			return true;
 		}
-		reactToLogOutUnsuccesfully(attendantAccount);
 		return false;
+	}
+
+	public boolean addAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
+		if (this.equals(AttendantAccountDatabases.godAccount())) {
+			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.add(addedAccount);
+			reactToAddAccount(attendantAccount, addedAccount);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean deleteAccount(AttendantAccount attendantAccount, AttendantAccount removedAccount) {
+		if (this.equals(AttendantAccountDatabases.godAccount())) {
+			AttendantAccountDatabases.ATTENDANT_ACCOUNTS.remove(removedAccount);
+			reactToDeleteAccount(attendantAccount, removedAccount);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -61,26 +75,29 @@ public class AuthFacade extends AbstractFacade<ItemEventListener> implements Aut
 	}
 
 	@Override
-	public void reactToLogInSuccesfully(AttendantAccount attendantAccount) {
+	public void reactToLogIn(AttendantAccount attendantAccount) {
 		// TODO Auto-generated method stub
 		System.out.println(attendantAccount.getUserName() + " has succsesfully logged in.");
 	}
 
 	@Override
-	public void reactToLogOutSuccesfully(AttendantAccount attendantAccount) {
+	public void reactToLogOut(AttendantAccount attendantAccount) {
 		// TODO Auto-generated method stub
 		System.out.println(attendantAccount.getUserName() + " has succsesfully logged out.");
 	}
 
 	@Override
-	public void reactToLogInUnsuccesfully(AttendantAccount attendantAccount) {
+	public void reactToAddAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
 		// TODO Auto-generated method stub
-		System.out.println(attendantAccount.getUserName() + " has failed to log in.");
+		System.out.println(
+				attendantAccount.getUserName() + " has succsesfully added account: " + addedAccount.getUserName());
 	}
 
 	@Override
-	public void reactToLogOutUnsuccesfully(AttendantAccount attendantAccount) {
+	public void reactToDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removedAccount) {
 		// TODO Auto-generated method stub
-		System.out.println(attendantAccount.getUserName() + " has failed to log in.");
+		System.out.println(
+				attendantAccount.getUserName() + " has succsesfully deleted account: " + removedAccount.getUserName());
 	}
+
 }
