@@ -1,14 +1,17 @@
 package auth;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AttendantAccountDatabases {
 	private AttendantAccountDatabases() {
 	};
 
-	public static final ArrayList<AttendantAccount> ATTENDANT_ACCOUNTS = (ArrayList<AttendantAccount>) Arrays
-			.asList(godAccount(), demoAccount());
+	public static final ArrayList<AttendantAccount> ATTENDANT_ACCOUNTS = new ArrayList<AttendantAccount>() {
+		{
+			add(godAccount());
+			add(demoAccount());
+		}
+	};
 
 	public static AttendantAccount godAccount() {
 		return new AttendantAccount("god", "god");
