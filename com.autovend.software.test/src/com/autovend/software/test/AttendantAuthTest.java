@@ -41,9 +41,21 @@ public class AttendantAuthTest {
 	}
 
 	@Test
+	public void SuccesfulLogOutTest() {
+		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
+		assertTrue(attendantController.startLogOut(demoAttendant));
+	}
+
+	@Test
 	public void UnsuccesfulLogInTest() {
 		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
 		assertFalse(attendantController.startLogIn(fakeAttendant));
+	}
+
+	@Test
+	public void UnsuccesfulLogOutTest() {
+		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
+		assertFalse(attendantController.startLogOut(fakeAttendant));
 	}
 
 }
