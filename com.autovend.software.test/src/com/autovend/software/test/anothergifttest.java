@@ -184,7 +184,6 @@ public class anothergifttest {
 		selfCheckoutStation.cardReader.insert(giftCard, "2001");
 
 		assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
-		
 
 	}
 
