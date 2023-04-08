@@ -10,11 +10,11 @@ public class AttendantAccountDatabases {
 	public static final ArrayList<AttendantAccount> ATTENDANT_ACCOUNTS = (ArrayList<AttendantAccount>) Arrays
 			.asList(godAccount(), demoAccount());
 
-	protected static AttendantAccount godAccount() {
+	public static AttendantAccount godAccount() {
 		return new AttendantAccount("god", "god");
 	}
 
-	protected static AttendantAccount demoAccount() {
+	public static AttendantAccount demoAccount() {
 		return new AttendantAccount("demo", "demo");
 	}
 
