@@ -96,7 +96,17 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 						}
 					}
 				}
+			} else {
+				for (Product product : itemList) {
+					if (!(product instanceof PLUCodedProduct) && !(product instanceof BarcodedProduct)) {
+						if (product.getPrice().equals(removedProduct.getPrice())) {
+							itemList.remove(product);
+							return true;
+						}
+					}
+				}
 			}
+
 		}
 		return false;
 	}
