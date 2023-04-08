@@ -62,19 +62,22 @@ public class AttendantView {
 	
 	
 	// Constructor
-	public AttendantView(AttendantController ac, int number_stations, String language) {
-		controller = ac;
-		num_stations = number_stations;
-		lang_code = language;
+	public AttendantView(AttendantController controller, int num_stations, String lang_code) {
+		if (controller == null || lang_code == null) 
+			throw new NullPointerException("Null arguments given");
+		this.controller = controller;
+		this.num_stations = num_stations;
+		this.lang_code = lang_code;
 	}
 	
 	
+	// Override to set main frame to be visible/invisible.
 	public void setVisible(boolean b) {
-		
+		attendantFrame.setVisible(b);
 	}
 	
 
-	// Main - only will be used for testing.
+	// Main - used for testing.
 	public static void main(String args[]) {
 		
 	}
