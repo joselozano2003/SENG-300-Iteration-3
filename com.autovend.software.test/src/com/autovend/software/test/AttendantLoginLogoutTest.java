@@ -1,0 +1,49 @@
+package com.autovend.software.test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.attendant.AttendantModel;
+import com.autovend.software.attendant.AttendantView;
+import com.autovend.software.customer.CustomerStationLogic;
+
+import auth.AttendantAccount;
+import auth.AttendantAccountDatabases;
+
+public class AttendantLoginLogoutTest {
+
+	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
+	private AttendantModel model = new AttendantModel();
+	private AttendantView view = new AttendantView();
+
+	public AttendantController attendantController = new AttendantController(model, view, customerStations);
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void SuccesfulLogInTest() {
+		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
+		assertTrue(attendantController.startLogIn(demoAttendant));
+	}
+
+	@Test
+	public void UnsuccesfulLogInTest() {
+		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
+		assertFalse(attendantController.startLogIn(fakeAttendant));
+	}
+
+}
