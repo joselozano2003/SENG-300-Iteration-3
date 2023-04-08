@@ -4,10 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.lsmr.selfcheckout.PriceLookupCode;
-import org.lsmr.selfcheckout.external.ProductDatabases;
-import org.lsmr.selfcheckout.products.PLUCodedProduct;
-
+import com.autovend.PriceLookUpCode;
+import com.autovend.products.PLUCodedProduct;
+import com.autovend.external.ProductDatabases;
 
 import javax.swing.*;
 
