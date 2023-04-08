@@ -1,6 +1,8 @@
 package com.autovend.software.GUI;
 
 
+import com.autovend.software.customer.CustomerSession;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -8,13 +10,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class CheckoutScreen {
-    private Controller controller;
+
     private  TextArea receipt;
     JPanel jPanel = new JPanel();
+    CustomerSession session = new CustomerSession();
 
-    public CheckoutScreen(Controller controller){
+    public CheckoutScreen(){
 
-        this.controller = controller;
 
         jPanel.setForeground(new Color(65, 73, 96));
         jPanel.setBackground(new Color(65, 73, 96));
@@ -52,7 +54,7 @@ public class CheckoutScreen {
         doneButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                controller.startGUI();
+                session.loadStartGUI();
             }
         });
 
@@ -70,7 +72,7 @@ public class CheckoutScreen {
         returnAddItems.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.loadMainGUI();
+                session.loadMainGUI();
             }
         });
         returnAddItems.setOpaque(true);
@@ -86,7 +88,7 @@ public class CheckoutScreen {
         creditCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                //
 
             }});
                 creditCard.setOpaque(true);

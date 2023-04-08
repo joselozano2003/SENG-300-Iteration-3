@@ -1,5 +1,7 @@
 package com.autovend.software.GUI;
 
+import com.autovend.software.customer.CustomerSession;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -8,8 +10,10 @@ import java.awt.event.MouseEvent;
 
 public class StartScreen {
     JPanel jPanel = new JPanel();
+    CustomerSession session = new CustomerSession();
 
-    public StartScreen(Controller controller){
+    public StartScreen(){
+
     	
    	 jPanel.setForeground(new Color(65, 73, 96));
      jPanel.setBackground(new Color(65, 73, 96));
@@ -23,7 +27,7 @@ public class StartScreen {
         goToMainScreen.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.loadMainGUI();
+                session.loadMainGUI();
             }
         });
 
