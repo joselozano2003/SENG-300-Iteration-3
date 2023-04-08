@@ -42,53 +42,44 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
-	private boolean receiptPrinted;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
-		receiptPrinted = false;
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
 
-	    // Checks if item has been previously added to cart
-	    if (shoppingCart.containsKey(product)) {
-	        double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
-	        shoppingCart.put(product, updatedQuantity);
-	    } else {
-	        shoppingCart.put(product, quantityToAdd);
-	    }
+		// Checks if item has been previously added to cart
+		if (shoppingCart.containsKey(product)) {
+			double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
+			shoppingCart.put(product, updatedQuantity);
+		} else {
+			shoppingCart.put(product, quantityToAdd);
+		}
 
-	    // Checks if product is barcoded
-	    if (product instanceof BarcodedProduct) {
-	        BarcodedProduct barcodedProduct = (BarcodedProduct) product;
-	        expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
-	        totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    // Checks if product is PLU coded
-	    else if (product instanceof PLUCodedProduct) {
-	        PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
-	        expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
-	        totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    
+		// Checks if product is barcoded
+		if (product instanceof BarcodedProduct) {
+			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
+			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
+			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+		// Checks if product is PLU coded
+		else if (product instanceof PLUCodedProduct) {
+			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
+			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
+			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+
 	}
 
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
 	}
 
-	public void setPrintStatus(boolean status) {
-		receiptPrinted = status;
-	}
-	public boolean isReceiptPrinted() {
-		return receiptPrinted;
-	}
-
-	public Map getShoppingCart() {
+	public Map<Product, Double> getShoppingCart() {
 		return shoppingCart;
 	}
 
@@ -106,6 +97,18 @@ public class CustomerSession {
 
 	public BigDecimal getAmountLeft() {
 		return totalCost.subtract(totalPaid);
+	}
+
+	public BigDecimal getChangeDue() {
+		return totalPaid.subtract(totalCost);
+	}
+
+	public boolean isPaymentComplete() {
+		if (totalPaid.compareTo(totalCost) >= 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
