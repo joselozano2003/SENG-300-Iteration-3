@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.lsmr.selfcheckout.PriceLookupCode;
+import org.lsmr.selfcheckout.external.ProductDatabases;
+import org.lsmr.selfcheckout.products.PLUCodedProduct;
 
 
 import javax.swing.*;
@@ -73,10 +76,11 @@ public class AttendantInterface {
 					"The product you searched for is: " + prod.getPLUCode() + " " + prod.getDescription() +".",
 					"Product found!",
 					JOptionPane.PLAIN_MESSAGE);
+					//displays error message if the product is not found in the database
 				} else {
 					JOptionPane.showMessageDialog(new JPanel(),
 					"The product: " + productName + " was not found in the database!",
-					"Product is not there in the Database. ",
+					"Product not found in the Database. ",
 					JOptionPane.ERROR_MESSAGE);
 				}
 			}
