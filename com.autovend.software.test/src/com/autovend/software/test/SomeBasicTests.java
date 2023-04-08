@@ -117,6 +117,12 @@ public class SomeBasicTests {
 
 	@Test
 	public void payWithValidCoin() throws DisabledException, OverloadException {
+		
+		customerSessionController.startAddingItems();
+
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		
 		customerSessionController.startPaying();
 
 		Coin coin = new Coin(BigDecimal.valueOf(0.05), currency);
@@ -128,6 +134,12 @@ public class SomeBasicTests {
 
 	@Test
 	public void payWithValidBill() throws DisabledException, OverloadException {
+		
+		customerSessionController.startAddingItems();
+
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		
 		customerSessionController.startPaying();
 
 		Bill bill = new Bill(10, currency);
@@ -148,7 +160,7 @@ public class SomeBasicTests {
 		
 		selfCheckoutStation.cardReader.tap(creditCard);
 
-		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost()); // eventually should change it to amountDue
+		assertEquals(currentSession.getTotalCost(), currentSession.getTotalPaid()); // eventually should change it to amountDue
 		
 
 	}

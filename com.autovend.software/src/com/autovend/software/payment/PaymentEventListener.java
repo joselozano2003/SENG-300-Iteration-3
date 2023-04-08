@@ -46,13 +46,9 @@ public interface PaymentEventListener extends AbstractEventListener {
 	
 	public void onPaymentFailure();
 	
-	public void onPaymentSuccessful(BigDecimal value);
-	
 	public void onChangeDispensedEvent();
 	
 	public void onChangeDispensedFailure();
-	
-	public void onCardRemovedEvent();
 	
 	
 }

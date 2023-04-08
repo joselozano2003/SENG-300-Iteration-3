@@ -122,6 +122,7 @@ public class CustomerController
 
 	public void startPaying() {
 		BigDecimal amountDue = currentSession.getAmountLeft();
+		System.out.println(amountDue);
 		paymentFacade.addAmountDue(amountDue);
 
 	}
@@ -241,16 +242,6 @@ public class CustomerController
 		return this.currentState;
 	}
 
-	@Override
-	public void onPaymentSuccessful(BigDecimal value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onCardRemovedEvent() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }
