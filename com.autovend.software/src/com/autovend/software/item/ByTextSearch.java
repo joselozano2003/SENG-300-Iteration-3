@@ -28,12 +28,45 @@
  */
 package com.autovend.software.item;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JButton;
+
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.Product;
 
 public class ByTextSearch extends ItemFacade {
+	
+	//map with keywords that correspond to a product
+	//will need to populate this map with all products that we want the attendant to be able to search up
+	public static Map<String, Product> Products_Textsearch_Keywords_Database = new HashMap<>();
 
 	protected ByTextSearch(SelfCheckoutStation station) {
 		super(station);
+	}
+	
+	/**
+	 * Method that takes in a string of 
+	 * 
+	 * @param attendantInputString: string that the attendant types in, and searches for any products that match the input. 
+	 * @return: an arraylist of products that are a match, which the attendant station displays as the search result 
+	 */
+	public ArrayList getProductsCorrespondingToTextSearch(String attendantInputString) {
+		ArrayList<Product> productsToShow = new ArrayList<Product>();
+		String[] InputStringWords = attendantInputString.split(" ");
+		
+		for(String keywords: Products_Textsearch_Keywords_Database.keySet()) {
+			for(String eachWord: InputStringWords) {
+				if(keywords.contains(eachWord) && !productsToShow.contains(Products_Textsearch_Keywords_Database.get(keywords))){
+					productsToShow.add(Products_Textsearch_Keywords_Database.get(keywords));
+				}
+			}
+		}
+		
+		return productsToShow;
 	}
 
 }

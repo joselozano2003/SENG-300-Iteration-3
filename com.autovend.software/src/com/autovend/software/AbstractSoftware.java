@@ -57,7 +57,7 @@ public abstract class AbstractSoftware<T extends AbstractListener> implements Se
 	/**
 	 * The SelfCheckoutStation to perform logic on.
 	 */
-	private final SelfCheckoutStation station;
+	protected final SelfCheckoutStation station;
 	/**
 	 * A list of the registered listeners on this software.
 	 */

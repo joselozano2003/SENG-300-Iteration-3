@@ -28,6 +28,8 @@
  */
 package com.autovend.software.payment;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import com.autovend.Card;
@@ -163,5 +165,15 @@ class WithCard extends PaymentFacade implements CardReaderObserver {
 				}
 			}
 		}
+	}
+
+	public void reactToEnabledEvent(AbstractDevice device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reactToDisabledEvent(AbstractDevice device) {
+		// TODO Auto-generated method stub
+		
 	}
 }
