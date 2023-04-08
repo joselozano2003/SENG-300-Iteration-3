@@ -27,6 +27,7 @@ import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -47,6 +48,7 @@ import com.autovend.software.customer.CustomerStationLogic;
 public class SomeBasicTests {
 
 	public SelfCheckoutStation selfCheckoutStation;
+	public ReusableBagDispenser bagDispenser;
 	public CustomerController customerSessionController;
 	public CustomerSession currentSession;
 
@@ -88,6 +90,8 @@ public class SomeBasicTests {
 		selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
 				scaleMaximumWeight, scaleSensitivity);
 
+		bagDispenser = new ReusableBagDispenser(100);
+
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
 		Barcode barcode = new Barcode(code1);
 		barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
@@ -105,7 +109,7 @@ public class SomeBasicTests {
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
 
-		customerSessionController = new CustomerController(selfCheckoutStation);
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
@@ -234,10 +238,10 @@ public class SomeBasicTests {
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 	}
-	
-	@Test 
+
+	@Test
 	public void changeDispenserTest() {
-		
+
 		customerSessionController.startAddingItems();
 
 		selfCheckoutStation.mainScanner
@@ -259,20 +263,18 @@ public class SomeBasicTests {
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-		
+
 		Bill tenDollarBill = new Bill(10, currency);
 		try {
 			selfCheckoutStation.billInput.accept(tenDollarBill);
 		} catch (DisabledException | OverloadException e) {
-			
+
 		}
-		
+
 		// Dispense 1 $5 bill and 2 $0.25 coins
 		assertEquals(selfCheckoutStation.billDispensers.get(5).size(), 99);
 		assertEquals(selfCheckoutStation.coinDispensers.get(BigDecimal.valueOf(0.25)).size(), 98);
 
-		
-		
 	}
 
 	// @Test
@@ -338,8 +340,8 @@ public class SomeBasicTests {
 		}
 
 	}
-	
-	@Test 
+
+	@Test
 	public void weightDiscrepancyBaggingArea() {
 		customerSessionController.startAddingItems();
 
@@ -348,13 +350,10 @@ public class SomeBasicTests {
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()*2));
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
 
 		assertEquals(State.DISABLED, customerSessionController.getCurrentState());
-	
 
 	}
-	
-	
 
 }

@@ -307,11 +307,6 @@ public class CustomerController
 		setState(State.DISABLED);
 
 	}
-	
-	@Override
-	public void onReusableBagsPurchased(int numberOfBags) {
-		currentSession.addBagsPurchasedToCustomerSession(numberOfBags);
-	}
 
 	@Override
 	public void onChangeDispensedEvent() {
