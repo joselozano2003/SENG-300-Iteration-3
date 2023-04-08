@@ -39,7 +39,15 @@ public interface BaggingEventListener extends AbstractEventListener {
 	
 	public void onWeightChanged(double weightInGrams);
 	
+
 	public void onBagsDispensedEvent(int amount);
 
 	public void onBagsDispensedFailure(int amount);
+
+	/**
+	 * Signals that the customer purchased x number of reusable bags
+	 * @param numberOfBags
+	 */
+	public void onReusableBagsPurchased(int numberOfBags);
+
 }

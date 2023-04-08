@@ -41,18 +41,47 @@ import com.autovend.software.AbstractFacade;
 @SuppressWarnings("serial")
 public class BaggingFacade extends AbstractFacade<BaggingEventListener> implements ElectronicScaleObserver,ReusableBagDispenserObserver  {
 
-	public BaggingFacade(SelfCheckoutStation station) {
+
+	ReusableBagDispenser bagDispenser;
+	
+	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
 		super(station);
 		try {
 
 			station.scale.register(this);
 			station.baggingArea.register(this);
+
 		//	station.bagDispenser.register(this);
+
+
+			bagDispenser.register(this);
+			this.bagDispenser = bagDispenser;
 
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
+	}
+	
+	/**
+	 * Method called when customer indicates the number of reusable bags they want to purchase
+	 * 
+	 * @param numberOfBags: number of reusable bags customer wants to purchase
+	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is thrown
+	 */
+	public void purchaseReusableBags(int numberOfBags) throws EmptyException {
+		if(numberOfBags > 0) {
+			//notifies of reusable bags purchased event, which adds bags to customer bill list 
+			for (BaggingEventListener listener : listeners) {
+				listener.onReusableBagsPurchased(numberOfBags);
+			}
+			
+			//hardware actually dispenses the bags
+			for(int i = 0; i < numberOfBags; i++) {
+				bagDispenser.dispense();
+			}
+		}
+		
 	}
 
 	@Override
@@ -85,6 +114,7 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 
 	}
 
+
 	@Override
 	public void bagDispensed(ReusableBagDispenser dispenser) {
 		// TODO Auto-generated method stub
@@ -102,6 +132,7 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 		// TODO Auto-generated method stub
 		
 	}
+
 	
 	
 	public void dispenseBags (int amount) {
