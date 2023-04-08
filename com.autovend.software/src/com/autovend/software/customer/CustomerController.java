@@ -31,9 +31,12 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.autovend.ReusableBag;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.external.ProductDatabases;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
@@ -48,6 +51,7 @@ public class CustomerController
 		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
+	private ReusableBagDispenser bagDispener;
 	private CustomerSession currentSession;
 
 	private PaymentFacade paymentFacade;
@@ -64,13 +68,14 @@ public class CustomerController
 
 	private State currentState;
 
-	public CustomerController(SelfCheckoutStation selfCheckoutStation) {
+	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
 		this.selfCheckoutStation = selfCheckoutStation;
+		this.bagDispener = bagDispenser;
 		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
 		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
-		this.baggingFacade = new BaggingFacade(selfCheckoutStation);
+		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -207,6 +212,11 @@ public class CustomerController
 			setState(State.DISABLED);
 		}
 
+	}
+	
+	@Override
+	public void onReusableBagsPurchased(int numberOfBags) {
+		currentSession.addBagsPurchasedToCustomerSession(numberOfBags);
 	}
 
 	@Override

@@ -28,10 +28,12 @@
  */
 package com.autovend.software.customer;
 
+import com.autovend.ReusableBag;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.item.ProductsDatabase2;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ import java.util.Map;
 
 public class CustomerSession {
 	private Map<Product, Double> shoppingCart;
+	private int bagsPurchased;
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
@@ -75,6 +78,16 @@ public class CustomerSession {
 	        totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
 	    }
 	    
+	}
+	
+	public void addBagsPurchasedToCustomerSession(int numberOfBags) {
+		bagsPurchased += numberOfBags;
+		
+		ReusableBag reusableBag = new ReusableBag();
+		for (int i = 1; i <= numberOfBags; i++) {
+			expectedWeight += reusableBag.getWeight();
+			totalCost = totalCost.add(ProductsDatabase2.costOfReusableBag);
+		}
 	}
 
 	public void addPayment(BigDecimal amount) {
