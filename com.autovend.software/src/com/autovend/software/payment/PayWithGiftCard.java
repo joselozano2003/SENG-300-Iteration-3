@@ -87,7 +87,6 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 					reader.remove();
 					for (PaymentEventListener listener : listeners) {
 						listener.onPaymentAddedEvent(value);
-						listener.onCardRemovedEvent();
 					}
 				} else {
 					for (PaymentEventListener listener : listeners) {

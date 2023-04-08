@@ -3,10 +3,15 @@ package com.autovend.software.test;
 import java.math.BigDecimal;
 import java.util.Currency;
 
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
+import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 
 public class Setup {
-	
 	/**
 	 * Creates a new SelfCheckoutStation as required for setting up most tests.
 	 * 
@@ -29,6 +34,49 @@ public class Setup {
 		int scaleSensitivity = 10;
 		return new SelfCheckoutStation(currency, billDenoms, coinDenoms,
 				scaleMaximumWeight, scaleSensitivity);
+	}
+	
+	/**
+	 * Fill the BillDispensers in a SelfCheckoutStation.
+	 * @param station The station to fill dispensers
+	 * @param amount The amount to fill each bill dispenser.
+	 */
+	public static void fillBillDispensers(SelfCheckoutStation station, int amount) {
+		for (int i = 0; i < station.billDenominations.length; i++) {
+			BillDispenser dispenser = station.billDispensers.get(station.billDenominations[i]);
+			for (int j = 0; j < amount; j++) {
+				Bill bill = new Bill(station.billDenominations[i], Setup.getCurrency());
+				try {
+					dispenser.load(bill);
+				} catch (SimulationException | OverloadException e) {
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Fill the CoinDispensers in a SelfCheckoutStation.
+	 * @param station The station to fill dispensers
+	 * @param amount The amount to fill each coin dispenser.
+	 */
+	public static void fillCoinDispensers(SelfCheckoutStation station, int amount) {
+		for (int i = 0; i < station.coinDenominations.size(); i++) {
+			CoinDispenser dispenser = station.coinDispensers.get(station.coinDenominations.get(i));
+			for (int j = 0; j < amount; j++) {
+				Coin coin = new Coin(station.coinDenominations.get(i), Setup.getCurrency());
+				try {
+					dispenser.load(coin);
+				} catch (SimulationException | OverloadException e) {
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @return An instance of "CAD" currency.
+	 */
+	public static Currency getCurrency() {
+		return Currency.getInstance("CAD");
 	}
 
 }

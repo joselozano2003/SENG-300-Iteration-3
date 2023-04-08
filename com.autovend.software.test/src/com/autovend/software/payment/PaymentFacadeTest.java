@@ -36,7 +36,6 @@ import org.junit.Test;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import org.junit.After;
 
@@ -45,8 +44,6 @@ import com.autovend.Coin;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
-import com.autovend.devices.OverloadException;
-import com.autovend.devices.SimulationException;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BillDispenserObserver;
 import com.autovend.devices.observers.CoinDispenserObserver;
@@ -56,56 +53,29 @@ import com.autovend.devices.observers.CoinDispenserObserver;
  *
  */
 public class PaymentFacadeTest {
-    
-	private int[] billDenominations;
-	private BigDecimal[] coinDenominations;
-	private Currency currency;
+	private PaymentFacade paymentFacade;
+	SelfCheckoutStation station;
 	
-	PaymentFacade paymentFacade;
-	PaymentFacade childFacade;
-	
-	BigDecimal changeCounter = new BigDecimal("0");
-	int changeDispensedFailCounter = 0;
-	int changeDispensedCounter = 0;
-	
-//	SelfCheckoutStation station;
-	SelfCheckoutStation selfCheckoutStation;
+	private BigDecimal changeCounter = new BigDecimal("0");
+	private int changeDispensedFailCounter = 0;
+	private int changeDispensedCounter = 0;
 
 	@Before
 	public void setup() throws Exception {
-		selfCheckoutStation = Setup.createSelfCheckoutStation();
-		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		station = Setup.createSelfCheckoutStation();
+		paymentFacade = new PaymentFacade(station, false);
 		
 		// Add 100 bills to each dispenser
-		for (int i = 0; i < billDenominations.length; i++) {
-			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Bill bill = new Bill(billDenominations[i], currency);
-				try {
-					dispenser.load(bill);
-				} catch (SimulationException | OverloadException e) {
-				}
-			}
-		}
+		Setup.fillBillDispensers(station, 100);
 		// Add 100 coins to each dispenser
-		for (int i = 0; i < coinDenominations.length; i++) {
-			CoinDispenser dispenser = selfCheckoutStation.coinDispensers.get(coinDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Coin coin = new Coin(coinDenominations[i], currency);
-				try {
-					dispenser.load(coin);
-				} catch (SimulationException | OverloadException e) {
-
-				}
-			}
-		}
+		Setup.fillCoinDispensers(station, 100);
 	}
 	
 	@After
 	public void teardown() {
 		changeCounter = BigDecimal.ZERO;
-		int changeDispensedFailCounter = 0;
-		int changeDispensedCounter = 0;
+		changeDispensedFailCounter = 0;
+		changeDispensedCounter = 0;
 	}
 	
 	/**
@@ -133,7 +103,7 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void addAmountDueTest() {
-		PaymentFacade paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false);
 		BigDecimal amountToAdd = BigDecimal.valueOf(12.50);
 		paymentFacade.addAmountDue(amountToAdd);
 		BigDecimal actual = paymentFacade.getAmountDue();
@@ -146,7 +116,7 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void subtractAmountDueTest() {
-		PaymentFacade paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.addAmountDue(BigDecimal.valueOf(25.50));
 		paymentFacade.subtractAmountDue(BigDecimal.valueOf(10.50));
 		BigDecimal actual = paymentFacade.getAmountDue();
@@ -160,7 +130,7 @@ public class PaymentFacadeTest {
 	 */
 	@Test (expected = IllegalArgumentException.class)
 	public void testNegativeChange() {
-		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(-1));
 	}
 	
@@ -171,11 +141,11 @@ public class PaymentFacadeTest {
 	@Test
 	public void testZeroChange() {
 		BillDispenserObserverStub bdstub = new BillDispenserObserverStub();
-		selfCheckoutStation.billDispensers.forEach((k,v) -> v.register(bdstub));
+		station.billDispensers.forEach((k,v) -> v.register(bdstub));
 		CoinDispenserObserverStub cdstub = new CoinDispenserObserverStub();
-		selfCheckoutStation.coinDispensers.forEach((k,v) -> v.register(cdstub));
+		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
 		
-		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(0)));
 	}
@@ -187,11 +157,11 @@ public class PaymentFacadeTest {
 	@Test
 	public void testMultipleChange() {
 		BillDispenserObserverStub bdstub = new BillDispenserObserverStub();
-		selfCheckoutStation.billDispensers.forEach((k,v) -> v.register(bdstub));
+		station.billDispensers.forEach((k,v) -> v.register(bdstub));
 		CoinDispenserObserverStub cdstub = new CoinDispenserObserverStub();
-		selfCheckoutStation.coinDispensers.forEach((k,v) -> v.register(cdstub));
+		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
 		
-		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(16.55));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(16.55)));
 	}
@@ -202,7 +172,7 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void testChangeLowerThanDenominations() {
-		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
+		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.register(new PaymentEventListenerStub());
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0.04));
 		// TODO assertEquals(1, changeDispensedFailCounter);
@@ -234,13 +204,7 @@ public class PaymentFacadeTest {
 		public void onPaymentAddedEvent(BigDecimal amount) {}
 
 		@Override
-		public void onPaymentReturnedEvent(BigDecimal amount) {}
-
-		@Override
 		public void onPaymentFailure() {}
-
-		@Override
-		public void onPaymentSuccessful(BigDecimal value) {}
 
 		@Override
 		public void onChangeDispensedEvent() {
@@ -248,12 +212,9 @@ public class PaymentFacadeTest {
 		}
 
 		@Override
-		public void onChangeDispensedFailure() {
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
 			changeDispensedFailCounter++;
 		}
-
-		@Override
-		public void onCardRemovedEvent() {}
 		
 	}
 	

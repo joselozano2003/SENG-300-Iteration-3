@@ -57,7 +57,7 @@ public abstract class AbstractFacade<T extends AbstractEventListener> implements
 	/**
 	 * The SelfCheckoutStation to perform logic on.
 	 */
-	protected SelfCheckoutStation station;
+	protected final SelfCheckoutStation station;
 	/**
 	 * A list of the registered listeners on this software.
 	 */

@@ -38,21 +38,16 @@ public interface PaymentEventListener extends AbstractEventListener {
 	 * @param amount The amount added for payment.
 	 */
 	public void onPaymentAddedEvent(BigDecimal amount);
+	
 	/**
-	 * Signals an event in which funds have been returned.
-	 * @param amount The amount removed.
-	 */
-	public void onPaymentReturnedEvent(BigDecimal amount);
-	
+	 * Signals an event in which invalid payment has been entered.
+	 * @param 
+	 */	
 	public void onPaymentFailure();
-	
-	public void onPaymentSuccessful(BigDecimal value);
 	
 	public void onChangeDispensedEvent();
 	
-	public void onChangeDispensedFailure();
-	
-	public void onCardRemovedEvent();
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
 	
 	
 }
