@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 import javax.swing.*;
 
 public class AttendantInterface {
@@ -50,6 +51,42 @@ public class AttendantInterface {
     	attendantFrame.pack();
     	attendantFrame.setVisible(true);
 	}
+	//Add Item By text search added to the Attendant Interface
+	JButton textSearchItem = new JButton("Lookup Product");
+		textSearchItem.addMouseListener(new MouseAdapter() {
+			@Override
+			//prompts the attendant to enter product details
+			public void mouseClicked(MouseEvent e) {
+				String productName = JOptionPane.showInputDialog("Please enter the product details: ", "");
+				if(productName.equals("")) {
+					JOptionPane.showMessageDialog(new JPanel(),
+						"Invalid Product Name",
+						"Please enter the details again.",
+						JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				//checks if the product is there in the product database
+				PriceLookupCode plu = control.attendantLookUpProductCode(productName);
+				if(plu != null) {
+					PLUCodedProduct prod = ProductDatabases.PLU_PRODUCT_DATABASE.get(plu);
+					JOptionPane.showMessageDialog(new JPanel(),
+					"The product you searched for is: " + prod.getPLUCode() + " " + prod.getDescription() +".",
+					"Product found!",
+					JOptionPane.PLAIN_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(new JPanel(),
+					"The product: " + productName + " was not found in the database!",
+					"Product is not there in the Database. ",
+					JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		textSearchItem.setOpaque(true);
+		textSearchItem.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	    textSearchItem.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+		textSearchItem.setBackground(new Color(230, 152, 39));
+		textSearchItem.setBounds(60, 335, 280, 55);
+		add(textSearchItem);
 	
 	
 	// Ends attendant interface session.
