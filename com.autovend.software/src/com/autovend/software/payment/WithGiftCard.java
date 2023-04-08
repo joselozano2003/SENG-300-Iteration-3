@@ -28,12 +28,8 @@
  */
 package com.autovend.software.payment;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Objects;
 
-import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.ChipFailureException;
 import com.autovend.GiftCard;
@@ -44,22 +40,36 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.CardIssuer;
+import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
-public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
-	private  SelfCheckoutStation station;
-	private BufferedImage signature;
-	private Object reader;
+public class WithGiftCard extends PaymentFacade implements CardReaderObserver {
+	
+	private String pinInput;
+	public BigDecimal value;
 
-	public PayWithGiftCard(SelfCheckoutStation station) {
-		super(station, true);
+
+	public WithGiftCard(SelfCheckoutStation station) {
+		super(station);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
+			for (PaymentListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
+		
+		pinInput = null;
 	}
+	
+	public void setPinInput(String aPin) {
+		pinInput = aPin;
+	}
+	
+	public void setValue(BigDecimal val) {
+		value = val;
+	}
+	
+	
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
@@ -75,61 +85,33 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-		if (data instanceof GiftCard.GiftCardInsertData) {
-			BigDecimal value = getAmountDue();
-	
-			if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
-				for (PaymentEventListener listener : listeners) {
-					listener.onPaymentFailure();
-			}
-				return;
-			}
-			
-			data = (GiftCard.GiftCardInsertData) data;
-				
-			try {
-				if (((GiftCardInsertData) data).deduct(value)) {
-					subtractAmountDue(value);
-					reader.remove();
-					for (PaymentEventListener listener : listeners) {
-						listener.onPaymentAddedEvent(value);
-					}
-				} else {
-					for (PaymentEventListener listener : listeners) {
-						listener.onPaymentFailure();
-					}
-				}
-			} catch (ChipFailureException e) {
-				for (PaymentEventListener listener : listeners) {
-					listener.onPaymentFailure();
-				}
-			}
-			
+		if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
+			//giftcard not in database
+//			for (PaymentListener listener : listeners) {
+//			//listener.onPaymentFailure();
+//		}
+			return;
 		}
-	}
-	public  boolean swipeCard(CardIssuer cardIssuer, Card card) throws IOException {
-		if(card == null ) throw new NullPointerException("No argument may be null");
+		data = (GiftCard.GiftCardInsertData) data;
 
-		CardData data = station.cardReader.swipe(card, signature);
-		if(Objects.equals(data.getType(), "Gift")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		else{
-			return false;
+		try {
+			if (((GiftCardInsertData) data).deduct(value)) {
+//				for (PaymentListener listener : listeners) {
+//					listener.onPaymentSuccessful(value);
+//				}
+				System.out.println("Payment successful");
+				value = new BigDecimal("0");
+			} else {
+//				for (PaymentListener listener : listeners) {
+//					//listener.onPaymentFailure();
+//				}
+				System.out.println("Payment unsuccessful");
+			}
+		} catch (ChipFailureException e) {
+			// TODO Auto-generated catch block
+			//maybe call attendant for maintenance
+			e.printStackTrace();
 		}
-
-	}}
-
-	public  boolean insertCard(CardIssuer card, String pin) throws IOException{
-		if(card == null ) throw new NullPointerException("No argument may be null");
-
-		CardData data = station.cardReader.insert(card, String.valueOf(signature));
-		if(Objects.equals(data.getType(), "Gift")) {
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-
-		}else{
-			return false;
-		}
-
+		
 	}
 }

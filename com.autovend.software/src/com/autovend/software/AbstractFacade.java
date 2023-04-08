@@ -52,7 +52,7 @@ import com.autovend.devices.SelfCheckoutStation;
  *            class is X, its corresponding listener type would typically be
  *            Xlistener.
  */
-public abstract class AbstractFacade<T extends AbstractEventListener> implements Serializable {
+public abstract class AbstractSoftware<T extends AbstractListener> implements Serializable {
 	private static final long serialVersionUID = -5835508997720707884L;
 	/**
 	 * The SelfCheckoutStation to perform logic on.
@@ -101,7 +101,7 @@ public abstract class AbstractFacade<T extends AbstractEventListener> implements
 	 * 
 	 * @param station
 	 */
-	protected AbstractFacade(SelfCheckoutStation station) {
+	protected AbstractSoftware(SelfCheckoutStation station) {
 		if (station == null)
 			throw new NullPointerException("SelfCheckoutStation cannot be null");
 		this.station = station;
