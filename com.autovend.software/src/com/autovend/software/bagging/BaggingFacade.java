@@ -39,49 +39,37 @@ import com.autovend.devices.observers.ReusableBagDispenserObserver;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class BaggingFacade extends AbstractFacade<BaggingEventListener> implements ElectronicScaleObserver,ReusableBagDispenserObserver  {
-	/**
-	 * The dispenser that is determined should be permanent.
-	 */
-	private final ReusableBagDispenser bagDispenser;
-	
+public class BaggingFacade extends AbstractFacade<BaggingEventListener>
+		implements ElectronicScaleObserver, ReusableBagDispenserObserver {
+
+	ReusableBagDispenser bagDispenser;
+
 	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
 		super(station);
-		if (bagDispenser == null)
-			throw new NullPointerException();
-		this.bagDispenser = bagDispenser;
-		
 		try {
+
 			station.scale.register(this);
 			station.baggingArea.register(this);
-		//	station.bagDispenser.register(this);
+
+			// station.bagDispenser.register(this);
+
 			bagDispenser.register(this);
+			this.bagDispenser = bagDispenser;
+
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
-	
+
 	/**
-	 * Method called when customer indicates the number of reusable bags they want to purchase
+	 * Method called when customer indicates the number of reusable bags they want
+	 * to purchase
 	 * 
 	 * @param numberOfBags: number of reusable bags customer wants to purchase
-	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is thrown
+	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is
+	 *                         thrown
 	 */
-	public void purchaseReusableBags(int numberOfBags) throws EmptyException {
-		if(numberOfBags > 0) {
-			//notifies of reusable bags purchased event, which adds bags to customer bill list 
-			for (BaggingEventListener listener : listeners) {
-				listener.onReusableBagsPurchased(numberOfBags);
-			}
-			
-			//hardware actually dispenses the bags
-			for(int i = 0; i < numberOfBags; i++) {
-				bagDispenser.dispense();
-			}
-		}
-		
-	}
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
@@ -113,45 +101,40 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 
 	}
 
-
 	@Override
 	public void bagDispensed(ReusableBagDispenser dispenser) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void outOfBags(ReusableBagDispenser dispenser) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void bagsLoaded(ReusableBagDispenser dispenser, int count) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
-	
-	public void dispenseBags (int amount) {
-		
-//		while (amount > 0) {
-//	        try {
-//	           station.bagDispenser.dispense();
-//			   amount--;		
-//	        } catch (EmptyException e) {
-//	             Handle the case where the dispenser runs out of bags
-//	             for (BaggingEventListener listener : listeners)
-//					listener.onBagsDispensedFailure(amount);
-//	            break;
-//	        }
-//	    }
-		
-//		for (BaggingEventListener listener : listeners)
-//			listener.onBagsDispensedEvent(amount);
+	public void dispenseBags(int amount) {
 
-		
+		while (amount > 0) {
+			try {
+				bagDispenser.dispense();
+				amount--;
+			} catch (EmptyException e) {
+				for (BaggingEventListener listener : listeners)
+					listener.onBagsDispensedFailure(amount);
+				break;
+			}
+		}
+
+		for (BaggingEventListener listener : listeners)
+			listener.onBagsDispensedEvent(amount);
+
 	}
 
 }

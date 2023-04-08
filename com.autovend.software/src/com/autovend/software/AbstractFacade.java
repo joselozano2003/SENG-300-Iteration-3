@@ -55,8 +55,7 @@ import com.autovend.devices.SelfCheckoutStation;
 public abstract class AbstractFacade<T extends AbstractEventListener> implements Serializable {
 	private static final long serialVersionUID = -5835508997720707884L;
 	/**
-	 * The SelfCheckoutStation which announces hardware events
-	 * that the facades react to. Should never change once set.
+	 * The SelfCheckoutStation to perform logic on.
 	 */
 	protected final SelfCheckoutStation station;
 	/**

@@ -33,21 +33,20 @@ import com.autovend.software.AbstractEventListener;
 public interface BaggingEventListener extends AbstractEventListener {
 	/**
 	 * Signals that the weight on a scale increased.
+	 * 
 	 * @param amount
-	 * @throws WeightDiscrepancyException 
+	 * @throws WeightDiscrepancyException
 	 */
-	
+
 	public void onWeightChanged(double weightInGrams);
-	
-
-	public void onBagsDispensedEvent(int amount);
-
-	public void onBagsDispensedFailure(int amount);
 
 	/**
 	 * Signals that the customer purchased x number of reusable bags
+	 * 
 	 * @param numberOfBags
 	 */
-	public void onReusableBagsPurchased(int numberOfBags);
+	public void onBagsDispensedEvent(int amount);
+
+	public void onBagsDispensedFailure(int amount);
 
 }

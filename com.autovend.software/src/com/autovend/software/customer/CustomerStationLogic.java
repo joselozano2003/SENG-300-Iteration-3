@@ -3,8 +3,15 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import com.autovend.devices.ReusableBagDispenser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.bagging.BaggingFacade;
+import com.autovend.software.item.ItemFacade;
+import com.autovend.software.membership.MembershipFacade;
+import com.autovend.software.payment.PaymentFacade;
+import com.autovend.software.receipt.ReceiptFacade;
 
 public class CustomerStationLogic {
 
@@ -18,16 +25,15 @@ public class CustomerStationLogic {
 
 	private CustomerStationLogic(SelfCheckoutStation station) {
 		// Initiate facades.
-//		ItemFacade item = new ItemFacade(station, false);
-//		PaymentFacade payment = new PaymentFacade(station, false);
-//		ReceiptFacade receipt = new ReceiptFacade(station);
-//		BaggingFacade bagging = new BaggingFacade(station, );
-//		MembershipFacade membership = new MembershipFacade(station);
+		ItemFacade item = new ItemFacade(station, false);
+		PaymentFacade payment = new PaymentFacade(station, false);
+		ReceiptFacade receipt = new ReceiptFacade(station);
+	//	BaggingFacade bagging = new BaggingFacade(station);
+		MembershipFacade membership = new MembershipFacade(station);
 		// Initiate station with MVC design.
-		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(50);
 		//model = new CustomerModel(item, payment, receipt, bagging, membership);
-		//view = new CustomerView();
-		controller = new CustomerController(station, bagDispenser);
+		view = new CustomerView();
+		//controller = new CustomerController(model, view);
 	}
 
 	public void turnOnDisplay() {
