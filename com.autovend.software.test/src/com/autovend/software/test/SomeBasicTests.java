@@ -189,18 +189,21 @@ public class SomeBasicTests {
 	@Test
 	public void removeItem() {
 		Barcode barcode = new Barcode(Numeral.eight, Numeral.one, Numeral.two, Numeral.three);
-		BarcodedProduct product1 = new BarcodedProduct(barcode, "bar", new BigDecimal("10"), 2.5);
+		BarcodedProduct product1 = new BarcodedProduct(barcode, "bar", new BigDecimal("10"), 1);
+		PriceLookUpCode PLUCode = new PriceLookUpCode(Numeral.one, Numeral.two, Numeral.three, Numeral.four);
+		PLUCodedProduct product2 = new PLUCodedProduct(PLUCode, "plu", new BigDecimal("20"));
+
 		customerSessionController.getItemFacade().addProduct(product1);
 		Product addedPrdocut1 = customerSessionController.getItemFacade().getItemList().get(0);
 		assertFalse(addedPrdocut1 == null);
+		assertFalse(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product2));
 		assertTrue(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product1));
 		assertEquals(0, customerSessionController.getItemFacade().getItemList().size());
 
-		PriceLookUpCode PLUCode = new PriceLookUpCode(Numeral.one, Numeral.two, Numeral.three, Numeral.four);
-		PLUCodedProduct product2 = new PLUCodedProduct(PLUCode, "plu", new BigDecimal("10"));
 		customerSessionController.getItemFacade().addProduct(product2);
 		Product addedPrdocut2 = customerSessionController.getItemFacade().getItemList().get(0);
 		assertFalse(addedPrdocut2 == null);
+		assertFalse(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product1));
 		assertTrue(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product2));
 		assertEquals(0, customerSessionController.getItemFacade().getItemList().size());
 	}
