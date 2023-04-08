@@ -46,11 +46,10 @@ import com.autovend.devices.observers.CoinTrayObserver;
 import com.autovend.devices.observers.CoinValidatorObserver;
 
 @SuppressWarnings("serial")
-class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver,
-		CoinTrayObserver, CoinValidatorObserver {
-
-	public PayWithCoin(SelfCheckoutStation station) {
-		super(station, true);
+class WithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver, CoinTrayObserver, CoinValidatorObserver {
+	
+	protected WithCoin(SelfCheckoutStation station) {
+		super(station);
 		try {
 			station.coinDispensers.forEach((k, v) -> v.register(this));
 			station.coinSlot.register(this);
@@ -58,75 +57,42 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 			station.coinTray.register(this);
 			station.coinValidator.register(this);
 		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
+			for (PaymentListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value) {
-		for (PaymentEventListener listener : listeners)
-			listener.onPaymentAddedEvent(value);
-	}
-
+	public void reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value) {}
 	@Override
-	public void reactToInvalidCoinDetectedEvent(CoinValidator validator) {
-	}
-
+	public void reactToInvalidCoinDetectedEvent(CoinValidator validator) {}
 	@Override
-	public void reactToCoinAddedEvent(CoinTray tray) {
-	}
-
+	public void reactToCoinAddedEvent(CoinTray tray) {}
 	@Override
-	public void reactToCoinsFullEvent(CoinStorage unit) {
-	}
-
+	public void reactToCoinsFullEvent(CoinStorage unit) {}
 	@Override
-	public void reactToCoinAddedEvent(CoinStorage unit) {
-	}
-
+	public void reactToCoinAddedEvent(CoinStorage unit) {}
 	@Override
-	public void reactToCoinsLoadedEvent(CoinStorage unit) {
-	}
-
+	public void reactToCoinsLoadedEvent(CoinStorage unit) {}
 	@Override
-	public void reactToCoinsUnloadedEvent(CoinStorage unit) {
-	}
-
+	public void reactToCoinsUnloadedEvent(CoinStorage unit) {}
 	@Override
-	public void reactToCoinInsertedEvent(CoinSlot slot) {
-	}
-
+	public void reactToCoinInsertedEvent(CoinSlot slot) {}
 	@Override
-	public void reactToCoinsFullEvent(CoinDispenser dispenser) {
-	}
-
+	public void reactToCoinsFullEvent(CoinDispenser dispenser) {}
 	@Override
-	public void reactToCoinsEmptyEvent(CoinDispenser dispenser) {
-	}
-
+	public void reactToCoinsEmptyEvent(CoinDispenser dispenser) {}
 	@Override
-	public void reactToCoinAddedEvent(CoinDispenser dispenser, Coin coin) {
-	}
-
+	public void reactToCoinAddedEvent(CoinDispenser dispenser, Coin coin) {}
 	@Override
-	public void reactToCoinRemovedEvent(CoinDispenser dispenser, Coin coin) {
-	}
-
+	public void reactToCoinRemovedEvent(CoinDispenser dispenser, Coin coin) {}
 	@Override
-	public void reactToCoinsLoadedEvent(CoinDispenser dispenser, Coin... coins) {
-	}
-
+	public void reactToCoinsLoadedEvent(CoinDispenser dispenser, Coin... coins) {}
 	@Override
-	public void reactToCoinsUnloadedEvent(CoinDispenser dispenser, Coin... coins) {
-	}
-
+	public void reactToCoinsUnloadedEvent(CoinDispenser dispenser, Coin... coins) {}
+	
 }

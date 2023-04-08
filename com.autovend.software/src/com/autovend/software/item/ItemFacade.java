@@ -28,28 +28,30 @@
  */
 package com.autovend.software.item;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
-import com.autovend.software.AbstractFacade;
+import com.autovend.software.AbstractSoftware;
 
 @SuppressWarnings("serial")
-public class ItemFacade extends AbstractFacade<ItemEventListener>{
+public class ItemFacade extends AbstractSoftware<ItemListener>{
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-    private SelfCheckoutStation selfCheckoutStation; 
-
+	private static double expectedWeight;
+	private static BigDecimal totalCost;
 	
-    public ItemFacade(SelfCheckoutStation station, boolean isChild) {
+    public ItemFacade(SelfCheckoutStation station) {
 		super(station);
-		this.selfCheckoutStation = station;
 		//Initialize this instance and children once.
-		
-		if (!isChild) {
+		if (instance == null) {
+			instance = this;
 			itemList = new ArrayList<Product>();
+			expectedWeight = 0.0;
+			totalCost = BigDecimal.ZERO;
 			children = new ArrayList<ItemFacade>();
 			children.add(new ByScanning(station));
 			children.add(new ByBrowsing(station));
@@ -71,10 +73,26 @@ public class ItemFacade extends AbstractFacade<ItemEventListener>{
 		return itemList;
 	}
 	
+	public void adjustExpectedWeight(double adjust) {
+		expectedWeight += adjust;
+	}
+	
+	public double getExpectedWeight() {
+		return expectedWeight;
+	}
+	
+	public void adjustTotalCost(BigDecimal adjust) {
+		totalCost.add(adjust);
+	}
+	
+	public BigDecimal getTotalCost() {
+		return totalCost;
+	}
+	
 	/**
 	 * @return List of active subclasses.
 	 */
-	public List<ItemFacade> getChildren() {
+	protected List<ItemFacade> getChildren() {
 		return children;
 	}
 	
