@@ -172,7 +172,7 @@ public class AttendantView {
 	}
 	
 	
-	// ** METHOD TO BE CALLED BY SOFTWARE WHEN A WEIGHT DISCREPANCY IS DETECTED **
+	// ** METHOD TO BE CALLED BY CONTROLLER WHEN A WEIGHT DISCREPANCY IS DETECTED **
 	//
 	// Notifies attendant of weight discrepancy. Attendant can then either override
 	// the discrepancy, or can prompt the customer to remove items so that the discrepancy is resolved.
@@ -190,7 +190,7 @@ public class AttendantView {
 	}
 	
 	
-	// ** METHOD TO BE CALLED BY BAGGING AREA LISTENER IF WEIGHT DISCREPANCY IS RESOLVED
+	// ** METHOD TO BE CALLED BY CONTROLLER IF WEIGHT DISCREPANCY IS RESOLVED
 	// WITHOUT NEEDING AN OVERRIDE (e.g. customer removes problematic item) **
 	// 
 	// Resets row corresponding to station to default.
@@ -199,7 +199,7 @@ public class AttendantView {
 	}
 	
 	
-	// ** METHOD TO BE CALLED BY SOFTWARE WHEN BAG APPROVAL IS NEEDED **
+	// ** METHOD TO BE CALLED BY CONTROLLER WHEN BAG APPROVAL IS NEEDED **
 	//
 	// Notifies attendant that customer is awaiting bag approval. Attendant can then
 	// either approve bags or refuse bags. If approve, call method in software that
