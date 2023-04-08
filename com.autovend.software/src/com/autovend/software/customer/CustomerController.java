@@ -61,7 +61,6 @@ public class CustomerController
 
 	public enum State {
 		INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED, DISABLED,
-
 	}
 
 	private State currentState;
@@ -237,6 +236,18 @@ public class CustomerController
 	
 	public State getCurrentState() {
 		return this.currentState;
+	}
+
+	@Override
+	public void onPaymentSuccessful(BigDecimal value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onCardRemovedEvent() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

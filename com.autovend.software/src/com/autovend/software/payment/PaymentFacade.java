@@ -55,6 +55,7 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
             children.add(new PayWithCoin(selfCheckoutStation));
             children.add(new PayWithBill(selfCheckoutStation));
             children.add(new PayWithCard(selfCheckoutStation));
+            children.add(new PayWithGiftCard(selfCheckoutStation));
             amountDue = BigDecimal.ZERO;
         }
     }
@@ -63,8 +64,6 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	
 	public void addAmountDue(BigDecimal amountToAdd) {
 		amountDue = amountDue.add(amountToAdd);
-		
-  
 	}
 	
 	public void subtractAmountDue(BigDecimal amountToSubtract) {

@@ -20,6 +20,4 @@ public class GiftCardDatabase {
 		}
 		return false;
 	}
-	
-	
 }

@@ -46,7 +46,7 @@ import com.autovend.software.BankIO;
 class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
 	protected PayWithCard(SelfCheckoutStation station) {
-		super(station, false);
+		super(station, true);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
