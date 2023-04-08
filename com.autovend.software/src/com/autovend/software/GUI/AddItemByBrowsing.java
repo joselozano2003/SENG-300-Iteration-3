@@ -16,15 +16,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-public class AddItemByBrowsing {
+public class AddItemByBrowsing implements ActionListener{
     //variables need for Search Item By Browsing GUY
 	JFrame AddItemByBrowsing_frame;
-    JPanel Catalogue_panel,SearchByLetter_Panel,slider_panel;
+    JPanel Catalogue_panel,SearchByLetter_Panel,SliderPanel, PreviousPanel, NextPanel;
     JTextField tempCelsius;
-    JLabel Title, fahrenheitLabel,SliderLabel ;
-    JSlider Slider;
-    JButton Items;
+    JLabel Title, fahrenheitLabel;
+    JButton Items, Previous_Catalogue, Next_Catalogue;
     String[] letters = {"A", "B", "C", "D", "E", "F",
     	    "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
     	    "S", "T", "U", "V", "W", "X", "Y", "Z"};
@@ -33,16 +33,21 @@ public class AddItemByBrowsing {
     
     //constructor
     public AddItemByBrowsing() {
+    	
+    	//swing compounents needed for the GUI
     	AddItemByBrowsing_frame = new JFrame();
     	Catalogue_panel = new JPanel();
     	SearchByLetter_Panel = new JPanel();
+    	PreviousPanel = new JPanel();
+    	NextPanel = new JPanel();
+    	
     	Title = new JLabel();
     	Catalogue_panel.setLayout(new GridLayout(5,5, 2, 2)); 
     	SearchByLetter_Panel.setLayout(new GridLayout(0,26, 2, 2));
     	
-    	//frame set uo 
+    	//frame set up 
     	AddItemByBrowsing_frame.setTitle("Add Item By Browsing");
-    	AddItemByBrowsing_frame.setSize(1300,750);
+    	AddItemByBrowsing_frame.setSize(1500,750);
     	AddItemByBrowsing_frame.setLayout(null);
     	AddItemByBrowsing_frame.setDefaultCloseOperation(AddItemByBrowsing_frame.EXIT_ON_CLOSE);
     	
@@ -57,27 +62,24 @@ public class AddItemByBrowsing {
 		Title.setFont(new Font("Mv Boli",Font.PLAIN,20));
 		//Title.setVerticalAlignment(JLabel.TOP);
 		//Title.setHorizontalAlignment(JLabel.CENTER);
-		Title.setBounds(600, 25, 200, 50); //set x,y position within a frame as well as dimensions
+		Title.setBounds(650, 25, 200, 50); //set x,y position within a frame as well as dimensions
 		
 		
 		//butons set up for panel search by letter and catalogue panel 
 		SearchByLetter_Panel.setBackground(Color.WHITE);
-		SearchByLetter_Panel.setBounds(25,190,1250,100);
+		SearchByLetter_Panel.setBounds(75,190,1250,100);
 		
 		Catalogue_panel.setBackground(Color.WHITE);
-		Catalogue_panel.setBounds(50,300,1200,400);
+		Catalogue_panel.setBounds(100,300,1200,400);
 		
-		//Catalogue slider set up 
-		SliderLabel = new JLabel();
-		slider_panel = new JPanel();
-		Slider = new JSlider();
+		//Catalogue slider panel set up 
+		NextPanel.setBackground(Color.WHITE);
+		NextPanel.setBounds(1302,425, 75, 130);
+		NextPanel.setLayout(null);
 		
-		Slider.setPreferredSize(new Dimension(400,200));
-		
-		
-		
-		
-		
+		PreviousPanel.setBackground(Color.WHITE);
+		PreviousPanel.setBounds(22,425, 75, 130);
+		PreviousPanel.setLayout(null);
 		//current widgets to the GUI
 		AddAlphabet();
 		AddCatalogue();
@@ -88,9 +90,8 @@ public class AddItemByBrowsing {
 		AddItemByBrowsing_frame.add(Title);
 		AddItemByBrowsing_frame.add(SearchByLetter_Panel);	
 		AddItemByBrowsing_frame.add(Catalogue_panel);
-		AddItemByBrowsing_frame.add(Slider);
-		AddItemByBrowsing_frame.add(SliderLabel);
-		AddItemByBrowsing_frame.add(slider_panel);
+		AddItemByBrowsing_frame.add(NextPanel);
+		AddItemByBrowsing_frame.add(PreviousPanel);
 		AddItemByBrowsing_frame.setVisible(true);
 		
     }
@@ -127,14 +128,22 @@ public class AddItemByBrowsing {
     
     private void AddCatalogue() {
     	
-    	//Catalogue Slider 
+    	//Catalogue Next and Previous Buttons 
+    	Next_Catalogue = new JButton(">");
+    	Next_Catalogue.setBounds(0, 0, 75, 130);
     	
+    	Previous_Catalogue = new JButton("<");
+    	Previous_Catalogue.setBounds(0, 0, 75, 130);
     	
+    	NextPanel.add(Next_Catalogue);
+    	PreviousPanel.add(Previous_Catalogue);
+        	
     	//add the items
     	for(int j = 1; j < 26; j++) {
     		Items = new JButton("Item" + Integer.toString(j));
     		Catalogue_panel.add(Items);
     	}	
+    	
     }
     
   //signals to the customer to place item in the bagging area 
@@ -154,6 +163,12 @@ public class AddItemByBrowsing {
     	AddItemByBrowsing catalogue = new AddItemByBrowsing(); 
     	
     }
+
+@Override
+public void actionPerformed(ActionEvent e) {
+	// TODO Auto-generated method stub
+	
+}
     
     
     
