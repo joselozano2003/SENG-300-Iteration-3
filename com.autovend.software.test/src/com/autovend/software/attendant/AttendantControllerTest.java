@@ -38,20 +38,33 @@ import com.autovend.software.test.Setup;
 
 public class AttendantControllerTest {
 	private AttendantController controller;
+	private AttendantModel model;
+	private AttendantView view;
+	private ArrayList<CustomerStationLogic> customerStationList;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
-		AttendantModel model = new AttendantModel();
-		AttendantView view = new AttendantView();
-		ArrayList<CustomerStationLogic> customerStationList = new ArrayList<CustomerStationLogic>();
+		model = new AttendantModel();
+		view = new AttendantView();
+		customerStationList = new ArrayList<CustomerStationLogic>();
 		customerStationList.add(CustomerStationLogic.installOn(Setup.createSelfCheckoutStation()));
 		controller = new AttendantController(model, view, customerStationList);
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new AttendantController(null, null, null);
+	public void testContructionNullStation() {
+		new AttendantController(null, view, customerStationList);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructionNullView() {
+		new AttendantController(model, null, customerStationList);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructionNullList() {
+		new AttendantController(model, view, null);
 	}
 
 }

@@ -234,13 +234,7 @@ public class PaymentFacadeTest {
 		public void onPaymentAddedEvent(BigDecimal amount) {}
 
 		@Override
-		public void onPaymentReturnedEvent(BigDecimal amount) {}
-
-		@Override
 		public void onPaymentFailure() {}
-
-		@Override
-		public void onPaymentSuccessful(BigDecimal value) {}
 
 		@Override
 		public void onChangeDispensedEvent() {
@@ -248,12 +242,9 @@ public class PaymentFacadeTest {
 		}
 
 		@Override
-		public void onChangeDispensedFailure() {
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
 			changeDispensedFailCounter++;
 		}
-
-		@Override
-		public void onCardRemovedEvent() {}
 		
 	}
 	

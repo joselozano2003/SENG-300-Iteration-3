@@ -31,6 +31,7 @@ package com.autovend.software.customer;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 
@@ -42,12 +43,18 @@ public class CustomerControllerTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		controller = new CustomerController(station);
+		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
+		controller = new CustomerController(station, bagDispenser);
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new CustomerController(null);
+	public void testConstructionNullStation() {
+		new CustomerController(null, new ReusableBagDispenser(50));
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testConstructionNullBagDispenser() {
+		new CustomerController(station, null);
 	}
 
 }

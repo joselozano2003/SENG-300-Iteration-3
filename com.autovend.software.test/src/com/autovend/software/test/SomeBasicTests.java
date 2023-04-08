@@ -55,6 +55,7 @@ import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -132,8 +133,9 @@ public class SomeBasicTests {
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
-
-		customerSessionController = new CustomerController(selfCheckoutStation);
+		
+		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 

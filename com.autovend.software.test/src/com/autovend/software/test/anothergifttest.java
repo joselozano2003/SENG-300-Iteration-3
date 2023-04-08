@@ -51,6 +51,7 @@ import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -107,8 +108,9 @@ public class anothergifttest {
 		
 		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
 		GiftCardDatabase.addCard("12345678", giftCard);
-
-		customerSessionController = new CustomerController(selfCheckoutStation);
+		
+		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 

@@ -31,6 +31,7 @@ package com.autovend.software.bagging;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 
@@ -42,12 +43,18 @@ public class BaggingFacadeTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		baggingFacade = new BaggingFacade(station);
+		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
+		baggingFacade = new BaggingFacade(station, bagDispenser);
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new BaggingFacade(null);
+	public void testContructionNullStation() {
+		new BaggingFacade(null, new ReusableBagDispenser(10));
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructionNullBagDispenser() {
+		new BaggingFacade(null, new ReusableBagDispenser(10));
 	}
 
 }

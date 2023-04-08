@@ -40,23 +40,22 @@ import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class BaggingFacade extends AbstractFacade<BaggingEventListener> implements ElectronicScaleObserver,ReusableBagDispenserObserver  {
-
-
-	ReusableBagDispenser bagDispenser;
+	/**
+	 * The dispenser that is determined should be permanent.
+	 */
+	private final ReusableBagDispenser bagDispenser;
 	
 	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
 		super(station);
+		if (bagDispenser == null)
+			throw new NullPointerException();
+		this.bagDispenser = bagDispenser;
+		
 		try {
-
 			station.scale.register(this);
 			station.baggingArea.register(this);
-
 		//	station.bagDispenser.register(this);
-
-
 			bagDispenser.register(this);
-			this.bagDispenser = bagDispenser;
-
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
 				listener.reactToHardwareFailure();
