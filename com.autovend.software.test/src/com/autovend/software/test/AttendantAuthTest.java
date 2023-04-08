@@ -36,6 +36,19 @@ public class AttendantAuthTest {
 	}
 
 	@Test
+	public void AttendantEqualTest() {
+		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
+		assertTrue(demoAttendant.equals(demoAttendant));
+		assertFalse(demoAttendant.equals(new String("demoAttendant")));
+	}
+
+	@Test
+	public void AttendantPrintTest() {
+		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
+		assertTrue(demoAttendant.toString().equals(new String("attendant userName: " + demoAttendant.getUserName())));
+	}
+
+	@Test
 	public void NullUsernameTest() {
 		AttendantAccount testAttendantAccount = null;
 		try {

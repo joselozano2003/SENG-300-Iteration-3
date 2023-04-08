@@ -1,8 +1,5 @@
 package auth;
 
-import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.observers.AbstractDeviceObserver;
-
 public class AuthFacade implements AuthEvenListener {
 	public AuthFacade() {
 		// TODO Auto-generated constructor stub
@@ -42,36 +39,6 @@ public class AuthFacade implements AuthEvenListener {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public void reactToHardwareFailure() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToDisableStationRequest() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reactToEnableStationRequest() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
