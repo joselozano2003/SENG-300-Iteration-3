@@ -60,5 +60,17 @@ public class ByTextSearch extends ItemFacade {
 		
 		return productsToShow;
 	}
+	
+	/**
+	 * Method is called when the customer gui detects an attendant selecting a product from text search to be added to a customer's session.
+	 * 
+	 * @param product: product the attendant selected from text search
+	 */
+	public void productFromTextSearchSelected(Product product) {
+		if(product != null) {
+        	for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(product, 1);;
+		}
+	}
 
 }
