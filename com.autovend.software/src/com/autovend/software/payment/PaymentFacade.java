@@ -45,16 +45,15 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	private static PaymentFacade instance;
 	private List<PaymentFacade> children;
 	private static BigDecimal amountDue;
-    private SelfCheckoutStation selfCheckoutStation; 
 	
     public PaymentFacade(SelfCheckoutStation station, boolean isChild) {
         super(station);
-        this.selfCheckoutStation = station;
+        //this.selfCheckoutStation = station;
         if (!isChild) {
             children = new ArrayList<PaymentFacade>();
-            children.add(new PayWithCoin(selfCheckoutStation));
-            children.add(new PayWithBill(selfCheckoutStation));
-            children.add(new PayWithCard(selfCheckoutStation));
+            children.add(new PayWithCoin(station));
+            children.add(new PayWithBill(station));
+            children.add(new PayWithCard(station));
             amountDue = BigDecimal.ZERO;
         }
     }
@@ -98,9 +97,9 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 		}
 
 		// Dispense bills
-		for (int i = selfCheckoutStation.billDenominations.length - 1; i >= 0; i--) {
-			int billDenomination = selfCheckoutStation.billDenominations[i];
-			BillDispenser billDispenser = selfCheckoutStation.billDispensers.get(billDenomination);
+		for (int i = station.billDenominations.length - 1; i >= 0; i--) {
+			int billDenomination = station.billDenominations[i];
+			BillDispenser billDispenser = station.billDispensers.get(billDenomination);
 			BigDecimal billValue = BigDecimal.valueOf(billDenomination);
 			while (changeDue.compareTo(billValue) >= 0 && billDispenser.size() > 0) {
 				try {
@@ -115,9 +114,9 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 		}
 
 		// Dispense coins
-		for (int i = selfCheckoutStation.coinDenominations.size() - 1; i >= 0; i--) {
-			BigDecimal coinDenomination = selfCheckoutStation.coinDenominations.get(i);
-			CoinDispenser coinDispenser = selfCheckoutStation.coinDispensers.get(coinDenomination);
+		for (int i = station.coinDenominations.size() - 1; i >= 0; i--) {
+			BigDecimal coinDenomination = station.coinDenominations.get(i);
+			CoinDispenser coinDispenser = station.coinDispensers.get(coinDenomination);
 
 			while (changeDue.compareTo(coinDenomination) >= 0 && coinDispenser.size() > 0) {
 
@@ -134,8 +133,8 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 
 		// Edge case for if the change due is less than the smallest coin denomination
 		if (changeDue.compareTo(BigDecimal.ZERO) > 0) {
-			BigDecimal smallestCoinDenomination = selfCheckoutStation.coinDenominations.get(0);
-			CoinDispenser smallestCoinDispenser = selfCheckoutStation.coinDispensers.get(smallestCoinDenomination);
+			BigDecimal smallestCoinDenomination = station.coinDenominations.get(0);
+			CoinDispenser smallestCoinDispenser = station.coinDispensers.get(smallestCoinDenomination);
 			try {
 				smallestCoinDispenser.emit();
 			} catch (DisabledException | OverloadException | EmptyException e) {

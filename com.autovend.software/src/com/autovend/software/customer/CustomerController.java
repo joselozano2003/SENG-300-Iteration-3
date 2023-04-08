@@ -113,6 +113,7 @@ public class CustomerController
 		}
 	}
 
+
 	public void startNewSession() {
 		currentSession = new CustomerSession();
 	}
@@ -122,13 +123,8 @@ public class CustomerController
 
 	public void startPaying() {
 		BigDecimal amountDue = currentSession.getAmountLeft();
-		System.out.println(amountDue);
 		paymentFacade.addAmountDue(amountDue);
 
-	}
-
-	public ItemFacade getItemFacade() {
-		return itemFacade;
 	}
 
 	@Override
@@ -157,6 +153,8 @@ public class CustomerController
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
 		currentSession.addItemToCart(product, quantity);
+		//currensSession.getCurrentCart(); gets the updated cart
+		//view.setItemsList(currentCart);
 		setState(State.CHECKING_WEIGHT);
 
 	}
