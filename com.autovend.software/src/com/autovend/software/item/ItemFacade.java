@@ -36,18 +36,17 @@ import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class ItemFacade extends AbstractFacade<ItemEventListener>{
+public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-    private SelfCheckoutStation selfCheckoutStation; 
+	private SelfCheckoutStation selfCheckoutStation;
 
-	
-    public ItemFacade(SelfCheckoutStation station, boolean isChild) {
+	public ItemFacade(SelfCheckoutStation station, boolean isChild) {
 		super(station);
 		this.selfCheckoutStation = station;
-		//Initialize this instance and children once.
-		
+		// Initialize this instance and children once.
+
 		if (!isChild) {
 			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
@@ -61,28 +60,32 @@ public class ItemFacade extends AbstractFacade<ItemEventListener>{
 	protected void addProduct(Product product) {
 		if (product != null)
 			itemList.add(product);
-    }
-	
-	public void removeProduct(Product product) {
-		itemList.remove(product);
 	}
-	
+
+	public boolean removeProduct(Product product) {
+		if (product != null) {
+			itemList.remove(product);
+			return true;
+		}
+		return false;
+	}
+
 	public List<Product> getItemList() {
 		return itemList;
 	}
-	
+
 	/**
 	 * @return List of active subclasses.
 	 */
 	public List<ItemFacade> getChildren() {
 		return children;
 	}
-	
+
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
 	public static ItemFacade getInstance() {
 		return instance;
 	}
-	
+
 }
