@@ -11,7 +11,6 @@ public class AttendantAccount {
 			setUserName(userName);
 			setPassword(password);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

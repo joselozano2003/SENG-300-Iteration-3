@@ -1,6 +1,7 @@
 package com.autovend.software.test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -32,6 +33,26 @@ public class AttendantAuthTest {
 
 	@After
 	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void NullUsernameTest() {
+		AttendantAccount testAttendantAccount = null;
+		try {
+			testAttendantAccount = new AttendantAccount(null, "123456");
+		} catch (Exception e) {
+			assertNull(testAttendantAccount);
+		}
+	}
+
+	@Test
+	public void NullPasswordTest() {
+		AttendantAccount testAttendantAccount = null;
+		try {
+			testAttendantAccount = new AttendantAccount("user", null);
+		} catch (Exception e) {
+			assertNull(testAttendantAccount);
+		}
 	}
 
 	@Test
