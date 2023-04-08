@@ -28,15 +28,41 @@
  */
 package com.autovend.software.membership;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.MembershipCard;
+import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.test.Setup;
 
 public class MembershipFacadeTest {
+	class ListenerStub implements MembershipListener {
+		@Override
+		public void reactToHardwareFailure() {fail();}
+		@Override
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToDisableStationRequest() {fail();}
+		@Override
+		public void reactToEnableStationRequest() {fail();}
+		@Override
+		public void reactToValidMembershipEntered(String number) {fail();}
+		@Override
+		public void reactToInvalidMembershipEntered() {fail();}
+	}
+	
 	private SelfCheckoutStation station;
 	private MembershipFacade membershipFacade;
+	private int found;
 	
 	@Before
 	public void setup() {
@@ -48,6 +74,26 @@ public class MembershipFacadeTest {
 	@Test (expected = NullPointerException.class)
 	public void testNullContruction() {
 		new MembershipFacade(null);
+	}
+	
+	/**
+	 * Pre: Valid Membership card data is read.
+	 * Expected: reactToValidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventValidMembershipEntered() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToValidMembershipEntered(String number) {
+				found++;
+			}
+		});
+		//TODO: Add card to some database.
+		MembershipCard card = new MembershipCard("type", "1234", "cardHolder", true);
+		//NOTE: Might fail from random swipe failure. Should test in another way to avoid this.
+		station.cardReader.swipe(card, null);
+		
+		assertEquals(1, found);
 	}
 
 }
