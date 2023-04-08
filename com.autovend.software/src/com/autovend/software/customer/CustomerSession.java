@@ -49,6 +49,7 @@ public class CustomerSession {
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
+		bagsPurchased = 0;
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
@@ -80,8 +81,13 @@ public class CustomerSession {
 	    
 	}
 	
+	/**
+	 * Updates customer session info after customer chooses to purchase reusable bags
+	 * 
+	 * @param numberOfBags: number of bags customer chose to purchase
+	 */
 	public void addBagsPurchasedToCustomerSession(int numberOfBags) {
-		bagsPurchased += numberOfBags;
+		bagsPurchased += numberOfBags; 
 		
 		ReusableBag reusableBag = new ReusableBag();
 		for (int i = 1; i <= numberOfBags; i++) {
