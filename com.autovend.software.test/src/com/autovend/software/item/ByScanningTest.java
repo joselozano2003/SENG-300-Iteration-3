@@ -28,6 +28,27 @@
  */
 package com.autovend.software.item;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.test.Setup;
+
 public class ByScanningTest {
+	private SelfCheckoutStation station;
+	private ByScanning byScanning;
+	
+	@Before
+	public void setup() {
+		
+		//Setup the class to test
+		station = Setup.createSelfCheckoutStation();
+		byScanning = new ByScanning(station);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testNullContruction() {
+		new ByScanning(null);
+	}
 
 }

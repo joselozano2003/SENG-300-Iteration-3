@@ -28,6 +28,30 @@
  */
 package com.autovend.software.attendant;
 
+import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.test.Setup;
+
 public class AttendantControllerTest {
+	private AttendantController controller;
+	
+	@Before
+	public void setup() {
+		//Setup the class to test
+		AttendantModel model = new AttendantModel();
+		AttendantView view = new AttendantView();
+		ArrayList<CustomerStationLogic> customerStationList = new ArrayList<CustomerStationLogic>();
+		customerStationList.add(CustomerStationLogic.installOn(Setup.createSelfCheckoutStation()));
+		controller = new AttendantController(model, view, customerStationList);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testNullContruction() {
+		new AttendantController(null, null, null);
+	}
 
 }

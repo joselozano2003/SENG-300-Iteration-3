@@ -28,8 +28,26 @@
  */
 package com.autovend.software.payment;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.test.Setup;
+
 public class PayWithCoinTest {
+	private SelfCheckoutStation station;
+	private PayWithCoin payWithCoin;
 	
+	@Before
+	public void setup() {
+		//Setup the class to test
+		station = Setup.createSelfCheckoutStation();
+		payWithCoin = new PayWithCoin(station);
+	}
 	
+	@Test (expected = NullPointerException.class)
+	public void testNullContruction() {
+		new PayWithCoin(null);
+	}
 
 }

@@ -28,6 +28,25 @@
  */
 package com.autovend.software.receipt;
 
-public class ReceiptFacadeTest {
+import org.junit.Before;
+import org.junit.Test;
 
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.test.Setup;
+
+public class ReceiptFacadeTest {
+	private SelfCheckoutStation station;
+	private ReceiptFacade receiptFacade;
+	
+	@Before
+	public void setup() {
+		//Setup the class to test
+		station = Setup.createSelfCheckoutStation();
+		receiptFacade = new ReceiptFacade(station);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testNullContruction() {
+		new ReceiptFacade(null);
+	}
 }

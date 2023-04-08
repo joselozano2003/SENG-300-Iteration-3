@@ -35,68 +35,31 @@ import org.junit.Test;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
-import java.lang.reflect.Executable;
 import java.math.BigDecimal;
-import java.security.cert.CertificateParsingException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Currency;
-import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
-import com.autovend.Barcode;
 import com.autovend.Bill;
 import com.autovend.Coin;
-import com.autovend.CreditCard;
-import com.autovend.Numeral;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.OverloadException;
-import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BillDispenserObserver;
 import com.autovend.devices.observers.CoinDispenserObserver;
-import com.autovend.external.CardIssuer;
-import com.autovend.external.ProductDatabases;
-import com.autovend.products.BarcodedProduct;
-import com.autovend.products.PLUCodedProduct;
-import com.autovend.software.BankIO;
-import com.autovend.software.attendant.AttendantController;
-import com.autovend.software.attendant.AttendantModel;
-import com.autovend.software.attendant.AttendantView;
-import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerSession;
-import com.autovend.software.customer.CustomerStationLogic;
-
 /**
  * Automated JUnit4 test suite for the 
  * PaymentFacade.java class.
  *
  */
 public class PaymentFacadeTest {
-	public CustomerController customerSessionController;
-	public CustomerSession currentSession;
-
-	public AttendantModel model;
-	public AttendantView view;
-	public List<CustomerStationLogic> customerStations;
-	public AttendantController attendantController;
-
-	public int[] billDenominations;
-	public BigDecimal[] coinDenominations;
-	public Currency currency;
-	public int scaleMaximumWeight;
-	public int scaleSensitivity;
-
-	public BarcodedProduct barcodeProduct;
-	public PLUCodedProduct pluProduct;
-	public CardIssuer credit;
-	public CreditCard creditCard;
+    
+	private int[] billDenominations;
+	private BigDecimal[] coinDenominations;
+	private Currency currency;
 	
 	PaymentFacade paymentFacade;
 	PaymentFacade childFacade;
@@ -110,20 +73,8 @@ public class PaymentFacadeTest {
 
 	@Before
 	public void setup() throws Exception {
-//		station = Setup.createSelfCheckoutStation();
-//		paymentFacade = new PaymentFacade(station, false);
-
-		// Variables for SelfCheckoutStation constructor
-				billDenominations = new int[] { 5, 10, 20, 50, 100 };
-				coinDenominations = new BigDecimal[] { BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.10),
-						BigDecimal.valueOf(0.25), BigDecimal.valueOf(1), BigDecimal.valueOf(2) };
-				currency = Currency.getInstance("CAD");
-
-				scaleMaximumWeight = 20;
-				scaleSensitivity = 1;
-
-				selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
-						scaleMaximumWeight, scaleSensitivity);
+		selfCheckoutStation = Setup.createSelfCheckoutStation();
+		paymentFacade = new PaymentFacade(selfCheckoutStation, false);
 		
 		// Add 100 bills to each dispenser
 		for (int i = 0; i < billDenominations.length; i++) {

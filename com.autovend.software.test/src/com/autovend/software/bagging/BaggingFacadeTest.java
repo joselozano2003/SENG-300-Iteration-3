@@ -26,7 +26,7 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.customer;
+package com.autovend.software.bagging;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,20 +34,20 @@ import org.junit.Test;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 
-public class CustomerControllerTest {
+public class BaggingFacadeTest {
 	private SelfCheckoutStation station;
-	private CustomerController controller;
+	private BaggingFacade baggingFacade;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		controller = new CustomerController(station);
+		baggingFacade = new BaggingFacade(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testNullContruction() {
-		new CustomerController(null);
+		new BaggingFacade(null);
 	}
 
 }
