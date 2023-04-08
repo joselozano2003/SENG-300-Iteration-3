@@ -27,7 +27,7 @@ public class StartScreen extends JPanel{
         goToMainScreen.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                StartScreen.this.session.loadMainGUI();
+                //StartScreen.this.session.loadMainGUI(); will connect to mainScreen
             }
         });
 

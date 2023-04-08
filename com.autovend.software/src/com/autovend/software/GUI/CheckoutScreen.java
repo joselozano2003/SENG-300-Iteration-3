@@ -249,7 +249,9 @@ public class CheckoutScreen extends JPanel{
 
                 }
 
-                if(GiftCardDatabase.getGiftCard(String num) == giftCardNumber) {
+                if (GiftCardDatabase.getGiftCard(String num) != giftCardNumber) {
+                    JOptionPane.showMessageDialog(new JPanel(), "Card Data not found!", "Error!", JOptionPane.ERROR_MESSAGE);
+                } else {
                     CardIssuer card = BankIO.CARD_ISSUER_DATABASE.get(giftCardNumber);
                     Object[] optionToPay = {"Insert", "Swipe"};
                     int cardPayType = JOptionPane.showOptionDialog(
@@ -283,11 +285,9 @@ public class CheckoutScreen extends JPanel{
                 } else {
                     JOptionPane.showMessageDialog(new JPanel(), "Payment Failed!", "Error!", JOptionPane.ERROR_MESSAGE);
                 }
-            }else {
-                JOptionPane.showMessageDialog(new JPanel(), "Card Data not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             }
 
-            update();
+                update();
 
 
             }});
