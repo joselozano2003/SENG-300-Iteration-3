@@ -46,7 +46,7 @@ import com.autovend.software.BankIO;
 public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithGiftCard(SelfCheckoutStation station) {
-		super(station, false);
+		super(station, true);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
@@ -54,8 +54,6 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 				listener.reactToHardwareFailure();
 		}
 	}
-		
-	
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
@@ -71,37 +69,37 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-		BigDecimal value = getAmountDue();
-
-		if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
-			for (PaymentEventListener listener : listeners) {
-				listener.onPaymentFailure();
-		}
-			return;
-		}
-		
-		data = (GiftCard.GiftCardInsertData) data;
-		
-		System.out.println(value.toString());
-
-		try {
-			if (((GiftCardInsertData) data).deduct(value)) {
+		if (data instanceof GiftCard.GiftCardInsertData) {
+			BigDecimal value = getAmountDue();
+	
+			if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
 				for (PaymentEventListener listener : listeners) {
-					listener.onPaymentSuccessful(value);
+					listener.onPaymentFailure();
+			}
+				return;
+			}
+			
+			data = (GiftCard.GiftCardInsertData) data;
+				
+			try {
+				if (((GiftCardInsertData) data).deduct(value)) {
+					subtractAmountDue(value);
+					reader.remove();
+					for (PaymentEventListener listener : listeners) {
+						listener.onPaymentAddedEvent(value);
+						listener.onCardRemovedEvent();
+					}
+				} else {
+					for (PaymentEventListener listener : listeners) {
+						listener.onPaymentFailure();
+					}
 				}
-				System.out.println("Payment successful");
-				subtractAmountDue(value);
-			} else {
+			} catch (ChipFailureException e) {
 				for (PaymentEventListener listener : listeners) {
 					listener.onPaymentFailure();
 				}
-				System.out.println("Payment unsuccessful");
 			}
-		} catch (ChipFailureException e) {
-			// TODO Auto-generated catch block
-			//maybe call attendant for maintenance
-			e.printStackTrace();
+			
 		}
-		
 	}
 }
