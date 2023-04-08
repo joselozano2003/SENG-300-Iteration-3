@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
+import com.autovend.software.ProductsDatabase2;
 
 public class ByTextSearch extends ItemFacade {
 
