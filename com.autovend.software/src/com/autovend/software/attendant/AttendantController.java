@@ -30,7 +30,9 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.products.Product;
 import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
@@ -69,5 +71,9 @@ public class AttendantController {
 
 	public boolean startDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removeAccount) {
 		return auth.deleteAccount(attendantAccount, removeAccount);
+	}
+
+	public boolean startRemoveItem(ItemFacade item, Product product) {
+		return item.removeProduct(product);
 	}
 }

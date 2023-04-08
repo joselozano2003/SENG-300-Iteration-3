@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
 
@@ -62,10 +64,49 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 			itemList.add(product);
 	}
 
-	public boolean removeProduct(Product product) {
-		if (product != null) {
-			itemList.remove(product);
-			return true;
+	public boolean removeProduct(Product removedProduct) {
+		if (removedProduct != null) {
+			if (removedProduct instanceof BarcodedProduct) {
+				for (Product product : itemList) {
+					if (product instanceof BarcodedProduct) {
+						if (((BarcodedProduct) product).getBarcode()
+								.equals(((BarcodedProduct) removedProduct).getBarcode())
+								&& ((BarcodedProduct) product).getDescription()
+										.equals(((BarcodedProduct) removedProduct).getDescription())
+								&& ((BarcodedProduct) product)
+										.getExpectedWeight() == (((BarcodedProduct) removedProduct).getExpectedWeight())
+								&& ((BarcodedProduct) product).getPrice()
+										.equals(((BarcodedProduct) removedProduct).getPrice())) {
+							itemList.remove(product);
+							return true;
+						}
+					}
+				}
+			} else if (removedProduct instanceof PLUCodedProduct) {
+				for (Product product : itemList) {
+					if (product instanceof PLUCodedProduct) {
+						if (((PLUCodedProduct) product).getPLUCode()
+								.equals(((PLUCodedProduct) removedProduct).getPLUCode())
+								&& ((PLUCodedProduct) product).getDescription()
+										.equals(((PLUCodedProduct) removedProduct).getDescription())
+								&& ((PLUCodedProduct) product).getPrice()
+										.equals(((PLUCodedProduct) removedProduct).getPrice())) {
+							itemList.remove(product);
+							return true;
+						}
+					}
+				}
+			} else {
+				for (Product product : itemList) {
+					if (!(product instanceof PLUCodedProduct) && !(product instanceof BarcodedProduct)) {
+						if (product.getPrice().equals(removedProduct.getPrice())) {
+							itemList.remove(product);
+							return true;
+						}
+					}
+				}
+			}
+
 		}
 		return false;
 	}
