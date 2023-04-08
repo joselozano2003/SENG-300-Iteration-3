@@ -29,12 +29,25 @@
 package com.autovend.software.item;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.Product;
 
 @SuppressWarnings("serial")
 public class ByBrowsing extends ItemFacade  {
 
 	protected ByBrowsing(SelfCheckoutStation station) {
 		super(station, true);
+	}
+	
+	/**
+	 * Method is called when the customer gui detects a customer selecting an item from the visual catalogue
+	 * 
+	 * @param product: product the customer selected from the visual catalogue 
+	 */
+	public void productFromVisualCatalogueSelected(Product product) {
+		if(product != null) {
+        	for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(product, 1);;
+		}
 	}
 	
 	

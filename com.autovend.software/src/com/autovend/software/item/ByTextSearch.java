@@ -28,12 +28,37 @@
  */
 package com.autovend.software.item;
 
+import java.util.ArrayList;
+
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.Product;
+import com.autovend.software.item.TextSearchVisualCatalogueDatabase;
 
 public class ByTextSearch extends ItemFacade {
 
 	public ByTextSearch(SelfCheckoutStation station) {
 		super(station, true);
+	}
+	
+	/**
+	 * Method that takes in a string of what the attendant typed in as input for the search, and finds products that match the input keywords.
+	 * 
+	 * @param attendantInputString: string that the attendant types in, and searches for any products that match the input. 
+	 * @return: an arraylist of products that are a match, which the attendant station displays as the search result 
+	 */
+	public ArrayList getProductsCorrespondingToTextSearch(String attendantInputString) {
+		ArrayList<Product> productsToShow = new ArrayList<Product>();
+		String[] InputStringWords = attendantInputString.split(" ");
+		
+		for(String keywords: TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.keySet()) {
+			for(String eachWord: InputStringWords) {
+				if(keywords.contains(eachWord) && !productsToShow.contains(TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.get(keywords))){
+					productsToShow.add(TextSearchVisualCatalogueDatabase.Products_Textsearch_Keywords_Database.get(keywords));
+				}
+			}
+		}
+		
+		return productsToShow;
 	}
 
 }
