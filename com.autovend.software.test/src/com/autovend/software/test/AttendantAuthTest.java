@@ -18,7 +18,7 @@ import com.autovend.software.customer.CustomerStationLogic;
 import auth.AttendantAccount;
 import auth.AttendantAccountDatabases;
 
-public class AttendantLoginLogoutTest {
+public class AttendantAuthTest {
 
 	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
 	private AttendantModel model = new AttendantModel();
