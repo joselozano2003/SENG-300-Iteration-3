@@ -30,9 +30,11 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
-import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
@@ -73,7 +75,41 @@ public class AttendantController {
 		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 
-	public boolean startRemoveItem(ItemFacade item, Product product) {
-		return item.removeProduct(product);
+	public boolean startRemoveItem(CustomerSession customerSession, Product removedProduct) {
+		if (removedProduct != null) {
+			if (removedProduct instanceof BarcodedProduct) {
+				for (Object product : customerSession.getShoppingCart().keySet()) {
+					if (product instanceof BarcodedProduct) {
+						if (((BarcodedProduct) product).getBarcode()
+								.equals(((BarcodedProduct) removedProduct).getBarcode())
+								&& ((BarcodedProduct) product).getDescription()
+										.equals(((BarcodedProduct) removedProduct).getDescription())
+								&& ((BarcodedProduct) product)
+										.getExpectedWeight() == (((BarcodedProduct) removedProduct).getExpectedWeight())
+								&& ((BarcodedProduct) product).getPrice()
+										.equals(((BarcodedProduct) removedProduct).getPrice())) {
+							customerSession.removeItemFromShoppingCart(removedProduct);
+							return true;
+						}
+					}
+				}
+			} else if (removedProduct instanceof PLUCodedProduct) {
+				for (Object product : customerSession.getShoppingCart().keySet()) {
+					if (product instanceof PLUCodedProduct) {
+						if (((PLUCodedProduct) product).getPLUCode()
+								.equals(((PLUCodedProduct) removedProduct).getPLUCode())
+								&& ((PLUCodedProduct) product).getDescription()
+										.equals(((PLUCodedProduct) removedProduct).getDescription())
+								&& ((PLUCodedProduct) product).getPrice()
+										.equals(((PLUCodedProduct) removedProduct).getPrice())) {
+							customerSession.removeItemFromShoppingCart(removedProduct);
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
+
 }

@@ -28,14 +28,13 @@
  */
 package com.autovend.software.customer;
 
-import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.products.BarcodedProduct;
-import com.autovend.products.PLUCodedProduct;
-import com.autovend.products.Product;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
+import com.autovend.products.Product;
 
 public class CustomerSession {
 	private Map<Product, Double> shoppingCart;
@@ -54,27 +53,27 @@ public class CustomerSession {
 
 	public void addItemToCart(Product product, double quantityToAdd) {
 
-	    // Checks if item has been previously added to cart
-	    if (shoppingCart.containsKey(product)) {
-	        double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
-	        shoppingCart.put(product, updatedQuantity);
-	    } else {
-	        shoppingCart.put(product, quantityToAdd);
-	    }
+		// Checks if item has been previously added to cart
+		if (shoppingCart.containsKey(product)) {
+			double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
+			shoppingCart.put(product, updatedQuantity);
+		} else {
+			shoppingCart.put(product, quantityToAdd);
+		}
 
-	    // Checks if product is barcoded
-	    if (product instanceof BarcodedProduct) {
-	        BarcodedProduct barcodedProduct = (BarcodedProduct) product;
-	        expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
-	        totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    // Checks if product is PLU coded
-	    else if (product instanceof PLUCodedProduct) {
-	        PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
-	        expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
-	        totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-	    }
-	    
+		// Checks if product is barcoded
+		if (product instanceof BarcodedProduct) {
+			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
+			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
+			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+		// Checks if product is PLU coded
+		else if (product instanceof PLUCodedProduct) {
+			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
+			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
+			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+		}
+
 	}
 
 	public void addPayment(BigDecimal amount) {
@@ -84,12 +83,17 @@ public class CustomerSession {
 	public void setPrintStatus(boolean status) {
 		receiptPrinted = status;
 	}
+
 	public boolean isReceiptPrinted() {
 		return receiptPrinted;
 	}
 
 	public Map getShoppingCart() {
 		return shoppingCart;
+	}
+
+	public void removeItemFromShoppingCart(Object removedProduct) {
+		shoppingCart.remove(removedProduct);
 	}
 
 	public double getExpectedWeight() {

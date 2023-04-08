@@ -32,7 +32,6 @@ import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.products.Product;
 import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
@@ -193,19 +192,17 @@ public class SomeBasicTests {
 		PriceLookUpCode PLUCode = new PriceLookUpCode(Numeral.one, Numeral.two, Numeral.three, Numeral.four);
 		PLUCodedProduct product2 = new PLUCodedProduct(PLUCode, "plu", new BigDecimal("20"));
 
-		customerSessionController.getItemFacade().addProduct(product1);
-		Product addedPrdocut1 = customerSessionController.getItemFacade().getItemList().get(0);
-		assertFalse(addedPrdocut1 == null);
-		assertFalse(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product2));
-		assertTrue(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product1));
-		assertEquals(0, customerSessionController.getItemFacade().getItemList().size());
+		currentSession.addItemToCart(product1, 1.0);
+		assertEquals(1, currentSession.getShoppingCart().size());
+		assertFalse(attendantController.startRemoveItem(currentSession, product2));
+		assertTrue(attendantController.startRemoveItem(currentSession, product1));
+		assertEquals(0, currentSession.getShoppingCart().size());
 
-		customerSessionController.getItemFacade().addProduct(product2);
-		Product addedPrdocut2 = customerSessionController.getItemFacade().getItemList().get(0);
-		assertFalse(addedPrdocut2 == null);
-		assertFalse(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product1));
-		assertTrue(attendantController.startRemoveItem(customerSessionController.getItemFacade(), product2));
-		assertEquals(0, customerSessionController.getItemFacade().getItemList().size());
+		currentSession.addItemToCart(product2, 1.0);
+		assertEquals(1, currentSession.getShoppingCart().size());
+		assertFalse(attendantController.startRemoveItem(currentSession, product1));
+		assertTrue(attendantController.startRemoveItem(currentSession, product2));
+		assertEquals(0, currentSession.getShoppingCart().size());
 	}
 
 	@Test
