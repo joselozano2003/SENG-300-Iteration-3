@@ -8,13 +8,17 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 
-public class CheckoutScreen {
+public class CheckoutScreen extends JPanel{
 
     private  TextArea receipt;
+    private  JTextArea infoText;
+    private JButton returnAddItems;
+    private JButton doneButton;
     JPanel jPanel = new JPanel();
     CustomerSession session = new CustomerSession();
-
+    private BigDecimal amountEntered;
     public CheckoutScreen(){
 
 
@@ -48,7 +52,7 @@ public class CheckoutScreen {
         infoText.setBackground(new Color(15, 17, 26));
         jPanel.add(infoText);
 
-//        updatePanel();
+        update();
 
         JButton doneButton = new JButton("Done");
         doneButton.addMouseListener(new MouseAdapter() {
@@ -88,6 +92,13 @@ public class CheckoutScreen {
         creditCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                String creditCardNumber = JOptionPane.showInputDialog("Please enter your Credit Card Number: ", "");
+                if(creditCardNumber.equals("")){
+                    JOptionPane.showMessageDialog(new JPanel(), "Invalid Inputs!",
+                            "Please Try Again!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 //
 
             }});
@@ -176,7 +187,33 @@ public class CheckoutScreen {
 
 
 
+    }
+    private void update(){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                infoText.setText("" + getInfoText());
+                boolean paid = false;
+                if(amountEntered.compareTo(session.getTotalCost()) >= 0){
+                    paid = true;
+                    try {
+                    // generate receipt from the session
+                    }catch (Exception error){
+                        JOptionPane.showMessageDialog(new JPanel(),"Failed to generate receipt!", "Error!", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                if(paid){
+                    returnAddItems.setVisible(false);
+                    doneButton.setVisible(true);
+                }
+
+            }
+        });
+    }
 
 
+    private String getInfoText(){
+        return "\n Total: " + session.getTotalCost() + "\n Entered: " + amountEntered.doubleValue() + "\n Changes Due: " + amountEntered.subtract(session.getTotalCost());
     }
-    }
+
+}

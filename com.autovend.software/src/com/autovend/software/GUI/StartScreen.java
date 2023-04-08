@@ -8,11 +8,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class StartScreen {
+public class StartScreen extends JPanel{
     JPanel jPanel = new JPanel();
     CustomerSession session = new CustomerSession();
 
-    public StartScreen(){
+    public StartScreen(CustomerSession session) {
 
     	
    	 jPanel.setForeground(new Color(65, 73, 96));
@@ -27,7 +27,7 @@ public class StartScreen {
         goToMainScreen.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                session.loadMainGUI();
+                StartScreen.this.session.loadMainGUI();
             }
         });
 

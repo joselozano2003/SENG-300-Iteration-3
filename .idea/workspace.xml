@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2b51f176-a2ee-4143-bae3-20c0d2faaac6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/SENG-300-Iteration-3.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SENG-300-Iteration-3.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/CheckoutScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/CheckoutScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/Controller.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/StartScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/StartScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/customer/CustomerSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/customer/CustomerSession.java" afterDir="false" />
     </list>

@@ -59,6 +59,7 @@ public class CustomerSession {
 	private ArrayList<SellableUnit> pluCodedProductInBaggingArea;
 	private ArrayList<SellableUnit> personalBags;
 	private String receipt;
+	BigDecimal amountLeft;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
@@ -75,6 +76,7 @@ public class CustomerSession {
 		barcodedProductInBaggingArea = new ArrayList<SellableUnit>();
 		pluCodedProductInBaggingArea = new ArrayList<SellableUnit>();
 		personalBags = new ArrayList<SellableUnit>();
+		BigDecimal amountLeft = getAmountLeft();
 
 
 
@@ -153,10 +155,13 @@ public class CustomerSession {
 			station.baggingArea.remove(i);
 		}
 		personalBags.clear();
-
 		totalCost = new BigDecimal("0");
 		receipt = null;
-		
+		totalPaid = new BigDecimal("0");
+		amountLeft = new BigDecimal("0");
+
+
+
 
 
 	}
@@ -170,7 +175,7 @@ public class CustomerSession {
 		station.screen.setVisible(false);
 		jFrame.getContentPane().removeAll();
 		jFrame.setLayout(new BorderLayout());
-		StartScreen startScreen = new StartScreen();
+		StartScreen startScreen = new StartScreen(this);
 		JPanel newPanel = new JPanel(new GridBagLayout());
 		newPanel.setBackground(new Color(65,73,96));
 		newPanel.add(startScreen);
@@ -180,7 +185,6 @@ public class CustomerSession {
 		station.screen.setVisible(true);
 		resetCart();
 		addingItems = false;
-
 
 	}
 
