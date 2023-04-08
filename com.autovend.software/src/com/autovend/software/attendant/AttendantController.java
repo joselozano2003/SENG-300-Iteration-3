@@ -76,4 +76,19 @@ public class AttendantController {
 	public boolean startRemoveItem(ItemFacade item, Product product) {
 		return item.removeProduct(product);
 	}
+	
+	// Called when weight discrepancy is detected. Notifies attendant, who can resolve.
+	public void alertWeightDiscrepancy(int stationNumber, double discrepancy) {
+		view.notifyWeightDiscrepancy(stationNumber, discrepancy);
+	}
+	
+	// Called if weight discrepancy is resolved by customer adding/removing items. Updates GUI.
+	public void alertWeightDiscrepancyResolved(int stationNumber) {
+		view.weightDiscrepancyResolved(stationNumber);
+	}
+	
+	// Called to prompt attendant to approve bags.
+	public void alertBagApproval(int stationNumber) {
+		view.notifyBagApproval(stationNumber);
+	}
 }
