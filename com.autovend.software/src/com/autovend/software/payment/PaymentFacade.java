@@ -54,7 +54,7 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
             children = new ArrayList<PaymentFacade>();
             children.add(new PayWithCoin(selfCheckoutStation));
             children.add(new PayWithBill(selfCheckoutStation));
-//            children.add(new PayWithCard(selfCheckoutStation));
+            children.add(new PayWithCard(selfCheckoutStation));
             amountDue = BigDecimal.ZERO;
         }
     }

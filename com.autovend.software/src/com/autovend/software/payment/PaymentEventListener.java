@@ -52,5 +52,7 @@ public interface PaymentEventListener extends AbstractEventListener {
 	
 	public void onChangeDispensedFailure();
 	
+	public void onCardRemovedEvent();
+	
 	
 }
