@@ -37,6 +37,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
+import com.autovend.external.ProductDatabases;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
@@ -69,14 +70,17 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		 * MembershipDataBase, if it does it sets membershipEntered = true, otherwise false
 		 */
 		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+
 			if (MemberShipDatabase.userExists(barcode.toString()) == true) {
 				membershipEntered = true;
 				for (MembershipListener listener : listeners)
 					listener.reactToValidMembershipEntered(barcode.toString());
 			} else {
 				membershipEntered = false;
-				for (MembershipListener listener : listeners)
-					listener.reactToInvalidMembershipEntered();
+				if (!ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
 			}
 		}
 		@Override
@@ -103,8 +107,10 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 					listener.reactToValidMembershipEntered(data.getNumber());
 			} else {
 				membershipEntered = false;
-				for (MembershipListener listener : listeners)
-					listener.reactToInvalidMembershipEntered();
+				if (data.getType().equals("membership")) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
 			}
 		}
 			
