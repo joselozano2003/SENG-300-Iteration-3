@@ -18,6 +18,7 @@ public class CustomerStationLogic {
 	//CustomerModel model;
 	CustomerView view;
 	CustomerController controller;
+	SelfCheckoutStation station;
 
 	public static CustomerStationLogic installOn(SelfCheckoutStation station) {
 		return new CustomerStationLogic(station);
@@ -25,6 +26,7 @@ public class CustomerStationLogic {
 
 	private CustomerStationLogic(SelfCheckoutStation station) {
 		// Initiate facades.
+		this.station = station;
 		ItemFacade item = new ItemFacade(station, false);
 		PaymentFacade payment = new PaymentFacade(station, false);
 		ReceiptFacade receipt = new ReceiptFacade(station);
@@ -34,6 +36,9 @@ public class CustomerStationLogic {
 		//model = new CustomerModel(item, payment, receipt, bagging, membership);
 		view = new CustomerView();
 		//controller = new CustomerController(model, view);
+	}
+	public SelfCheckoutStation getStation() {
+		return this.station;
 	}
 
 	public void turnOnDisplay() {

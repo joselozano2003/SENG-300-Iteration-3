@@ -30,6 +30,8 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.devices.OverloadException;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
@@ -75,5 +77,10 @@ public class AttendantController {
 
 	public boolean startRemoveItem(ItemFacade item, Product product) {
 		return item.removeProduct(product);
+	}
+
+	public void addInkToStation(int stationNumber, int inkLevel) throws OverloadException {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getStation();
+		station.printer.addInk(inkLevel);
 	}
 }
