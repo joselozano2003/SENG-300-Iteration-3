@@ -7,6 +7,7 @@ import com.autovend.Barcode;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.OverloadException;
@@ -14,6 +15,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 
 public class Setup {
 	/**
@@ -120,6 +122,42 @@ public class Setup {
 			ProductDatabases.INVENTORY.put(barcodedProduct2, 4);
 		}
 		return barcodedProduct2;
+	}
+	
+	/**Creates a PLUCodedProduct with the PLU "123" and puts it in the ProductDatabases when specified.
+	 * @param price The price per-unit of the product, which will be converted to BigDecimal.
+	 * @param weight The expected weight of one unit of the product.
+	 * @param putInDatabase When true, the BarcodedProduct is put into the ProductDatabases
+	 * and the ProductDatabases inventory is increased by one.
+	 * @return The newly created product.
+	 */
+	public static PLUCodedProduct createPLUProduct1234(double price, int weight, boolean putInDatabase) {
+		PriceLookUpCode plu1234 = new PriceLookUpCode(Numeral.one, Numeral.two, Numeral.three, Numeral.four);
+		BigDecimal bigPrice = BigDecimal.valueOf(price);
+		PLUCodedProduct pluProduct1 = new PLUCodedProduct(plu1234, "Product One", bigPrice);
+		if (putInDatabase) {
+			ProductDatabases.PLU_PRODUCT_DATABASE.put(plu1234, pluProduct1);
+			ProductDatabases.INVENTORY.put(pluProduct1, 1);
+		}
+		return pluProduct1;
+	}
+	
+	/**Creates a PLUCodedProduct with the PLU "456" and puts it in the ProductDatabases when specified.
+	 * @param price The price per-unit of the product, which will be converted to BigDecimal.
+	 * @param weight The expected weight of one unit of the product.
+	 * @param putInDatabase When true, the BarcodedProduct is put into the ProductDatabases
+	 * and the ProductDatabases inventory is increased by one.
+	 * @return The newly created product.
+	 */
+	public static PLUCodedProduct createPLUProduct5678(double price, int weight, boolean putInDatabase) {
+		PriceLookUpCode plu5678 = new PriceLookUpCode( Numeral.five, Numeral.six, Numeral.seven, Numeral.eight);
+		BigDecimal bigPrice = BigDecimal.valueOf(price);
+		PLUCodedProduct pluProduct2 = new PLUCodedProduct(plu5678, "Product Two", bigPrice);
+		if (putInDatabase) {
+			ProductDatabases.PLU_PRODUCT_DATABASE.put(plu5678, pluProduct2);
+			ProductDatabases.INVENTORY.put(pluProduct2, 4);
+		}
+		return pluProduct2;
 	}
 
 }
