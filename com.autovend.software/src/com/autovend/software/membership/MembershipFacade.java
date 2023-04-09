@@ -41,6 +41,10 @@ import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractFacade<MembershipListener> {
+	
+	// GUI will have to have a button that forces the system into scanning for membership mode
+	private	boolean scanningForMembership = false;
+	private boolean membershipEntered = false;
 
 	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);
@@ -61,17 +65,83 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		@Override
 		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 		@Override
-		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {}
+		
+		/**
+		 * If the system is in 'scanning for membership' mode, this function checks if a barcode exists in the current
+		 * MembershipDataBase, if it does it sets membershipEntered = true, otherwise false
+		 */
+		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+			//if valid
+			membershipEntered = true;
+			if (scanningForMembership) {
+				if (MemberShipDatabase.userExists(barcode.toString()) == false) {
+					System.out.println("Invalid Membership Card detetected. Please try again");
+					membershipEntered = false;
+				}
+			}
+		}
 		@Override
-		public void reactToCardInsertedEvent(CardReader reader) {}
+		public void reactToCardRemovedEvent(CardReader reader) {
+			// TO DO, UNSURE OF FUNCTIONALITY
+		}
 		@Override
-		public void reactToCardRemovedEvent(CardReader reader) {}
+		public void reactToCardInsertedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardTappedEvent(CardReader reader) {}
+		public void reactToCardTappedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardSwipedEvent(CardReader reader) {}
+		public void reactToCardSwipedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
+			//if valid
+			membershipEntered = true;
+			if (scanningForMembership) {
+				if (MemberShipDatabase.userExists(data.getNumber()) == false) {
+					System.out.println("Invalid Membership Card detetected. Please try again");
+					membershipEntered = false;
+				}
+			}
+		}
+			
+		/**
+		 * Manually activated event. to be called when the user inputs their membership code via a keyboard / touch screen.
+		 * Checks if the specified input string is a membership number stored in the data base, if yes, membershipEntered is true, 
+		 * otherwise false.
+		 * @param input
+		 */
+		
+		@SuppressWarnings("unused")
+		public void reactToCodeInputEvent(String input) {
+			//if valid
+			membershipEntered = true;
+			if (scanningForMembership) {
+				if (MemberShipDatabase.userExists(input)) {
+					System.out.println("Invalid Membership Card detetected. Please try again");
+					membershipEntered = false;
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * @return True or false if a valid membership number has been entered.
+	 */
+	public boolean membershipEntered() {
+		return membershipEntered;
+	}
+
+	public boolean isScanningForMembership() {
+		return scanningForMembership;
+	}
+
+	public void setScanningForMembership(boolean scanningForMembership) {
+		this.scanningForMembership = scanningForMembership;
 	}
 
 }
