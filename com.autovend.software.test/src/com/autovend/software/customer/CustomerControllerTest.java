@@ -30,14 +30,20 @@ package com.autovend.software.customer;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
+import com.autovend.products.Product;
+import com.autovend.software.customer.CustomerController.State;
+
+import java.math.BigDecimal;
 
 public class CustomerControllerTest {
 	private SelfCheckoutStation station;
 	private CustomerController controller;
+	private ReusableBagDispenser bagDispenser;
 	
 	@Before
 	public void setup() {
@@ -56,5 +62,134 @@ public class CustomerControllerTest {
 	public void testConstructionNullBagDispenser() {
 		new CustomerController(station, null);
 	}
+	
+	
+	//Adding empty test methods
+	
+	@Test
+    public void testInitialState() {
+        assertEquals(State.INITIAL, controller.getCurrentState());
+    }
 
+    @Test
+    public void testStartNewSession() {
+        controller.startNewSession();
+        assertEquals(State.INITIAL, controller.getCurrentState());
+    }
+
+    @Test
+    public void testStartAddingOwnBags() {
+        controller.startAddingOwnBags();
+        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
+    }
+    
+    @Test
+    public void testFinishAddingOwnBags() {
+    	
+    }
+    
+    @Test
+    public void testStartAddingItems() {
+    	
+    }
+    
+    @Test
+    public void testAddMoreItems() {
+    	
+    }
+    
+    @Test
+    public void testStartPaying() {
+    	
+    }
+    
+    @Test
+    public void testPurchaseBags() {
+    	
+    }
+    
+    @Test
+    public void testOnBagsDispensedEvent() {
+    	
+    }
+    
+    @Test
+    public void testOnBagsDispensedFailure() {
+    	
+    }
+    
+    @Test 
+    public void testReactToDisableDeviceRequest(){
+    	
+    }
+    
+    @Test
+    public void testReactToEnableDeviceRequest() {
+    	
+    }
+    
+    @Test
+    public void testReactToDisableStationRequest(){
+    	
+    }
+    
+    @Test
+    public void testReactToEnableStationRequest() {
+    	
+    }
+    
+    @Test
+    public void testReactToHardwareFailure() {
+    	
+    }
+    
+    @Test
+    public void testOnItemAddedEvent() {
+    	
+    }
+    
+    @Test
+    public void testOnItemNotFoundEvent() {
+    	
+    }
+    
+    @Test
+    public void testOnPaymentAddedEvent() {
+    	
+    }
+    
+    @Test 
+    public void testOnPaymentFailure() {
+    	
+    }
+    
+    @Test
+    public void testOnReceiptPrintedEvent() {
+    	
+    }
+    
+    @Test 
+    public void testOnReceiptPrinterFixed() {
+    	
+    }
+    
+    @Test
+    public void testOnReceiptPrinterFailed() {
+    	
+    }
+    
+    @Test
+    public void testOnChangeDispensedEvent() {
+    	
+    }
+    
+    @Test
+    public void testOnChangeDispensedFailure() {
+    	
+    }
+    
+    @Test
+    public void testOnWeightChanged() {
+    	
+    }
 }
