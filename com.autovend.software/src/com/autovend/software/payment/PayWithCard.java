@@ -28,12 +28,8 @@
  */
 package com.autovend.software.payment;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Objects;
 
-import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
@@ -44,10 +40,7 @@ import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
-public class PayWithCard extends PaymentFacade implements CardReaderObserver {
-	private SelfCheckoutStation station;
-	private Object reader;
-	private BufferedImage signature ;
+class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithCard(SelfCheckoutStation station) {
 		super(station, true);
@@ -115,53 +108,5 @@ public class PayWithCard extends PaymentFacade implements CardReaderObserver {
 				}
 			}
 		}
-	}
-	public boolean tapCard(CardIssuer card) throws IOException{
-		if(card == null ) throw new NullPointerException("No argument may be null");
-		CardData data = station.cardReader.tap(card);
-		if(Objects.equals(data.getType(), "Credit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}else if(Objects.equals(data.getType(), "Debit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}else{
-			return false;
-		}
-
-	}
-
-	public  boolean swipeCard(CardIssuer cardIssuer, Card card) throws IOException{
-		if(card == null ) throw new NullPointerException("No argument may be null");
-
-		CardData data = station.cardReader.swipe(card, signature);
-		if(Objects.equals(data.getType(), "Credit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}else if(Objects.equals(data.getType(), "Debit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}
-		else{
-			return false;
-		}
-
-	}
-
-	public  boolean insertCard(CardIssuer card, String pin) throws IOException{
-		if(card == null ) throw new NullPointerException("No argument may be null");
-
-		CardData data = station.cardReader.swipe(card, signature);
-		if(Objects.equals(data.getType(), "Credit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}else if(Objects.equals(data.getType(), "Debit")){
-
-			return reactToCardDataReadEvent(CardReader reader, CardData data);
-		}
-		else{
-			return false;
-		}
-
 	}
 }

@@ -15,9 +15,8 @@ import com.autovend.devices.SimulationException;
  */
 public final class GiftCard extends Card {
 	private static final long serialVersionUID = -8385691174430941679L;
-    public static boolean GiftCardInsertData;
 
-    private Currency currency;
+	private Currency currency;
 	private BigDecimal remainingBalance;
 
 	/**

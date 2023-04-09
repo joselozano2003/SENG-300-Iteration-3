@@ -28,31 +28,18 @@
  */
 package com.autovend.software.item;
 
-
 import com.autovend.products.BarcodedProduct;
-import com.autovend.Barcode;
-
 import com.autovend.products.Product;
-import com.autovend.software.AbstractListener;
+import com.autovend.software.AbstractEventListener;
 
-public interface ItemListener extends AbstractListener {
+public interface ItemEventListener extends AbstractEventListener {
 	/**
 	 * Signals an event in which a product was successfully added.
 	 * @param product
 	 */
-	public void reactToItemAdded(Product product);
+	public void onItemAddedEvent(Product product, double quantity);
 	
-	/**
-	 * Signals an event in which an invalid barcode is scanned.
-	 * @param barcode
-	 */
-	public void reactToInvalidBarcodScanned(Barcode barcode);
-	
-	/**
-	 * Signal an event in which the product that is trying to be added to the customer's purchase list is null
-	 * @param product
-	 */
-	public void reactToNullProductEvent(Product product);
+	public void onItemNotFoundEvent();
 
     void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }

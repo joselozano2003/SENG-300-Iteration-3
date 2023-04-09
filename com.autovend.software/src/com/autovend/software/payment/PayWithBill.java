@@ -28,6 +28,7 @@
  */
 package com.autovend.software.payment;
 
+import java.math.BigDecimal;
 import java.util.Currency;
 
 import com.autovend.Bill;
@@ -44,10 +45,10 @@ import com.autovend.devices.observers.BillStorageObserver;
 import com.autovend.devices.observers.BillValidatorObserver;
 
 @SuppressWarnings("serial")
-class WithBill extends PaymentFacade implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
+class PayWithBill extends PaymentFacade implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
 	
-	protected WithBill(SelfCheckoutStation station) {
-		super(station);
+	public PayWithBill(SelfCheckoutStation station) {
+		super(station, true);
 		try {
 			station.billDispensers.forEach((k,v) -> v.register(this));
 			station.billInput.register(this);
@@ -55,7 +56,7 @@ class WithBill extends PaymentFacade implements BillDispenserObserver, BillSlotO
 			station.billStorage.register(this);
 			station.billValidator.register(this);
 		} catch (Exception e) {
-			for (PaymentListener listener : listeners)
+			for (PaymentEventListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
@@ -65,7 +66,11 @@ class WithBill extends PaymentFacade implements BillDispenserObserver, BillSlotO
 	@Override
 	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value) {}
+	public void reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value) {
+		for (PaymentEventListener listener : listeners)
+			listener.onPaymentAddedEvent(BigDecimal.valueOf(value));
+	}
+	
 	@Override
 	public void reactToInvalidBillDetectedEvent(BillValidator validator) {}
 	@Override

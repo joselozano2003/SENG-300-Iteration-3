@@ -9,7 +9,6 @@ import com.autovend.ChipFailureException;
 import com.autovend.MagneticStripeFailureException;
 import com.autovend.Card.CardData;
 import com.autovend.devices.observers.CardReaderObserver;
-import com.autovend.external.CardIssuer;
 
 /**
  * Represents the card reader, capable of tap, chip insert, and swipe. Either
@@ -42,7 +41,7 @@ public class CardReader extends AbstractDevice<CardReaderObserver> {
 	 *             If the tap failed (lack of failure does not mean that the data is
 	 *             not corrupted).
 	 */
-	public CardData tap(CardIssuer card) throws IOException {
+	public CardData tap(Card card) throws IOException {
 		if(card.isTapEnabled) {
 			for(CardReaderObserver observer : observers)
 				observer.reactToCardTappedEvent(this);
@@ -108,7 +107,7 @@ public class CardReader extends AbstractDevice<CardReaderObserver> {
 	 * @throws IOException
 	 *             The insertion failed.
 	 */
-	public CardData insert(CardIssuer card, String pin) throws IOException {
+	public CardData insert(Card card, String pin) throws IOException {
 		if(cardIsInserted)
 			throw new IllegalStateException("There is already a card in the slot");
 

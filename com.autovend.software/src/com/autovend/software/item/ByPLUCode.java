@@ -37,6 +37,8 @@ public class ByPLUCode extends ItemFacade  {
     protected ByPLUCode(SelfCheckoutStation station) {
 		super(station, true);
 	}
+
+    
     
 
 	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {

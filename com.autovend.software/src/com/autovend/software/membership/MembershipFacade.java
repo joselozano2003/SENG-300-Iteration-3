@@ -37,15 +37,11 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-
-public class MembershipFacade extends AbstractSoftware<MembershipListener> {
+public class MembershipFacade extends AbstractFacade<MembershipListener> {
 	
-	// GUI will have to have a button that forces the system into scanning for membership mode
-	private	boolean scanningForMembership = false;
-
 	private boolean membershipEntered = false;
 
 	public MembershipFacade(SelfCheckoutStation station) {
@@ -74,14 +70,9 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		 */
 		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
 			//if valid
-
-			membershipEntered = true;
-			if (scanningForMembership) {
-				if (MemberShipDatabase.userExists(barcode.toString()) == false) {
-					System.out.println("Invalid Membership Card detetected. Please try again");
-					membershipEntered = false;
-				}
-
+			membershipEntered = false;
+			if (MemberShipDatabase.userExists(barcode.toString()) == true) {
+				membershipEntered = true;
 			}
 		}
 		@Override
@@ -102,15 +93,9 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		}
 		@Override
 		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-
-			//if valid
-			membershipEntered = true;
-			if (scanningForMembership) {
-				if (MemberShipDatabase.userExists(data.getNumber()) == false) {
-					System.out.println("Invalid Membership Card detetected. Please try again");
-					membershipEntered = false;
-				}
-
+			membershipEntered = false;
+			if (MemberShipDatabase.userExists(data.getNumber()) == true) {
+				membershipEntered = true;
 			}
 		}
 			
@@ -123,33 +108,12 @@ public class MembershipFacade extends AbstractSoftware<MembershipListener> {
 		
 		@SuppressWarnings("unused")
 		public void reactToCodeInputEvent(String input) {
-
-			//if valid
-			membershipEntered = true;
-			if (scanningForMembership) {
-				if (MemberShipDatabase.userExists(input)) {
-					System.out.println("Invalid Membership Card detetected. Please try again");
-					membershipEntered = false;
-				}
+			membershipEntered = false;
+			if (MemberShipDatabase.userExists(input) == true) {
+				membershipEntered = true;
 			}
 		}
 		
-	}
-	
-	/**
-	 * @return True or false if a valid membership number has been entered.
-	 */
-	public boolean membershipEntered() {
-		return membershipEntered;
-	}
-
-	public boolean isScanningForMembership() {
-		return scanningForMembership;
-	}
-
-	public void setScanningForMembership(boolean scanningForMembership) {
-		this.scanningForMembership = scanningForMembership;
-
 	}
 	
 	/**
