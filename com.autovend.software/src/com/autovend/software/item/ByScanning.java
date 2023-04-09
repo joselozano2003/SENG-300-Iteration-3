@@ -64,5 +64,9 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
         	for (ItemEventListener listener : listeners)
 				listener.onItemAddedEvent(barcodedProduct, 1);;
         }
+		else {
+			for (ItemEventListener listener : listeners)
+				listener.reactToInvalidBarcode(barcodedProduct, 1);
+		}
     }
 }

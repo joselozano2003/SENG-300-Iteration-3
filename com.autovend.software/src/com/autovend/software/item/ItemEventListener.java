@@ -28,6 +28,7 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractEventListener;
 
@@ -40,4 +41,5 @@ public interface ItemEventListener extends AbstractEventListener {
 	
 	public void onItemNotFoundEvent();
 
+    void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }
