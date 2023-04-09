@@ -91,4 +91,21 @@ public class AttendantController {
 	public void alertBagApproval(int stationNumber) {
 		view.notifyBagApproval(stationNumber);
 	}
+	
+	// Called by AttendantView when attendant wants to override a weight discrepancy at specified station.
+	public void overrideWeightDiscrepancy(int stationNumber) {
+		
+	}
+	
+	// Called by AttendantView when attendant approves bags at specified station.
+	public void bagsApproved(int stationNumber) {
+		
+	}
+	
+	// Called by AttendantView when attendant rejects bags. CustomerView should be signalled and
+	// customer should be prompted to remove bags.
+	public void bagsRejected(int stationNumber) {
+		
+	}
+	
 }
