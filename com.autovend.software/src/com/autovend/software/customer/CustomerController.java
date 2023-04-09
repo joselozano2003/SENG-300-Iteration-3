@@ -40,6 +40,7 @@ import com.autovend.external.ProductDatabases;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ItemFacade;
@@ -217,15 +218,15 @@ public class CustomerController
 	}
 
 	@Override
-	public void onBagsDispensedEvent(int amount) {
-		// I don't see a reusableBagProduct - just the sellable unit, where should we
-		// set this price?
-		// currentSession.addItemToCart(bag, amount);
+	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
+		currentSession.addItemToCart(bagProduct, amount);
+		setState(State.CHECKING_WEIGHT);		
 	}
 
 	@Override
-	public void onBagsDispensedFailure(int amount) {
-		// notify attendant
+	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -292,7 +293,7 @@ public class CustomerController
 		setState(State.FINISHED);
 
 		// To "see" the receipt, uncomment the line below
-		// System.out.println(receiptText.toString());
+		//System.out.println(receiptText.toString());
 
 	}
 
@@ -347,5 +348,7 @@ public class CustomerController
 	public State getCurrentState() {
 		return this.currentState;
 	}
+
+
 
 }
