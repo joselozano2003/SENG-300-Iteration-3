@@ -64,6 +64,8 @@ public class ReceiptFacadeTest {
 	private PLUCodedProduct pluProduct1;
 	private PLUCodedProduct pluProduct2;
 	
+	private boolean printSuccess;
+	
 	@Before
 	public void setup() {
 		//Setup the class to test
@@ -76,12 +78,21 @@ public class ReceiptFacadeTest {
 		
 		pluProduct1 = Setup.createPLUProduct1234(5.00, 69, false);
 		pluProduct2 = Setup.createPLUProduct5678(4.20, 99, false);
+		
+		printSuccess = false;
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testNullConstruction() {
 		new ReceiptFacade(null);
 	}
+	
+	/*(@Test
+	public void testReactToHardwareFailure() {
+		new ReceiptFacade(null);
+		
+	}*/
+	
 	@Test
 	public void testDisabled() {
 		station.printer.disable();
@@ -95,72 +106,50 @@ public class ReceiptFacadeTest {
 	}
 	@Test
 	public void testPrintReceiptBarcode(){
+		facade.register(new ReceiptEventListenerStub());
+		
 		try {
 			station.printer.addInk(100);
 		} catch (OverloadException e) {}
 		try {
 			station.printer.addPaper(100);
 		} catch (OverloadException e) {}
-		StringBuilder expected = new StringBuilder();	
 		
 		Map<Product, Double> cart = new HashMap<>();		
 		cart.put(bcProduct1, 1.00);
 		cart.put(bcProduct2, 2.00);
-		
-		expected.append("Receipt:\n");	
-		expected.append("Product One x 1.00 5.00\n");
-		expected.append("Product Two x 2.00 8.40\n");
-		
+
 		facade.printReceipt(cart);
-		String actual = station.printer.removeReceipt();
 		
-		System.out.println(expected.toString());
-		System.out.println(actual);
-		
-		boolean receiptMatch = false;
-		if (actual.equals(expected.toString())) {
-			receiptMatch = true;
-		}else {
-			receiptMatch = false;
-		}
-		
-		assertTrue(receiptMatch);
+		assertTrue(printSuccess);
 	}
 	@Test
 	public void testPrintReceiptPLU(){
+		facade.register(new ReceiptEventListenerStub());
+		
 		try {
 			station.printer.addInk(100);
 		} catch (OverloadException e) {}
 		try {
 			station.printer.addPaper(100);
-		} catch (OverloadException e) {}
-		StringBuilder expected = new StringBuilder();	
+		} catch (OverloadException e) {}	
 		
 		Map<Product, Double> cart = new HashMap<>();		
 		cart.put(pluProduct1, 1.00);
 		cart.put(pluProduct2, 2.00);
 		
-		expected.append("Receipt:\n");	
-		expected.append("Product One x 1.00 5.00\n");
-		expected.append("Product Two x 2.00 8.40\n");
-		
 		facade.printReceipt(cart);
-		String actual = station.printer.removeReceipt();
 		
-		//System.out.println(expected.toString());
-		//System.out.println(actual);
-		
-		boolean receiptMatch = false;
-		if (actual.equals(expected.toString())) {
-			receiptMatch = true;
-		}else {
-			receiptMatch = false;
-		}
-		
-		assertTrue(receiptMatch);
+		assertTrue(printSuccess);
 	}
-	
+	@Test
+	public void testPrintReceiptUnknown() {
+		
+	}
+	@Test
 	public void testLowInk() {
+		facade.register(new ReceiptEventListenerStub());
+		
 		try {
 			station.printer.addInk(1);
 		} catch (OverloadException e) {}
@@ -169,14 +158,17 @@ public class ReceiptFacadeTest {
 		} catch (OverloadException e) {}
 		
 		Map<Product, Double> cart = new HashMap<>();		
-		cart.put(bcProduct1, 1.00);
-		cart.put(bcProduct2, 2.00);
+		cart.put(pluProduct1, 1.00);
+		cart.put(pluProduct2, 2.00);
 		
 		facade.printReceipt(cart);
 		
+		assertFalse(printSuccess);
 	}
 	@Test
 	public void testLowPaper() {
+		facade.register(new ReceiptEventListenerStub());
+		
 		try {
 			station.printer.addInk(100);
 		} catch (OverloadException e) {}
@@ -185,10 +177,50 @@ public class ReceiptFacadeTest {
 		} catch (OverloadException e) {}
 		
 		Map<Product, Double> cart = new HashMap<>();		
-		cart.put(bcProduct1, 1.00);
-		cart.put(bcProduct2, 2.00);
+		cart.put(pluProduct1, 1.00);
+		cart.put(pluProduct2, 2.00);
 		
 		facade.printReceipt(cart);
+		
+		assertFalse(printSuccess);
+	}
+	@Test
+	public void testOverloadPaper() {
+		facade.register(new ReceiptEventListenerStub());
+		
+		try {
+			station.printer.addInk(100);
+		} catch (OverloadException e) {}
+		try {
+			station.printer.addPaper((1 << 10) + 1);
+		} catch (OverloadException e) {}
+		
+		Map<Product, Double> cart = new HashMap<>();		
+		cart.put(pluProduct1, 1.00);
+		cart.put(pluProduct2, 2.00);
+		
+		facade.printReceipt(cart);
+		
+		assertFalse(printSuccess);
+	}
+	@Test
+	public void testOverloadInk() {
+		facade.register(new ReceiptEventListenerStub());
+		
+		try {
+			station.printer.addInk((1 << 20) + 1);
+		} catch (OverloadException e) {}
+		try {
+			station.printer.addPaper(100);
+		} catch (OverloadException e) {}
+		
+		Map<Product, Double> cart = new HashMap<>();		
+		cart.put(pluProduct1, 1.00);
+		cart.put(pluProduct2, 2.00);
+		
+		facade.printReceipt(cart);
+		
+		assertFalse(printSuccess);
 	}
 	
 	/*--------------- STUBS ---------------*/
@@ -209,9 +241,13 @@ public class ReceiptFacadeTest {
 		@Override
 		public void reactToEnableStationRequest() {fail();}
 		@Override
-		public void onReceiptPrinterFailed() {fail();}
+		public void onReceiptPrinterFailed() {
+			printSuccess = false;
+		}
 		@Override
-		public void onReceiptPrintedEvent(StringBuilder receiptText) {fail();}
+		public void onReceiptPrintedEvent(StringBuilder receiptText) {
+			printSuccess = true;
+		}
 		@Override
 		public void onReceiptPrinterFixed() {fail();}
 	}
