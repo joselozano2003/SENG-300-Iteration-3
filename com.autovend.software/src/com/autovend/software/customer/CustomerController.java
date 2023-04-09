@@ -188,6 +188,7 @@ public class CustomerController
 
 	// In reaction to UI
 	public void finishAddingOwnBags() {
+		setState(State.DISABLED);
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
