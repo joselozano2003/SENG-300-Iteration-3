@@ -103,6 +103,7 @@ public class AttendantView {
 			// When button is pressed, override weight discrepancy and continue checkout.
 			
 			// CALL CONTROLLER METHOD TO OVERRIDE WEIGHT DISCREPANCY
+			controller.overrideWeightDiscrepancy(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
@@ -125,6 +126,7 @@ public class AttendantView {
 			// Approve bags...
 			
 			// CALL CONTROLLER METHOD TO UPDATE EXPECTED WEIGHT, CONTINUE CHECKOUT
+			controller.bagsApproved(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
@@ -146,7 +148,8 @@ public class AttendantView {
 		public void actionPerformed(ActionEvent e) {
 			// Approve bags...
 			
-			// CONTROLLER: MAKE CALL TO ATTENDANT INTERFACE PROMPTING TO REMOVE BAGS.
+			// CONTROLLER: MAKE CALL TO CUSTOMER INTERFACE PROMPTING TO REMOVE BAGS.
+			controller.bagsRejected(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
