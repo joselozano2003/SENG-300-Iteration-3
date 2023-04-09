@@ -12,10 +12,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
+import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
+import com.autovend.ReusableBag;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
@@ -30,13 +36,14 @@ import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
+import com.autovend.software.bagging.ReusableBagProduct;
+import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 
 public class SomeBasicTests {
-
 	private SelfCheckoutStation station;
 	private ReusableBagDispenser bagDispenser;
 	private CustomerController customerSessionController;
@@ -49,10 +56,10 @@ public class SomeBasicTests {
 
 	private BarcodedProduct barcodeProduct;
 	private BarcodedProduct barcodeProduct2;
-
 	private PLUCodedProduct pluProduct;
 	private CardIssuer credit;
 	private CreditCard creditCard;
+	public ReusableBagProduct bagProduct;
 
 	@Before
 	public void setUp() throws Exception {
@@ -63,17 +70,32 @@ public class SomeBasicTests {
 		date.set(Calendar.DAY_OF_MONTH, 4);
 
 		station = Setup.createSelfCheckoutStation();
-
 		bagDispenser = new ReusableBagDispenser(100);
-		
-		//
-		barcodeProduct = Setup.createBarcodedProduct123(1.00, 15, true);
-		barcodeProduct2 = Setup.createBarcodedProduct456(2.50, 40, true);
+		int n = 0;
+		while (n < 100) {
+			bagDispenser.load(new ReusableBag());
+			n++;
+		}
+
+		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
+		Barcode barcode = new Barcode(code1);
+		barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
+		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
+
+		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
+		Barcode barcode2 = new Barcode(code2);
+		barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
+		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+
+		bagProduct = new ReusableBagProduct();
 
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
+
 
 		customerSessionController = new CustomerController(station, bagDispenser);
 		customerSessionController.startNewSession();
@@ -88,8 +110,8 @@ public class SomeBasicTests {
 		Setup.fillBillDispensers(station, 100);
 		// Add 100 coins to each dispenser
 		Setup.fillCoinDispensers(station, 100);
-		
 		ReceiptPrinter printer = station.printer;
+
 		try {
 			// Initialize ink amount to 1000
 			printer.addInk(100);
@@ -212,7 +234,6 @@ public class SomeBasicTests {
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-
 		Bill tenDollarBill = new Bill(10, Setup.getCurrency());
 		try {
 			station.billInput.accept(tenDollarBill);
@@ -223,7 +244,6 @@ public class SomeBasicTests {
 		// Dispense 1 $5 bill and 2 $0.25 coins
 		assertEquals(99, station.billDispensers.get(5).size());
 		assertEquals(98, station.coinDispensers.get(BigDecimal.valueOf(0.25)).size());
-
 	}
 
 	// @Test
@@ -298,11 +318,29 @@ public class SomeBasicTests {
 		station.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.baggingArea
-				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
+		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
 
 		assertEquals(State.DISABLED, customerSessionController.getCurrentState());
 
 	}
 
+
+	@Test
+	public void dispenseBagsTest() throws InterruptedException {
+		customerSessionController.purchaseBags(2);
+		Thread.sleep(3000);
+
+		station.baggingArea.add(new ReusableBag());
+		station.baggingArea.add(new ReusableBag());
+
+		assertEquals(1, currentSession.getShoppingCart().size());
+
+		Thread.sleep(5000);
+
+		customerSessionController.startPaying();
+
+		Coin coin = new Coin(BigDecimal.valueOf(1), Setup.getCurrency());
+		station.coinSlot.accept(coin);
+
+	}
 }
