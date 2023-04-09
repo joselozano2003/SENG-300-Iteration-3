@@ -37,6 +37,7 @@ import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
@@ -66,6 +67,7 @@ public class CustomerController
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
+	private int inkUsed, paperUsed, inkAdded, paperAdded;
 
 	public enum State {
 
@@ -101,6 +103,9 @@ public class CustomerController
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
+
+		inkUsed = 0;
+		paperUsed = 0;
 	}
 
 	public void setState(State newState) {
@@ -188,6 +193,7 @@ public class CustomerController
 	// In reaction to UI
 	public void startNewSession() {
 		currentSession = new CustomerSession();
+		// set state to initial?
 	}
 
 	// In reaction to UI
@@ -283,6 +289,11 @@ public class CustomerController
 	}
 
 	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// Display try again? message in UI
+	}
+
+	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
 		boolean paymentComplete = currentSession.isPaymentComplete();
@@ -372,6 +383,29 @@ public class CustomerController
 	public void reactToInvalidMembershipEntered() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean testResources(StringBuilder sb) {
+		int inkCount = 0;
+		int paperCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (!Character.isWhitespace(c)) {
+				inkCount++;
+			}
+			if (c == '\n') {
+				paperCount++;
+			}
+		}
+		// Check if the printer has enough resources to print the receipt
+		if ((inkCount + inkUsed < inkAdded) && (paperCount + paperUsed < paperAdded)) {
+			inkUsed += inkCount;
+			paperUsed += paperCount;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }

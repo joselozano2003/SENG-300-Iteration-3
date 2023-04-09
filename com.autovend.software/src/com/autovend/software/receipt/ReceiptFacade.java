@@ -123,8 +123,6 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 			System.err.println("Failed to print receipt: " + e.getMessage());
 		}
 
-		
-
 	}
 
 }
