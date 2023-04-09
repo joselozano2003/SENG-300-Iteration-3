@@ -33,9 +33,5 @@ public class ProductsDatabase2 {
 		costOfReusableBag = cost;
 	}
 	
-	public static BigDecimal getPriceOfReusableBag() {
-		return costOfReusableBag;
-	}
-	
 
 }

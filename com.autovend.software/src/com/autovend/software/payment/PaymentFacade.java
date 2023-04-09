@@ -54,7 +54,6 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 			children.add(new PayWithCoin(station));
 			children.add(new PayWithBill(station));
 			children.add(new PayWithCard(station));
-			children.add(new PayWithGiftCard(station));
 			amountDue = BigDecimal.ZERO;
 		}
 	}

@@ -40,19 +40,16 @@ import com.autovend.external.ProductDatabases;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
-import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ItemFacade;
-import com.autovend.software.membership.MembershipFacade;
-import com.autovend.software.membership.MembershipListener;
 import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
 
 public class CustomerController
-		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
+		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -63,15 +60,12 @@ public class CustomerController
 
 	private ReceiptFacade receiptPrinterFacade;
 	private BaggingFacade baggingFacade;
-	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
 
 	public enum State {
-
-		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
+		INITIAL, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
 		DISABLED,
-
 	}
 
 	private State currentState;
@@ -84,8 +78,6 @@ public class CustomerController
 		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
 		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
-
-		this.membershipFacade = new MembershipFacade(selfCheckoutStation);
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -100,7 +92,6 @@ public class CustomerController
 		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
-		membershipFacade.register(this);
 	}
 
 	public void setState(State newState) {
@@ -127,8 +118,6 @@ public class CustomerController
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
-		case SCANNING_MEMBERSHIP:
-			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
@@ -198,7 +187,6 @@ public class CustomerController
 
 	// In reaction to UI
 	public void finishAddingOwnBags() {
-		setState(State.DISABLED);
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
@@ -229,15 +217,15 @@ public class CustomerController
 	}
 
 	@Override
-	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
-		currentSession.addItemToCart(bagProduct, amount);
-		setState(State.CHECKING_WEIGHT);		
+	public void onBagsDispensedEvent(int amount) {
+		// I don't see a reusableBagProduct - just the sellable unit, where should we
+		// set this price?
+		// currentSession.addItemToCart(bag, amount);
 	}
 
 	@Override
-	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
-		// TODO Auto-generated method stub
-		
+	public void onBagsDispensedFailure(int amount) {
+		// notify attendant
 	}
 
 	@Override
@@ -304,7 +292,7 @@ public class CustomerController
 		setState(State.FINISHED);
 
 		// To "see" the receipt, uncomment the line below
-		//System.out.println(receiptText.toString());
+		// System.out.println(receiptText.toString());
 
 	}
 
@@ -358,20 +346,6 @@ public class CustomerController
 
 	public State getCurrentState() {
 		return this.currentState;
-	}
-
-
-
-	@Override
-	public void reactToValidMembershipEntered(String number) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void reactToInvalidMembershipEntered() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

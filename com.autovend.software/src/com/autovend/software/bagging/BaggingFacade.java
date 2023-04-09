@@ -43,18 +43,18 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 		implements ElectronicScaleObserver, ReusableBagDispenserObserver {
 
 	ReusableBagDispenser bagDispenser;
-	ReusableBagProduct bagProduct;
 
 	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
 		super(station);
-	    this.bagDispenser = bagDispenser;
-		bagProduct = new ReusableBagProduct();
 		try {
 
-			// station.scale.register(this);
+			station.scale.register(this);
 			station.baggingArea.register(this);
 
-			this.bagDispenser.register(this);
+			// station.bagDispenser.register(this);
+
+			bagDispenser.register(this);
+			this.bagDispenser = bagDispenser;
 
 		} catch (Exception e) {
 			for (BaggingEventListener listener : listeners)
@@ -120,22 +120,21 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 	}
 
 	public void dispenseBags(int amount) {
-		int successfullyDispensed = 0;
+
 		while (amount > 0) {
 			try {
 				bagDispenser.dispense();
 				amount--;
-				successfullyDispensed++;
-
 			} catch (EmptyException e) {
 				for (BaggingEventListener listener : listeners)
-					listener.onBagsDispensedFailure(bagProduct, amount);
+					listener.onBagsDispensedFailure(amount);
 				break;
 			}
 		}
 
 		for (BaggingEventListener listener : listeners)
-			listener.onBagsDispensedEvent(bagProduct, successfullyDispensed);
+			listener.onBagsDispensedEvent(amount);
+
 	}
 
 }
