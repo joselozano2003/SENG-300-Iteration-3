@@ -45,11 +45,19 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
 
+/**
+ * A test class that performs tests on the ByScanning class. 
+ * @author Akansha
+ *
+ */
 public class ByScanningTest {
 	private SelfCheckoutStation station;
 	private ByScanning byScanning;
 	private int found;
 	
+	/**
+	 * Sets up the test suite. Runs before every method.
+	 */
 	@Before
 	public void setup() {
 		
@@ -58,6 +66,9 @@ public class ByScanningTest {
 		byScanning = new ByScanning(station);
 	}
 	
+	/**
+	 * Cleans up the test suite. Runs after every test method.
+	 */
 	@After
 	public void teardown() {
 		station = null;
@@ -98,9 +109,6 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(27.99, 10, false);
 		
-		// Code inside the override doesn't get reached, seems as though onItemNotFound 
-		// is not used in ByScanning.java at all
-		// This test fail fail
 		byScanning.register(new ItemListenerStub() {
 			@Override
 			public void onItemNotFoundEvent() {
@@ -108,6 +116,22 @@ public class ByScanningTest {
 			}
 		});
 		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct0.getBarcode());
+		assertEquals(expected, found);
+	}
+	
+	@Test
+	public void testEventAttemptingToAddNullItem() {
+		int expected = 1;
+		BarcodedProduct barcodedProduct1 = null;
+		
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				assertEquals(barcodedProduct1, barcodedProduct);
+				found++;
+			}
+		});
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
 		assertEquals(expected, found);
 	}
 	
@@ -151,17 +175,45 @@ public class ByScanningTest {
 	
 	@Test
 	public void testEventAddValidItemAndNullItem() {
-		int expected = 1;
+		int expected = 2;
 		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
+		BarcodedProduct barcodedProduct4 = null;
 		
 		byScanning.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
+				assertEquals(barcodedProduct3, product);
 				found++;
-			}});
+			}
+			
+			@Override 
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				assertEquals(barcodedProduct4, barcodedProduct);
+				found++;
+		}});
 		
 		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct3.getBarcode());
 		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
 		assertEquals(expected, found);
-	}	
+	}
+	
+	// Not too sure how to test for hardware failure!
+	// This test fails bc of that
+	@Test
+	public void testEventHardwareFailure() {
+		int expected = 1;
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void reactToHardwareFailure() {
+				found++;
+			}
+		});
+		
+		station.mainScanner.disable();
+		station.handheldScanner.disable();
+		
+		byScanning = new ByScanning(station);
+		
+		assertEquals(expected, found);
+	}
 }

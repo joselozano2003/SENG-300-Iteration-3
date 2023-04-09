@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 
 /**Stubs primarily check if/how many times observer events occurred.
@@ -25,4 +26,7 @@ class ItemListenerStub implements ItemEventListener {
 	public void onItemAddedEvent(Product product, double quantity) {fail();}
 	@Override
 	public void onItemNotFoundEvent() {fail();}
+	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) { fail();
+	}
 }
