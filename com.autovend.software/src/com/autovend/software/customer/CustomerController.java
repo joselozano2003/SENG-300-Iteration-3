@@ -140,7 +140,7 @@ public class CustomerController
 			selfCheckoutStation.handheldScanner.enable();
 			selfCheckoutStation.mainScanner.enable();
 			
-				
+			selfCheckoutStation.printer.disable();	
 			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
