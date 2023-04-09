@@ -46,7 +46,7 @@ import com.autovend.products.PLUCodedProduct;
 
 import java.math.*;
 
-public class AddItemByBrowsing {
+public class CustomerView {
 	
 	public static void main(String[] args) {
 		CustomerView cv = new CustomerView();
@@ -56,6 +56,7 @@ public class AddItemByBrowsing {
 	
 	// CODE TO COPY BELOW:
 	
+	// Maximum number of items per screen.
 	static int MAX_ITEMS = 20;
 	
 	CustomerController controller;
@@ -65,10 +66,10 @@ public class AddItemByBrowsing {
 	JPanel letterPanel;
 	JPanel previousPanel;
 	JPanel nextPanel;
-	JButton nextCatalogue;
-	JButton previousCatalogue;
+	JButton nextButton;
+	JButton previousButton;
 	JButton itemButtons[] = new JButton[MAX_ITEMS];
-	int num_items;			// Actual number of items to display on screen.
+	int num_items = 0;			// Actual number of items to display on screen.
 	
 	// Character array to represent string entered so far by user.
 	ArrayList<Character> stringEntered = new ArrayList<Character>();
@@ -83,6 +84,9 @@ public class AddItemByBrowsing {
 	
     // Catalogue currently being displayed to customer.
     Collection<PLUCodedProduct> catalogue;
+    
+    // Tracks page number we're currently on in the catalogue.
+    int page_number = 1;
     
     
 	// Called when add item by browsing button is pressed, this method will
@@ -136,14 +140,32 @@ public class AddItemByBrowsing {
 		previousPanel.setBounds(22,425, 75, 130);
 		previousPanel.setLayout(null);
 		
+		// Set up previous and next buttons.
+    	nextButton = new JButton(">");
+    	nextButton.setBounds(0, 0, 75, 130);
+    	nextButton.addActionListener(e -> {
+    		// Upon button being pressed, increment page number if possible.
+    		// page_number*MAX_ITEMS gives the total number of items displayed
+    		// on this page and all previous pages. If number of items is greater, increment.
+    		if (num_items > page_number*MAX_ITEMS) ++page_number;
+    	});
+    	
+    	previousButton = new JButton("<");
+    	previousButton.setBounds(0, 0, 75, 130);
+    	previousButton.addActionListener(e -> {
+    		// Upon button being pressed, decrement page number if possible.
+    		if (page_number > 1) --page_number;
+    	});
+    	
+    	nextPanel.add(nextButton);
+    	previousPanel.add(previousButton);
+		
 		// Initialize number of items to be zero, button array to be empty.
 		// Buttons will be added to this list as customer types in letters.
 		num_items = 0;
 		
 		//current widgets to the GUI
 		addAlphabet();
-		addCatalogue();
-		
 		
 		//adding everything to the main frame 
 		//browsingFrame.pack();
@@ -157,19 +179,40 @@ public class AddItemByBrowsing {
 	
 	
 	// Listener for letter buttons.
-	private class letterButtonListener implements ActionListener {
+	private class LetterButtonListener implements ActionListener {
 	
 		private char letter;
 		
-		letterButtonListener(char c) {letter = c;}
+		LetterButtonListener(char c) {letter = c;}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// When button is pressed, add letter to stringEntered array.
 			stringEntered.add(letter);
-			// Update catalogue.
+			// Update catalogue based on new string.
 			updateCatalogue();
+			// Display current catalogue based on stringEntered and page_number.
+			displayCatalogue();
 		}
+	}
+	
+	
+	// Listener for item buttons.
+	private class ItemButtonListener implements ActionListener {
+		
+		PLUCodedProduct item;
+		
+		ItemButtonListener(PLUCodedProduct pcp) {item = pcp;}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			// WHEN ITEM BUTTON IS PRESSED, CALL SOME METHOD IN THE CONTROLLER THAT
+			// ADDS THE ITEM TO CUSTOMERS SHOPPING CART. TO BE ADDED.
+			System.out.println("Item added");
+			
+		}
+		
 	}
 	
 	
@@ -179,7 +222,7 @@ public class AddItemByBrowsing {
         for (int i = 0; i < letters.length; ++i) {
             letterButtons[i] = new JButton(letters[i] + "");
             // Register button listener.
-            letterButtonListener listener = new letterButtonListener(letters[i]);
+            LetterButtonListener listener = new LetterButtonListener(letters[i]);
             // When button is pressed, character will be added to stringEntered.
             letterButtons[i].addActionListener(listener);
             letterPanel.add(letterButtons[i]);
@@ -189,7 +232,7 @@ public class AddItemByBrowsing {
     
     
     // Update catalogue based on current contents of stringEntered.
-    // Search database and display relevant results.
+    // Search database and update items list.
     private void updateCatalogue() {
     	// We have a collection of PLUCodedProducts. search by description.
     	PLUCodedProduct[] productArray = (PLUCodedProduct[]) products.toArray();
@@ -200,37 +243,23 @@ public class AddItemByBrowsing {
     			catalogue.add(productArray[i]);
     		}
     	}
-    	
-    	// Catalogue has been updated. Now add these as buttons in the catalogue panel.
-    	// Number of items to display is minimum of catalogue size and max # of items.
-    	num_items = Math.min(catalogue.size(), MAX_ITEMS);
-    	for (int i = 0; i < num_items; ++i) {
-    		// Create button with product description.
-    		itemButtons[i] = new JButton(productArray[i].getDescription());
-    		// Add button to catalogue panel.
-    		cataloguePanel.add(itemButtons[i]);
-    	}
-    	
+    	num_items = catalogue.size();
     }
     
     
-    private void addCatalogue() {
-    	
-    	//Catalogue Next and Previous Buttons 
-    	nextCatalogue = new JButton(">");
-    	nextCatalogue.setBounds(0, 0, 75, 130);
-    	
-    	previousCatalogue = new JButton("<");
-    	previousCatalogue.setBounds(0, 0, 75, 130);
-    	
-    	nextPanel.add(nextCatalogue);
-    	previousPanel.add(previousCatalogue);
-        	
-    	//add the items
-    	for(int j = 1; j < num_items; j++) {
-    		cataloguePanel.add(itemButtons[j]);
-    	}	
-    	
+    // Display current catalogue based on items list and current page number.
+    private void displayCatalogue() {
+    	PLUCodedProduct[] catArray = (PLUCodedProduct[]) catalogue.toArray();
+    	// Display all items in range [(page_number - 1)*MAX_ITEMS, page_number*MAX_ITEMS)
+    	for (int i = (page_number - 1)*MAX_ITEMS; i < page_number*MAX_ITEMS; ++i) {
+    		// Create button with product description.
+    		itemButtons[i] = new JButton(catArray[i].getDescription());
+    		// Set action of button...
+    		ItemButtonListener listener = new ItemButtonListener(catArray[i]);
+    		itemButtons[i].addActionListener(listener);
+    		// Add button to catalogue panel.
+    		cataloguePanel.add(itemButtons[i]);
+    	}
     }
 	
 	
