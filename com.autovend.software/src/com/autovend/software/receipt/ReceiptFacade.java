@@ -28,16 +28,24 @@
  */
 package com.autovend.software.receipt;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.EmptyException;
+import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ReceiptPrinterObserver;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
+import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class ReceiptFacade extends AbstractFacade<ReceiptEventListener>  {
-	
+public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
+
 	public ReceiptFacade(SelfCheckoutStation station) {
 		super(station);
 		try {
@@ -47,20 +55,72 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener>  {
 				listener.reactToHardwareFailure();
 		}
 	}
-	
+
 	private class InnerListener implements ReceiptPrinterObserver {
 		@Override
-		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		}
+
 		@Override
-		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		}
+
 		@Override
-		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
+		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
+		}
+
 		@Override
-		public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
+		public void reactToOutOfInkEvent(ReceiptPrinter printer) {
+		}
+
 		@Override
-		public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
+		public void reactToPaperAddedEvent(ReceiptPrinter printer) {
+		}
+
 		@Override
-		public void reactToInkAddedEvent(ReceiptPrinter printer) {}
+		public void reactToInkAddedEvent(ReceiptPrinter printer) {
+		}
+	}
+
+	public void printReceipt(Map<Product, Double> shoppingCart) {
+		StringBuilder receiptText = new StringBuilder();
+		receiptText.append("Receipt:\n");
+
+		for (Map.Entry<Product, Double> entry : shoppingCart.entrySet()) {
+			Product product = entry.getKey();
+			String name;
+			if (product instanceof BarcodedProduct) {
+				name = ((BarcodedProduct) product).getDescription();
+			} else if (product instanceof PLUCodedProduct) {
+				name = ((PLUCodedProduct) product).getDescription();
+			} else {
+				name = "Unknown";
+			}
+
+			double quantity = entry.getValue();
+			BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+
+			receiptText.append(String.format("%s x %.2f %.2f\n", name, quantity, totalPrice));
+
+			// System.out.printf("%s -> Quantity: %.2f, Price: %s%n", name, quantity,
+			// totalPrice);
+		}
+
+		try {
+			for (char c : receiptText.toString().toCharArray()) {
+				station.printer.print(c);
+
+			}
+			station.printer.cutPaper();
+			for (ReceiptEventListener listener : listeners) {
+				listener.onReceiptPrintedEvent(receiptText);
+			}
+		} catch (OverloadException | EmptyException e) {
+			System.err.println("Failed to print receipt: " + e.getMessage());
+		}
+
+		
+
 	}
 
 }

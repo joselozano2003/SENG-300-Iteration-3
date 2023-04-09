@@ -32,23 +32,25 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.autovend.ReusableBag;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.item.ProductsDatabase2;
 
 public class CustomerSession {
 	private Map<Product, Double> shoppingCart;
+	private int bagsPurchased;
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
-	private boolean receiptPrinted;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
+		bagsPurchased = 0;
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
-		receiptPrinted = false;
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
@@ -76,24 +78,28 @@ public class CustomerSession {
 
 	}
 
+	/**
+	 * Updates customer session info after customer chooses to purchase reusable
+	 * bags
+	 * 
+	 * @param numberOfBags: number of bags customer chose to purchase
+	 */
+	public void addBagsPurchasedToCustomerSession(int numberOfBags) {
+		bagsPurchased += numberOfBags;
+
+		ReusableBag reusableBag = new ReusableBag();
+		for (int i = 1; i <= numberOfBags; i++) {
+			expectedWeight += reusableBag.getWeight();
+			totalCost = totalCost.add(ProductsDatabase2.costOfReusableBag);
+		}
+	}
+
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
 	}
 
-	public void setPrintStatus(boolean status) {
-		receiptPrinted = status;
-	}
-
-	public boolean isReceiptPrinted() {
-		return receiptPrinted;
-	}
-
-	public Map getShoppingCart() {
+	public Map<Product, Double> getShoppingCart() {
 		return shoppingCart;
-	}
-
-	public void removeItemFromShoppingCart(Object removedProduct) {
-		shoppingCart.remove(removedProduct);
 	}
 
 	public double getExpectedWeight() {
@@ -110,6 +116,18 @@ public class CustomerSession {
 
 	public BigDecimal getAmountLeft() {
 		return totalCost.subtract(totalPaid);
+	}
+
+	public BigDecimal getChangeDue() {
+		return totalPaid.subtract(totalCost);
+	}
+
+	public boolean isPaymentComplete() {
+		if (totalPaid.compareTo(totalCost) >= 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -28,7 +28,7 @@ public class CustomerStationLogic {
 		ItemFacade item = new ItemFacade(station, false);
 		PaymentFacade payment = new PaymentFacade(station, false);
 		ReceiptFacade receipt = new ReceiptFacade(station);
-		BaggingFacade bagging = new BaggingFacade(station);
+	//	BaggingFacade bagging = new BaggingFacade(station);
 		MembershipFacade membership = new MembershipFacade(station);
 		// Initiate station with MVC design.
 		//model = new CustomerModel(item, payment, receipt, bagging, membership);

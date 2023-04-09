@@ -23,6 +23,7 @@ import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
@@ -38,6 +39,8 @@ import com.autovend.software.customer.CustomerSession;
 public class anothergifttest {
 
 	public SelfCheckoutStation selfCheckoutStation;
+	public ReusableBagDispenser bagDispenser;
+
 	public CustomerController customerSessionController;
 	public CustomerSession currentSession;
 
@@ -70,17 +73,18 @@ public class anothergifttest {
 
 		selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
 				scaleMaximumWeight, scaleSensitivity);
+		bagDispenser = new ReusableBagDispenser(100);
 
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
 		Barcode barcode = new Barcode(code1);
 		barcodeProduct = new BarcodedProduct(barcode, "product 1", new BigDecimal("1.00"), 10);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
 		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
-		
-		
-		GiftCardDatabase.addCard("12345678");
 
-		customerSessionController = new CustomerController(selfCheckoutStation);
+		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
+		GiftCardDatabase.addCard("12345678", giftCard);
+
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
@@ -113,29 +117,27 @@ public class anothergifttest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	@Test
 	public void payWithGiftCardPass() throws IOException {
-		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
-
 		customerSessionController.startAddingItems();
 
 		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-		
-		
-		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+		selfCheckoutStation.cardReader.insert(card, "2001");
 
 		assertEquals(currentSession.getTotalPaid(), currentSession.getTotalCost());
-		
 
 	}
-	
+
 	@Test
 	public void payWithGiftCardFail() throws IOException {
 		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("0.1"));
+		GiftCardDatabase.addCard("12345678", giftCard);
 
 		customerSessionController.startAddingItems();
 
@@ -143,34 +145,47 @@ public class anothergifttest {
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-		
-		
-		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+		selfCheckoutStation.cardReader.insert(card, "2001");
 
 		assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
-		
 
 	}
-	
+
 	@Test
 	public void payWithGiftCardBadPin() throws IOException {
-		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("300"));
-
 		customerSessionController.startAddingItems();
 
 		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		customerSessionController.startPaying();
-		
-		try { 
-			selfCheckoutStation.cardReader.insert(giftCard, "123");
+		GiftCard card = GiftCardDatabase.getGiftCard("12345678");
+
+		try {
+			selfCheckoutStation.cardReader.insert(card, "123");
 		} catch (InvalidPINException ipe) {
 			assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
 		}
 
 	}
 
+	@Test
+	public void payWithGiftCardNotInDatabase() throws IOException {
+		giftCard = new GiftCard("Gift", "87654321", "2001", currency, new BigDecimal("100"));
 
+		customerSessionController.startAddingItems();
+
+		selfCheckoutStation.mainScanner
+				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		customerSessionController.startPaying();
+
+		selfCheckoutStation.cardReader.insert(giftCard, "2001");
+
+		assertEquals(currentSession.getTotalPaid(), new BigDecimal("0"));
+
+	}
 
 }
