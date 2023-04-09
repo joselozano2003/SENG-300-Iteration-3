@@ -59,7 +59,7 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 		}
 	}
 
-	protected void addProduct(Product product) {
+	public void addProduct(Product product) {
 		if (product != null)
 			itemList.add(product);
 	}
@@ -96,17 +96,7 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 						}
 					}
 				}
-			} else {
-				for (Product product : itemList) {
-					if (!(product instanceof PLUCodedProduct) && !(product instanceof BarcodedProduct)) {
-						if (product.getPrice().equals(removedProduct.getPrice())) {
-							itemList.remove(product);
-							return true;
-						}
-					}
-				}
 			}
-
 		}
 		return false;
 	}

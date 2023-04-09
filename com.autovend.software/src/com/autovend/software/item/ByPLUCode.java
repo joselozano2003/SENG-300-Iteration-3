@@ -37,6 +37,7 @@ public class ByPLUCode extends ItemFacade  {
 
     
     
+
 //	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
 //        PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
 //        double weight = weightToPurchase;
