@@ -28,11 +28,8 @@
  */
 package com.autovend.software.payment;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
 
-import com.autovend.Card;
 import com.autovend.Card.CardData;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.CardReader;
@@ -45,87 +42,40 @@ import com.autovend.software.BankIO;
 @SuppressWarnings("serial")
 class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
-	protected PayWithCard(SelfCheckoutStation station) {
+	public PayWithCard(SelfCheckoutStation station) {
 		super(station, true);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners) {
+			for (PaymentEventListener listener : listeners)
 				listener.reactToHardwareFailure();
-		
-			}
-		}
-	}
-	
-	public boolean payByTap(Card card) throws IOException {
-		BigDecimal value = getAmountDue();
-		if(card == null) {
-			throw new NullPointerException("Argument cannot be null!");
-		}
-		
-		CardReader reader = this.station.cardReader;
-		CardData cardData = reader.tap(card);
-		
-		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
-			reactToCardDataReadEvent(reader, cardData);
-		}
-		else {
-			for (PaymentEventListener listener : listeners) {
-				listener.onPaymentFailure();
-			}
-		}
-	}
-	
-	public boolean payBySwipe(Card card, BufferedImage signature) throws IOException {
-		BigDecimal value = getAmountDue();
-		if(card == null) {
-			throw new NullPointerException("Argument cannot be null!");
-		}
-		
-		CardReader reader = this.station.cardReader;
-		CardData cardData = reader.swipe(card, signature);
-		
-		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
-			reactToCardDataReadEvent(reader, cardData);
-		}
-		else {
-			for (PaymentEventListener listener : listeners) {
-				listener.onPaymentFailure();
-			}
-		}
-	}
-	
-	public boolean payByInsert(Card card, String pin) throws IOException{
-		BigDecimal value = getAmountDue();
-		if(card == null) {
-			throw new NullPointerException("Argument cannot be null!");
-		}
-		
-		CardReader reader = this.station.cardReader;
-		CardData cardData = reader.insert(card, pin);
-		
-		if(cardData.getType()=="DebitCard" ^ cardData.getType()=="CreditCard") {
-			reactToCardDataReadEvent(reader, cardData);
-		}
-		else {
-			for (PaymentEventListener listener : listeners) {
-				listener.onPaymentFailure();
-			}
 		}
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
+
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
+
 	@Override
-	public void reactToCardInsertedEvent(CardReader reader) {}
+	public void reactToCardInsertedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardRemovedEvent(CardReader reader) {}
+	public void reactToCardRemovedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardTappedEvent(CardReader reader) {}
+	public void reactToCardTappedEvent(CardReader reader) {
+	}
+
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {}
+	public void reactToCardSwipedEvent(CardReader reader) {
+	}
+
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
 		BigDecimal value = getAmountDue();
@@ -137,20 +87,20 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 			}
 		} else {
 			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
-
 			if (holdNumber == -1) {
 				for (PaymentEventListener listener : listeners) {
 					listener.onPaymentFailure();
 				}
 			} else {
+
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
-					this.subtractAmountDue(value);
-					reader.remove();
 					for (PaymentEventListener listener : listeners) {
-						listener.onPaymentSuccessful(value);
-						listener.onCardRemovedEvent();
+						
+						listener.onPaymentAddedEvent(value);
+
 					}
+
 				} else {
 					for (PaymentEventListener listener : listeners) {
 						listener.onPaymentFailure();
