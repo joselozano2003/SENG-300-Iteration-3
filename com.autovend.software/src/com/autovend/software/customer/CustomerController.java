@@ -29,6 +29,7 @@
 package com.autovend.software.customer;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.autovend.ReusableBag;
@@ -47,6 +48,8 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.item.ByBrowsing;
+import com.autovend.software.item.ByTextSearch;
 
 public class CustomerController
 		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener {
@@ -214,6 +217,41 @@ public class CustomerController
 	// In reaction to UI
 	public void purchaseBags(int amount) {
 		baggingFacade.dispenseBags(amount);
+	}
+	
+	// In reaction to UI
+	/**
+	 * When customer gui signals that a customer has selected a product from the screen, call this method.
+	 * 
+	 * @param product: the product the customer has selected
+	 */
+	public void productFromBrowsingSelected(Product product) {
+		ByBrowsing browsing = (ByBrowsing)itemFacade.getChildren().get(1);
+		browsing.productFromVisualCatalogueSelected(product);
+	}
+	
+	//In reaction to UI
+	/**
+	 * When the attendant has typed in a string that they want to search, call this method.
+	 * This method gives you an arraylist of products to display as the search result. 
+	 * 
+	 * @param attendantInputString: string attendant has typed in as input to search
+	 * @return
+	 */
+	public ArrayList<Product> getProductsToDisplayAfterSearch(String attendantInputString){
+		ByTextSearch textSearch = (ByTextSearch) itemFacade.getChildren().get(3);
+		return textSearch.getProductsCorrespondingToTextSearch(attendantInputString);
+	}
+	
+	//In reaction to UI
+	/**
+	 * When attendant gui signals that the attendant has selected a product from the text search to add to customer's shopping cart, call this method.
+	 * 
+	 * @param product: the product attendant has selected to add to customer's shopping cart
+	 */
+	public void productFromTextSearchSelected(Product product) {
+		ByTextSearch textSearch = (ByTextSearch) itemFacade.getChildren().get(3);
+		textSearch.productFromTextSearchSelected(product);
 	}
 
 	@Override
