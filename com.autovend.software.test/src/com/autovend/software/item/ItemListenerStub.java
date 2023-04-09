@@ -6,7 +6,7 @@ import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.Product;
 
-/* Stubs primarily check if/how many times observer events occurred.
+/**Stubs primarily check if/how many times observer events occurred.
  * Tests should fail if an unexpected event is reported.
  * Override any event in this stub that you don't want to fail.
  */

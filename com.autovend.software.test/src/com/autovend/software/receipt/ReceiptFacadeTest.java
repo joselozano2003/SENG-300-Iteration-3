@@ -28,25 +28,93 @@
  */
 package com.autovend.software.receipt;
 
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.software.test.Setup;
 
 public class ReceiptFacadeTest {
+	private List<ReceiptEventListener> testListeners;
 	private SelfCheckoutStation station;
-	private ReceiptFacade receiptFacade;
+	private ReceiptFacade facade;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		receiptFacade = new ReceiptFacade(station);
+		facade = new ReceiptFacade(station);
+		testListeners = new ArrayList<>();
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
+	public void testNullConstruction() {
 		new ReceiptFacade(null);
+	}
+	
+	@Test
+	public void testReactToHardwareFailure() {
+
+	}
+	
+	@Test
+	public void testLowInk() {
+		
+	}
+	@Test
+	public void testLowPaper() {
+		
+	}
+	
+	/*--------------- STUBS ---------------*/
+	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
+	public class ReceiptEventListenerStub implements ReceiptEventListener {
+		private boolean reactToHardwareFailureCalled = false;
+		@Override
+		public void reactToHardwareFailure() {
+			reactToHardwareFailureCalled = true;
+		}
+		@Override
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToDisableStationRequest() {fail();}
+		@Override
+		public void reactToEnableStationRequest() {fail();}
+		@Override
+		public void onReceiptPrinterFailed() {fail();}
+		@Override
+		public void onReceiptPrintedEvent(StringBuilder receiptText) {fail();}
+		@Override
+		public void onReceiptPrinterFixed() {fail();}
+	}
+	
+	public class ReceiptPrinterObserverStub implements ReceiptPrinterObserver {
+		@Override
+		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+		@Override
+		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToOutOfInkEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToPaperAddedEvent(ReceiptPrinter printer) {}
+		@Override
+		public void reactToInkAddedEvent(ReceiptPrinter printer) {}
 	}
 }
