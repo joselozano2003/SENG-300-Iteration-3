@@ -29,13 +29,21 @@
 package com.autovend.software.customer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.text.*;
 
+import com.autovend.software.GUI.AddItemByBrowsing;
+
 public class CustomerView {
+	
 	public static void main(String[] args) {
+		CustomerView testView = new CustomerView();
+	}
+	public CustomerView() {
 		
 		{
 			
@@ -51,6 +59,7 @@ public class CustomerView {
 			totalLabel.setText("Current Total: $0.00 CAD");
 		    	    
 		    mainFrame.setLocationRelativeTo(null);
+		    mainFrame.setDefaultCloseOperation(mainFrame.EXIT_ON_CLOSE);
 		    
 		    cartPanel.setLayout(new BoxLayout(cartPanel,BoxLayout.PAGE_AXIS));
 		    
@@ -118,6 +127,13 @@ public class CustomerView {
 		    mainFrame.setResizable(false);
 		    mainFrame.setSize(900,600);
 		    mainFrame.setVisible(true);
+		    
+		    searchBrowseButton.addActionListener(new ActionListener() {
+		    	public void actionPerformed(ActionEvent e) {
+		    		AddItemByBrowsing browseWindow = new AddItemByBrowsing();
+		    		mainFrame.setVisible(false);
+		    	}
+		    });
 		    
 		}
 		
