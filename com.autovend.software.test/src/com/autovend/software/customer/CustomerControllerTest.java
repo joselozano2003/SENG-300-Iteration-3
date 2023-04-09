@@ -65,7 +65,7 @@ public class CustomerControllerTest {
 	}
 	
 	
-	//Adding empty test methods
+	//Adding empty test methods.
 	
 	@Test
     public void testInitialState() {
