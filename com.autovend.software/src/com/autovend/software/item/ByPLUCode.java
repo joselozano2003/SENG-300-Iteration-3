@@ -28,16 +28,20 @@
  */
 package com.autovend.software.item;
 
+import com.autovend.PriceLookUpCode;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.PLUCodedProduct;
 
 public class ByPLUCode extends ItemFacade  {
     protected ByPLUCode(SelfCheckoutStation station) {
 		super(station, true);
 	}
     
-//	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
-//        PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
-//        double weight = weightToPurchase;
-//        //addItem()
-//    }
+
+	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
+       PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
+       double weight = weightToPurchase;
+       //addItem()
+    }
 }
