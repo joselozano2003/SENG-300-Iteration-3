@@ -45,6 +45,7 @@ public class CustomerControllerTest {
 	private CustomerController controller;
 	private ReusableBagDispenser bagDispenser;
 	
+	
 	@Before
 	public void setup() {
 		//Setup the class to test
