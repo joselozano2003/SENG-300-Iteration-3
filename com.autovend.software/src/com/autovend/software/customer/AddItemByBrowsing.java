@@ -46,10 +46,10 @@ import com.autovend.products.PLUCodedProduct;
 
 import java.math.*;
 
-public class CustomerView {
+public class AddItemByBrowsing {
 	
 	public static void main(String[] args) {
-		CustomerView cv = new CustomerView();
+		AddItemByBrowsing cv = new AddItemByBrowsing();
 		cv.addItemByBrowsing();
 		cv.cataloguePanel.add(new JLabel("Hello world"));
 	}
@@ -141,20 +141,28 @@ public class CustomerView {
 		previousPanel.setLayout(null);
 		
 		// Set up previous and next buttons.
+		AddItemByBrowsing reference = this;
     	nextButton = new JButton(">");
     	nextButton.setBounds(0, 0, 75, 130);
     	nextButton.addActionListener(e -> {
     		// Upon button being pressed, increment page number if possible.
     		// page_number*MAX_ITEMS gives the total number of items displayed
     		// on this page and all previous pages. If number of items is greater, increment.
-    		if (num_items > page_number*MAX_ITEMS) ++page_number;
+    		if (num_items > page_number*MAX_ITEMS) {
+    			++page_number;
+    			// Update screen.
+    			reference.displayCatalogue();
+    		}
     	});
     	
     	previousButton = new JButton("<");
     	previousButton.setBounds(0, 0, 75, 130);
     	previousButton.addActionListener(e -> {
     		// Upon button being pressed, decrement page number if possible.
-    		if (page_number > 1) --page_number;
+    		if (page_number > 1) {
+    			--page_number;
+    			reference.displayCatalogue();
+    		}
     	});
     	
     	nextPanel.add(nextButton);
@@ -248,7 +256,7 @@ public class CustomerView {
     
     
     // Display current catalogue based on items list and current page number.
-    private void displayCatalogue() {
+    public void displayCatalogue() {
     	PLUCodedProduct[] catArray = (PLUCodedProduct[]) catalogue.toArray();
     	// Display all items in range [(page_number - 1)*MAX_ITEMS, page_number*MAX_ITEMS)
     	for (int i = (page_number - 1)*MAX_ITEMS; i < page_number*MAX_ITEMS; ++i) {
