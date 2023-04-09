@@ -1,5 +1,4 @@
-package gui;
-
+package com.autovend.software.GUI;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -56,3 +55,4 @@ public class AddItemByPLU extends JFrame {
         setVisible(true);
     }
 }
+
