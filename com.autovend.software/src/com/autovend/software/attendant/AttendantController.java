@@ -44,13 +44,14 @@ public class AttendantController {
 	private AttendantView view;
 	private AuthFacade auth;
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
+	public AttendantController(AttendantModel model, List<CustomerStationLogic> list) {
+		if (model == null || list == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;
-		this.view = view;
 		this.auth = new AuthFacade();
 		customerStations = list;
+		// Construct attendant view. For now, just set language to english.
+		this.view = new AttendantView(this, customerStations.size(), "ENG");
 	}
 
 	public void startupStation(/* station */) {
@@ -76,4 +77,36 @@ public class AttendantController {
 	public boolean startRemoveItem(ItemFacade item, Product product) {
 		return item.removeProduct(product);
 	}
+	
+	// Called when weight discrepancy is detected. Notifies attendant, who can resolve.
+	public void alertWeightDiscrepancy(int stationNumber, double discrepancy) {
+		view.notifyWeightDiscrepancy(stationNumber, discrepancy);
+	}
+	
+	// Called if weight discrepancy is resolved by customer adding/removing items. Updates GUI.
+	public void alertWeightDiscrepancyResolved(int stationNumber) {
+		view.weightDiscrepancyResolved(stationNumber);
+	}
+	
+	// Called to prompt attendant to approve bags.
+	public void alertBagApproval(int stationNumber) {
+		view.notifyBagApproval(stationNumber);
+	}
+	
+	// Called by AttendantView when attendant wants to override a weight discrepancy at specified station.
+	public void overrideWeightDiscrepancy(int stationNumber) {
+		
+	}
+	
+	// Called by AttendantView when attendant approves bags at specified station.
+	public void bagsApproved(int stationNumber) {
+		
+	}
+	
+	// Called by AttendantView when attendant rejects bags. CustomerView should be signalled and
+	// customer should be prompted to remove bags.
+	public void bagsRejected(int stationNumber) {
+		
+	}
+	
 }

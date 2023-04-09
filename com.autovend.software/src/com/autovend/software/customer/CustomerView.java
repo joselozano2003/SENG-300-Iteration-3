@@ -27,15 +27,115 @@
  * Tran, Kevin (30146900)
  */
 package com.autovend.software.customer;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.text.*;
+
+import com.autovend.software.GUI.AddItemByBrowsing;
 
 public class CustomerView {
+	
+	public static void main(String[] args) {
+		CustomerView testView = new CustomerView();
+	}
+	public CustomerView() {
+		
+		{
+			
+			JFrame mainFrame = new JFrame("CUSTOMER I/O INTERFACE [DEV BUILD]");	
+			JPanel mainPanel = new JPanel();
+			JLabel cartLabel = new JLabel();
+			JLabel searchLabel = new JLabel();
+			JLabel totalLabel = new JLabel();
+			JPanel cartPanel = new JPanel();
+			
+			cartLabel.setText("Current Items in Cart: ");
+			searchLabel.setText("Search for item: ");
+			totalLabel.setText("Current Total: $0.00 CAD");
+		    	    
+		    mainFrame.setLocationRelativeTo(null);
+		    mainFrame.setDefaultCloseOperation(mainFrame.EXIT_ON_CLOSE);
+		    
+		    cartPanel.setLayout(new BoxLayout(cartPanel,BoxLayout.PAGE_AXIS));
+		    
+		    mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.LINE_AXIS));
+		    
+		    JPanel buttonPanel = new JPanel();
+		    buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.PAGE_AXIS));
+		   
+		    JButton searchBrowseButton = new JButton("by Browsing");
+		    JButton searchPLUButton = new JButton("by PLU code");
+		    JButton purchaseBagButton = new JButton("Purchase Bag");
+		    JButton addOwnBagsButton = new JButton("Add own Bags");
+		    JButton paymentButton = new JButton("Proceed to Payment");
+		    
+		    searchBrowseButton.setSize(100,200);
+		    searchPLUButton.setSize(100,200);
+		    addOwnBagsButton.setSize(100,200);
+		    paymentButton.setSize(100,200);
+		    
+		    
+		    
+		    cartPanel.setBorder(new TitledBorder(new EtchedBorder (),"Cart"));
 
-	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
+		    JTextArea cartDis = new JTextArea(32, 58);
+		    cartDis.setEditable(false); 
+		    JScrollPane scrollBar = new JScrollPane(cartDis);
+		    scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		    
+		    cartPanel.add(Box.createVerticalStrut(10));
+		    cartPanel.add(cartLabel);
+		    cartLabel.setAlignmentX(cartPanel.LEFT_ALIGNMENT);
+		    cartPanel.add(Box.createVerticalStrut(10));
+		    cartPanel.add(scrollBar);
+		    cartPanel.add(Box.createVerticalStrut(10));
+		    cartPanel.add(totalLabel);
+		    cartPanel.add(Box.createVerticalStrut(10));
+		    
+		    
+		    mainPanel.add(Box.createHorizontalStrut(10));
+		    mainPanel.add(cartPanel);
+		    mainPanel.add(Box.createHorizontalStrut(10));
+		    mainPanel.add(buttonPanel);
+		    mainPanel.add(Box.createHorizontalStrut(10));
+		    
+		    
+		    searchLabel.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(searchLabel);
+		    buttonPanel.add(Box.createVerticalStrut(10));
+		    buttonPanel.add(searchBrowseButton);
+		    searchBrowseButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(Box.createVerticalStrut(10));
+		    buttonPanel.add(searchPLUButton);
+		    searchPLUButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(Box.createVerticalStrut(90));
+		    buttonPanel.add(purchaseBagButton);
+		    purchaseBagButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(Box.createVerticalStrut(10));
+		    buttonPanel.add(addOwnBagsButton);
+		    addOwnBagsButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(Box.createVerticalStrut(90));
+		    buttonPanel.add(paymentButton);
+		    paymentButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
+		    buttonPanel.add(Box.createVerticalStrut(10));
+		    mainFrame.add(mainPanel);
+		    mainFrame.setResizable(false);
+		    mainFrame.setSize(900,600);
+		    mainFrame.setVisible(true);
+		    
+		    searchBrowseButton.addActionListener(new ActionListener() {
+		    	public void actionPerformed(ActionEvent e) {
+		    		AddItemByBrowsing browseWindow = new AddItemByBrowsing();
+		    		mainFrame.setVisible(false);
+		    	}
+		    });
+		    
+		}
 		
 	}
-	
-	//view for customer
-	
-
 }

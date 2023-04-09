@@ -40,13 +40,13 @@ import com.autovend.products.BarcodedProduct;
 @SuppressWarnings("serial")
 public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
-    public ByScanning(SelfCheckoutStation station) {
-		super(station, true);
+    protected ByScanning(SelfCheckoutStation station) {
+		super(station);
 		try {
 			station.mainScanner.register(this);
 			station.handheldScanner.register(this);
 		} catch (Exception e) {
-			for (ItemEventListener listener : listeners)
+			for (ItemListener listener : listeners)
 				listener.reactToHardwareFailure();
 		}
 	}
@@ -59,14 +59,29 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
     @Override
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
-        BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
-        if(barcodedProduct != null) {
-        	for (ItemEventListener listener : listeners)
-				listener.onItemAddedEvent(barcodedProduct, 1);;
-        }
-		else {
-			for (ItemEventListener listener : listeners)
-				listener.reactToInvalidBarcode(barcodedProduct, 1);
-		}
+
+    	//check if the barcode exists in the database
+    	if (ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)) {
+    		BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+    		
+        	addProduct(barcodedProduct); //add item to item list
+			adjustExpectedWeight(barcodedProduct.getExpectedWeight()); //updated expected weight
+			adjustTotalCost(barcodedProduct.getPrice()); //updated total cost of item list
+			
+			//announce event of an item being added
+			for (ItemListener listener : listeners)
+				listener.reactToItemAdded(barcodedProduct);
+    	} else {
+        	//announce event of an invalid barcode being scanned
+			for (ItemListener listener : listeners)
+				listener.reactToInvalidBarcodScanned(barcode);
+    	}
+    	
+        //check valid
+        //if valid then add to cart
+        // ItemAddedEvent
+        //else
+        // invalidBarcodeEvent
+
     }
 }
