@@ -313,6 +313,8 @@ public class CustomerController
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 		setState(State.FINISHED);
+		inkUsed += getInkUsed(receiptText);
+		paperUsed += getPaperUsed(receiptText);
 
 		// To "see" the receipt, uncomment the line below
 		//System.out.println(receiptText.toString());
@@ -406,6 +408,28 @@ public class CustomerController
 		else {
 			return false;
 		}
+	}
+
+	public int getInkUsed(StringBuilder sb){
+		int inkCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (!Character.isWhitespace(c)) {
+				inkCount++;
+			}
+		}
+		return inkCount;
+	}
+
+	public int getPaperUsed(StringBuilder sb){
+		int paperCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (c == '\n') {
+				paperCount++;
+			}
+		}
+		return paperCount;
 	}
 
 }
