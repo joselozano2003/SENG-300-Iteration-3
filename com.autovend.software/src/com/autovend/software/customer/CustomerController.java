@@ -62,7 +62,7 @@ public class CustomerController
 	List<ItemFacade> itemAdditionMethods;
 
 	public enum State {
-		INITIAL, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED, DISABLED,
+		INITIAL, SCANNING_MEMBERSHIP, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED, DISABLED,
 	}
 
 	private State currentState;
@@ -97,6 +97,8 @@ public class CustomerController
 
 		switch (newState) {
 		case INITIAL:
+			break;
+		case SCANNING_MEMBERSHIP:
 			break;
 		case ADDING_ITEMS:
 			break;
