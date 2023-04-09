@@ -19,6 +19,7 @@ import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
 import com.autovend.Numeral;
+import com.autovend.ReusableBag;
 import com.autovend.devices.BillDispenser;
 import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
@@ -35,6 +36,7 @@ import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
@@ -60,6 +62,7 @@ public class SomeBasicTests {
 
 	public BarcodedProduct barcodeProduct;
 	public BarcodedProduct barcodeProduct2;
+	public ReusableBagProduct bagProduct;
 
 	public PLUCodedProduct pluProduct;
 	public CardIssuer credit;
@@ -86,6 +89,11 @@ public class SomeBasicTests {
 				scaleMaximumWeight, scaleSensitivity);
 
 		bagDispenser = new ReusableBagDispenser(100);
+		int n = 0;
+		while (n < 100) {
+			bagDispenser.load(new ReusableBag());
+			n++;
+		}
 
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
 		Barcode barcode = new Barcode(code1);
@@ -98,6 +106,8 @@ public class SomeBasicTests {
 		barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
 		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+
+		bagProduct = new ReusableBagProduct();
 
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
@@ -137,6 +147,7 @@ public class SomeBasicTests {
 			}
 		}
 
+		// Load printer with ink and paper
 		ReceiptPrinter printer = selfCheckoutStation.printer;
 		try {
 			// Initialize ink amount to 1000
@@ -348,6 +359,25 @@ public class SomeBasicTests {
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
 
 		assertEquals(State.DISABLED, customerSessionController.getCurrentState());
+
+	}
+
+	@Test
+	public void dispenseBagsTest() throws InterruptedException {
+		customerSessionController.purchaseBags(2);
+		Thread.sleep(3000);
+
+		selfCheckoutStation.baggingArea.add(new ReusableBag());
+		selfCheckoutStation.baggingArea.add(new ReusableBag());
+
+		assertEquals(1, currentSession.getShoppingCart().size());
+
+		Thread.sleep(5000);
+
+		customerSessionController.startPaying();
+
+		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
+		selfCheckoutStation.coinSlot.accept(coin);
 
 	}
 
