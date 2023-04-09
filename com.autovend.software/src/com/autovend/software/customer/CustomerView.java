@@ -37,8 +37,11 @@ import javax.swing.border.*;
 import javax.swing.text.*;
 
 import com.autovend.software.GUI.AddItemByBrowsing;
+import com.autovend.software.GUI.StartScreen;
 
 public class CustomerView {
+	
+	private JFrame mainFrame;
 	
 	public static void main(String[] args) {
 		CustomerView testView = new CustomerView();
@@ -47,7 +50,7 @@ public class CustomerView {
 		
 		{
 			
-			JFrame mainFrame = new JFrame("CUSTOMER I/O INTERFACE [DEV BUILD]");	
+			mainFrame = new JFrame("CUSTOMER I/O INTERFACE [DEV BUILD]");	
 			JPanel mainPanel = new JPanel();
 			JLabel cartLabel = new JLabel();
 			JLabel searchLabel = new JLabel();
@@ -126,16 +129,22 @@ public class CustomerView {
 		    mainFrame.add(mainPanel);
 		    mainFrame.setResizable(false);
 		    mainFrame.setSize(900,600);
-		    mainFrame.setVisible(true);
+		    mainFrame.setVisible(false);
+		    StartScreen startScreen = new StartScreen(this);
 		    
 		    searchBrowseButton.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent e) {
 		    		AddItemByBrowsing browseWindow = new AddItemByBrowsing();
+		    		browseWindow.addItemByBrowsing();
 		    		mainFrame.setVisible(false);
 		    	}
 		    });
 		    
 		}
 		
+	}
+	
+	public void appearMain() {
+		mainFrame.setVisible(true);
 	}
 }

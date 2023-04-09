@@ -1,18 +1,22 @@
 package com.autovend.software.GUI;
 
 import com.autovend.software.customer.CustomerSession;
+import com.autovend.software.customer.CustomerView;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class StartScreen extends JPanel{
+public class StartScreen {
+	JFrame thisFrame = new JFrame();
     JPanel jPanel = new JPanel();
     CustomerSession session = new CustomerSession();
 
-    public StartScreen(CustomerSession session) {
+    public StartScreen(CustomerView view) {
 
     	
    	 jPanel.setForeground(new Color(65, 73, 96));
@@ -44,6 +48,18 @@ public class StartScreen extends JPanel{
         title.setForeground(new Color(98, 145, 139));
         title.setBounds(6,20,1268,300);
         jPanel.add(title);
+        thisFrame.add(jPanel);
+        thisFrame.pack();
+        thisFrame.setVisible(true);
+        
+        
+        
+        goToMainScreen.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		thisFrame.setVisible(false);
+        		view.appearMain();
+        	}
+        });
 
 
 
