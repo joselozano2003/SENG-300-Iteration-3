@@ -41,7 +41,7 @@ import com.autovend.software.GUI.StartScreen;
 
 public class CustomerView {
 	
-	private JFrame mainFrame;
+	public JFrame mainFrame;
 	
 	public static void main(String[] args) {
 		CustomerView testView = new CustomerView();
@@ -49,6 +49,8 @@ public class CustomerView {
 	public CustomerView() {
 		
 		{
+			
+			CustomerView customerView = this;
 			
 			mainFrame = new JFrame("CUSTOMER I/O INTERFACE [DEV BUILD]");	
 			JPanel mainPanel = new JPanel();
@@ -61,7 +63,7 @@ public class CustomerView {
 			searchLabel.setText("Search for item: ");
 			totalLabel.setText("Current Total: $0.00 CAD");
 		    	    
-		    mainFrame.setLocationRelativeTo(null);
+		    
 		    mainFrame.setDefaultCloseOperation(mainFrame.EXIT_ON_CLOSE);
 		    
 		    cartPanel.setLayout(new BoxLayout(cartPanel,BoxLayout.PAGE_AXIS));
@@ -130,12 +132,13 @@ public class CustomerView {
 		    mainFrame.setResizable(false);
 		    mainFrame.setSize(900,600);
 		    mainFrame.setVisible(false);
+		    mainFrame.setLocationRelativeTo(null);
 		    StartScreen startScreen = new StartScreen(this);
 		    
 		    searchBrowseButton.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent e) {
 		    		AddItemByBrowsing browseWindow = new AddItemByBrowsing();
-		    		browseWindow.addItemByBrowsing();
+		    		browseWindow.addItemByBrowsing(customerView);
 		    		mainFrame.setVisible(false);
 		    	}
 		    });

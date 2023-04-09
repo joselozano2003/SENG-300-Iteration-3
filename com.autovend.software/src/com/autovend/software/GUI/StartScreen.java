@@ -15,17 +15,21 @@ public class StartScreen {
 	JFrame thisFrame = new JFrame();
     JPanel jPanel = new JPanel();
     CustomerSession session = new CustomerSession();
+    
+    int WIDTH = 1280;
+    int HEIGHT = 720;
 
     public StartScreen(CustomerView view) {
-
     	
+     
    	 jPanel.setForeground(new Color(65, 73, 96));
      jPanel.setBackground(new Color(65, 73, 96));
-     jPanel.setMinimumSize(new Dimension(1280, 720));
-     jPanel.setMaximumSize(new Dimension(1280, 720));
-     jPanel.setPreferredSize(new Dimension(1280, 720));
-     jPanel.setSize(new Dimension(1280, 720));
+     jPanel.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+     jPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+     jPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+     jPanel.setSize(new Dimension(WIDTH, HEIGHT));
      jPanel.setLayout(null);
+     
 
         JButton goToMainScreen = new JButton("Start");
         goToMainScreen.addMouseListener(new MouseAdapter() {
@@ -51,6 +55,7 @@ public class StartScreen {
         thisFrame.add(jPanel);
         thisFrame.pack();
         thisFrame.setVisible(true);
+        thisFrame.setLocationRelativeTo(view.mainFrame);
         
         
         

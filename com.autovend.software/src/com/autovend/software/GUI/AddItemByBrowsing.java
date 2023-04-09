@@ -45,16 +45,11 @@ import javax.swing.text.*;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerView;
 
 import java.math.*;
 
 public class AddItemByBrowsing {
-	
-	public static void main(String[] args) {
-		AddItemByBrowsing cv = new AddItemByBrowsing();
-		cv.addItemByBrowsing();
-		cv.cataloguePanel.add(new JLabel("Hello world"));
-	}
 	
 	// CODE TO COPY BELOW:
 	
@@ -93,7 +88,7 @@ public class AddItemByBrowsing {
     
 	// Called when add item by browsing button is pressed, this method will
 	// make calls to the controller to add items to shopping cart.
-	public void addItemByBrowsing() {
+	public void addItemByBrowsing(CustomerView view) {
     	//swing compounents needed for the GUI
     	browsingFrame = new JFrame();
     	cataloguePanel = new JPanel();
@@ -109,6 +104,7 @@ public class AddItemByBrowsing {
     	//frame set up 
     	browsingFrame.setTitle("Add Item By Browsing");
     	browsingFrame.setSize(1500,750);
+    	
     	browsingFrame.setLayout(null);
     	browsingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     	
@@ -185,6 +181,7 @@ public class AddItemByBrowsing {
 		browsingFrame.add(nextPanel);
 		browsingFrame.add(previousPanel);
 		browsingFrame.setVisible(true);
+		browsingFrame.setLocationRelativeTo(view.mainFrame);
 	}
 	
 	
