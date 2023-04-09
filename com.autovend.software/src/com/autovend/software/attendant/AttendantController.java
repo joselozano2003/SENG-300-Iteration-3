@@ -79,8 +79,22 @@ public class AttendantController {
 		return item.removeProduct(product);
 	}
 
-	public void addInkToStation(int stationNumber, int inkLevel) throws OverloadException {
-		SelfCheckoutStation station = customerStations.get(stationNumber).getStation();
-		station.printer.addInk(inkLevel);
+	public void addInkToStation(int stationNumber, int inkLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addInk(inkLevel);
+			customerStations.get(stationNumber).getController().inkAdded += inkLevel;
+		} catch (OverloadException e) {
+			// TODO: Show attendant screen that too much ink was tried to be added
+		}
+	}
+	public void addPaperToStation(int stationNumber, int paperLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addPaper(paperLevel);
+			customerStations.get(stationNumber).getController().paperAdded += paperLevel;
+		} catch (OverloadException e) {
+			// TODO: Show attendant screen that too much paper was tried to be added
+		}
 	}
 }

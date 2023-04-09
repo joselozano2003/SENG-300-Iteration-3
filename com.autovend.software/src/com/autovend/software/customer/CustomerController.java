@@ -67,7 +67,11 @@ public class CustomerController
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
-	private int inkUsed, paperUsed, inkAdded, paperAdded;
+	private int inkUsed, paperUsed;
+	public int inkAdded, paperAdded;
+	final int ALERT_THRESHOLD = 10;
+
+
 
 	public enum State {
 
@@ -128,6 +132,7 @@ public class CustomerController
 			selfCheckoutStation.mainScanner.disable();
 
 			selfCheckoutStation.printer.disable();
+			checkLevels();
 			break;
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
@@ -387,28 +392,10 @@ public class CustomerController
 		
 	}
 
-	public boolean testResources(StringBuilder sb) {
-		int inkCount = 0;
-		int paperCount = 0;
-		for (int i = 0; i < sb.length(); i++) {
-			char c = sb.charAt(i);
-			if (!Character.isWhitespace(c)) {
-				inkCount++;
-			}
-			if (c == '\n') {
-				paperCount++;
-			}
-		}
-		// Check if the printer has enough resources to print the receipt
-		if ((inkCount + inkUsed < inkAdded) && (paperCount + paperUsed < paperAdded)) {
-			inkUsed += inkCount;
-			paperUsed += paperCount;
-			return true;
-		}
-		else {
-			return false;
-		}
+	public SelfCheckoutStation getStation() {
+		return this.selfCheckoutStation;
 	}
+
 
 	public int getInkUsed(StringBuilder sb){
 		int inkCount = 0;
@@ -432,4 +419,13 @@ public class CustomerController
 		return paperCount;
 	}
 
+	public void checkLevels(){
+		int inkLevel = inkAdded - inkUsed;
+		int paperLevel = paperAdded - paperUsed;
+
+		if (inkLevel < ALERT_THRESHOLD || paperLevel < ALERT_THRESHOLD){
+			setState(State.DISABLED);
+			// TODO: notify attendant & change state to disabled
+		}
+	}
 }
