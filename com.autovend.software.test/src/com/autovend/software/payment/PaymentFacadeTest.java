@@ -103,7 +103,6 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void addAmountDueTest() {
-		PaymentFacade paymentFacade = new PaymentFacade(station, false);
 		BigDecimal amountToAdd = BigDecimal.valueOf(12.50);
 		paymentFacade.addAmountDue(amountToAdd);
 		BigDecimal actual = paymentFacade.getAmountDue();
@@ -116,7 +115,6 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void subtractAmountDueTest() {
-		PaymentFacade paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.addAmountDue(BigDecimal.valueOf(25.50));
 		paymentFacade.subtractAmountDue(BigDecimal.valueOf(10.50));
 		BigDecimal actual = paymentFacade.getAmountDue();
@@ -130,7 +128,6 @@ public class PaymentFacadeTest {
 	 */
 	@Test (expected = IllegalArgumentException.class)
 	public void testNegativeChange() {
-		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(-1));
 	}
 	
@@ -144,8 +141,6 @@ public class PaymentFacadeTest {
 		station.billDispensers.forEach((k,v) -> v.register(bdstub));
 		CoinDispenserObserverStub cdstub = new CoinDispenserObserverStub();
 		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
-		
-		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(0)));
 	}
@@ -160,23 +155,25 @@ public class PaymentFacadeTest {
 		station.billDispensers.forEach((k,v) -> v.register(bdstub));
 		CoinDispenserObserverStub cdstub = new CoinDispenserObserverStub();
 		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
-		
-		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.dispenseChange(BigDecimal.valueOf(16.55));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(16.55)));
 	}
 	
 	/**
 	 * Test dispenseChange() when the input requires a coin to be
-	 * dispensed with a denomination lower than the smallest available one
+	 * dispensed with a denomination lower than the smallest available one.
+	 * Expect the smallest available coin denomination to be dispensed.
 	 */
 	@Test
 	public void testChangeLowerThanDenominations() {
-		paymentFacade = new PaymentFacade(station, false);
 		paymentFacade.register(new PaymentEventListenerStub());
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0.04));
-		// TODO assertEquals(1, changeDispensedFailCounter);
+		System.out.println(changeCounter);
+		System.out.println(changeDispensedCounter);
+		assertTrue(changeCounter.equals(BigDecimal.valueOf(0.05)));
 	}
+	
+	// Add more tests for exception cases (Overload, disabled, empty, etc.)
 	
 	
 	
