@@ -28,15 +28,24 @@
  */
 package com.autovend.software.item;
 
+import static org.junit.Assert.assertEquals;
+
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.Barcode;
+import com.autovend.Numeral;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
 
 public class ByScanningTest {
 	private SelfCheckoutStation station;
 	private ByScanning byScanning;
+	private int found;
 	
 	@Before
 	public void setup() {
@@ -49,6 +58,29 @@ public class ByScanningTest {
 	@Test (expected = NullPointerException.class)
 	public void testNullContruction() {
 		new ByScanning(null);
+	}
+	
+	/**
+	 * Pre: Call item facade to add two different products.
+	 * Expected: onItemAddedEvent is called with correct product each time.
+	 */
+	@Test
+	public void testEventItemAdded() {
+		BarcodedProduct barcodedProduct123 = Setup.createBarcodedProduct123(1.00, 15, true);
+		BarcodedProduct barcodedProduct456 = Setup.createBarcodedProduct456(5.5, 20, true);
+		
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+				if (found == 1)
+					assertEquals(barcodedProduct123, product);
+				if (found == 2)
+					assertEquals(barcodedProduct456, product);
+			}});
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct123.getBarcode());
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct456.getBarcode());
+		assertEquals(2, found);
 	}
 
 }
