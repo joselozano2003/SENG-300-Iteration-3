@@ -43,6 +43,7 @@ public class AttendantController {
 	private AttendantModel model;
 	private AttendantView view;
 	private AuthFacade auth;
+	//testing
 
 	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
 		if (model == null || view == null || list == null)
