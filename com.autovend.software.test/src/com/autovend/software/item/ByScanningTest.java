@@ -32,12 +32,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.Barcode;
 import com.autovend.Numeral;
+import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
@@ -53,6 +56,13 @@ public class ByScanningTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		byScanning = new ByScanning(station);
+	}
+	
+	@After
+	public void teardown() {
+		station = null;
+		byScanning = null;
+		found = 0;
 	}
 	
 	@Test (expected = NullPointerException.class)
@@ -82,5 +92,76 @@ public class ByScanningTest {
 		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct456.getBarcode());
 		assertEquals(2, found);
 	}
-
+	
+	@Test
+	public void testEventItemNotFound() {
+		int expected = 1;
+		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(27.99, 10, false);
+		
+		// Code inside the override doesn't get reached, seems as though onItemNotFound 
+		// is not used in ByScanning.java at all
+		// This test fail fail
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void onItemNotFoundEvent() {
+				found++;
+			}
+		});
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct0.getBarcode());
+		assertEquals(expected, found);
+	}
+	
+	// This test fails, code inside override doesn't get reached
+	// not sure if I did the stub right
+	@Test
+	public void testEventDisabled() {
+		int expected = 1;
+		BarcodedProduct barcodedProduct1 = Setup.createBarcodedProduct123(12.91, 5, true);
+		
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+				found++;
+			}
+		});
+		
+		station.mainScanner.disable();
+		byScanning.reactToDisabledEvent(station.mainScanner);
+		assertEquals(expected, found);
+	}
+	
+	// This test fails, code inside override doesn't get reached
+	// not sure if I did the stub right
+	@Test
+	public void testEventEnabled() {
+		int expected = 1;
+		BarcodedProduct barcodedProduct2 = Setup.createBarcodedProduct123(12.91, 5, true);
+		
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+				found++;
+			}
+		});
+		
+		station.mainScanner.enable();
+		byScanning.reactToEnabledEvent(station.mainScanner);
+		assertEquals(expected, found);
+	}
+	
+	@Test
+	public void testEventAddValidItemAndNullItem() {
+		int expected = 1;
+		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
+		
+		byScanning.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
+		
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct3.getBarcode());
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
+		assertEquals(expected, found);
+	}	
 }
