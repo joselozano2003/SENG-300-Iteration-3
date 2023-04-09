@@ -44,13 +44,14 @@ public class AttendantController {
 	private AttendantView view;
 	private AuthFacade auth;
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
+	public AttendantController(AttendantModel model, List<CustomerStationLogic> list) {
+		if (model == null || list == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;
-		this.view = view;
 		this.auth = new AuthFacade();
 		customerStations = list;
+		// Construct attendant view. For now, just set language to english.
+		this.view = new AttendantView(this, customerStations.size(), "ENG");
 	}
 
 	public void startupStation(/* station */) {
