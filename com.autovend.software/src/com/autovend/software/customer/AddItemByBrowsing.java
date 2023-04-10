@@ -68,6 +68,7 @@ public class CustomerView {
 	JPanel nextPanel;
 	JButton nextButton;
 	JButton previousButton;
+	JLabel searchLabel;
 	JButton itemButtons[] = new JButton[MAX_ITEMS];
 	int num_items = 0;			// Actual number of items to display on screen.
 	
@@ -84,7 +85,7 @@ public class CustomerView {
     static Collection<PLUCodedProduct> products = ProductDatabases.PLU_PRODUCT_DATABASE.values();
 	
     // Catalogue currently being displayed to customer.
-    Collection<PLUCodedProduct> catalogue;
+    ArrayList<PLUCodedProduct> catalogue;
     
     // Tracks page number we're currently on in the catalogue.
     int page_number = 1;
@@ -101,6 +102,7 @@ public class CustomerView {
     	nextPanel = new JPanel();
     	
     	JLabel Title = new JLabel();
+    	searchLabel = new JLabel("");
     	// Item buttons will be placed in the catalogue panel.
     	cataloguePanel.setLayout(new GridLayout(5,5, 2, 2)); 
     	letterPanel.setLayout(new GridLayout(0,26, 2, 2));
@@ -186,6 +188,7 @@ public class CustomerView {
 		//adding everything to the main frame 
 		//browsingFrame.pack();
 		browsingFrame.add(Title);
+		browsingFrame.add(searchLabel);
 		browsingFrame.add(letterPanel);	
 		browsingFrame.add(cataloguePanel);
 		browsingFrame.add(nextPanel);
@@ -250,13 +253,14 @@ public class CustomerView {
     // Update catalogue based on current contents of stringEntered.
     // Search database and update items list.
     private void updateCatalogue() {
+    	// Begin by clearing catalogue.
+    	catalogue.clear();
     	// We have a collection of PLUCodedProducts. search by description.
-    	PLUCodedProduct[] productArray = (PLUCodedProduct[]) products.toArray();
-    	for (int i = 0; i < productArray.length; ++i) {
+    	for (PLUCodedProduct product : products) {
     		// If first stringEntered.length letters are the same, add to catalogue.
-    		if (stringEntered.toString() == productArray[i].getDescription().substring(0, stringEntered.size())) {
+    		if (stringEntered.toString() == product.getDescription().substring(0, stringEntered.size())) {
     			// Match! Add to catalogue.
-    			catalogue.add(productArray[i]);
+    			catalogue.add(product);
     		}
     	}
     	num_items = catalogue.size();
@@ -265,20 +269,19 @@ public class CustomerView {
     
     // Display current catalogue based on items list and current page number.
     public void displayCatalogue() {
-    	PLUCodedProduct[] catArray = (PLUCodedProduct[]) catalogue.toArray();
     	// Display all items in range [(page_number - 1)*MAX_ITEMS, page_number*MAX_ITEMS)
     	for (int i = (page_number - 1)*MAX_ITEMS; i < page_number*MAX_ITEMS; ++i) {
     		// Create button with product description.
-    		itemButtons[i] = new JButton(catArray[i].getDescription());
+    		itemButtons[i] = new JButton(catalogue.get(i).getDescription());
     		// Set action of button...
-    		ItemButtonListener listener = new ItemButtonListener(catArray[i]);
+    		ItemButtonListener listener = new ItemButtonListener(catalogue.get(i));
     		itemButtons[i].addActionListener(listener);
     		// Add button to catalogue panel.
     		cataloguePanel.add(itemButtons[i]);
     	}
     	
-    	// TO BE ADDED: PRINT stringEntered somewhere on the screen so that user can
-    	// see what they are typing.
+    	// Update searchLabel to be stringEntered.
+    	searchLabel.setText(stringEntered.toString());
     	
     }
 	
