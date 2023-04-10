@@ -43,12 +43,18 @@ import com.autovend.software.GUI.StartScreen;
 public class CustomerView {
 	
 	public JFrame mainFrame;
+	private JPanel waitPanel;
+	private JPanel mainPanel;
+	private JTextArea cartDis;
 	
 	public static void main(String[] args) {
 		TouchScreen tScreen = new TouchScreen();
 		CustomerView mainView = new CustomerView(tScreen.getFrame());
 		tScreen.getFrame().setLayout(new OverlayLayout(tScreen.getFrame().getContentPane()));
 		tScreen.getFrame().setVisible(true);
+		mainView.updateCart();
+		mainView.updateCart();
+		mainView.updateCart();
 	}
 	public CustomerView(JFrame touchFrame) {
 		
@@ -57,15 +63,22 @@ public class CustomerView {
 			CustomerView customerView = this;
 			
 			mainFrame = touchFrame;
-			JPanel mainPanel = new JPanel();
+			mainPanel = new JPanel();
 			JLabel cartLabel = new JLabel();
 			JLabel searchLabel = new JLabel();
 			JLabel totalLabel = new JLabel();
 			JPanel cartPanel = new JPanel();
+			waitPanel = new JPanel();
+			
+			JLabel waitLabel = new JLabel();
+			
+			waitLabel.setText("Please wait for an attendant to verify your station.");
 			
 			cartLabel.setText("Current Items in Cart: ");
 			searchLabel.setText("Search for item: ");
 			totalLabel.setText("Current Total: $0.00 CAD");
+			
+			waitPanel.setLayout(new BoxLayout(waitPanel,BoxLayout.LINE_AXIS));
 		    
 		    cartPanel.setLayout(new BoxLayout(cartPanel,BoxLayout.PAGE_AXIS));
 		    
@@ -82,10 +95,12 @@ public class CustomerView {
 		    
 		    cartPanel.setBorder(new TitledBorder(new EtchedBorder (),"Cart"));
 
-		    JTextArea cartDis = new JTextArea(32, 58);
+		    cartDis = new JTextArea(32, 58);
 		    cartDis.setEditable(false); 
 		    JScrollPane scrollBar = new JScrollPane(cartDis);
 		    scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		    
+		    waitPanel.add(waitLabel);
 		    
 		    cartPanel.add(Box.createVerticalStrut(10));
 		    cartPanel.add(cartLabel);
@@ -123,7 +138,8 @@ public class CustomerView {
 		    paymentButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
 		    buttonPanel.add(Box.createVerticalStrut(10));
 		    mainFrame.add(mainPanel);
-		    // mainFrame.validate();
+		    mainFrame.add(waitPanel);
+		    waitPanel.setVisible(false);
 		    mainFrame.validate();
 		    
 		    searchBrowseButton.addActionListener(new ActionListener() {
@@ -140,5 +156,20 @@ public class CustomerView {
 	
 	public void appearMain() {
 		mainFrame.setVisible(true);
+	}
+	
+	public void waitForAttendant() {
+		mainPanel.setVisible(false);
+		waitPanel.setVisible(true);
+		
+	}
+	
+	public void attendantVerified() {
+		mainPanel.setVisible(true);
+		waitPanel.setVisible(false);
+	}
+	
+	public void updateCart() {
+		cartDis.insert("Test\n",0);
 	}
 }

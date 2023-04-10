@@ -27,7 +27,6 @@
  * Tran, Kevin (30146900)
  */
 package com.autovend.software.GUI;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -49,7 +48,7 @@ import com.autovend.software.customer.CustomerView;
 
 import java.math.*;
 
-public class AddItemByBrowsing extends JPanel {
+public class AddItemByBrowsing {
 	
 	// CODE TO COPY BELOW:
 	
@@ -58,7 +57,6 @@ public class AddItemByBrowsing extends JPanel {
 	
 	CustomerController controller;
 	
-	JFrame browsingFrame;
 	JPanel browsingPanel;
 	JPanel cataloguePanel;
 	JPanel letterPanel;
@@ -66,6 +64,7 @@ public class AddItemByBrowsing extends JPanel {
 	JPanel nextPanel;
 	JButton nextButton;
 	JButton previousButton;
+	JLabel searchLabel;
 	JButton itemButtons[] = new JButton[MAX_ITEMS];
 	int num_items = 0;			// Actual number of items to display on screen.
 	
@@ -76,12 +75,13 @@ public class AddItemByBrowsing extends JPanel {
     	    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
     	    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
     JButton[] letterButtons = new JButton[letters.length];
+    JButton deleteButton;
     
     // Get collection of products to display.
     static Collection<PLUCodedProduct> products = ProductDatabases.PLU_PRODUCT_DATABASE.values();
 	
     // Catalogue currently being displayed to customer.
-    Collection<PLUCodedProduct> catalogue;
+    ArrayList<PLUCodedProduct> catalogue;
     
     // Tracks page number we're currently on in the catalogue.
     int page_number = 1;
@@ -89,10 +89,8 @@ public class AddItemByBrowsing extends JPanel {
     
 	// Called when add item by browsing button is pressed, this method will
 	// make calls to the controller to add items to shopping cart.
-	public void addItemByBrowsing(CustomerView view) {
+	public void addItemByBrowsing(CustomerView cusView) {
     	//swing compounents needed for the GUI
-		
-		browsingFrame = view.mainFrame;
     	browsingPanel = new JPanel();
     	cataloguePanel = new JPanel();
     	letterPanel = new JPanel();
@@ -100,26 +98,23 @@ public class AddItemByBrowsing extends JPanel {
     	nextPanel = new JPanel();
     	
     	JLabel Title = new JLabel();
+    	searchLabel = new JLabel("");
     	// Item buttons will be placed in the catalogue panel.
     	cataloguePanel.setLayout(new GridLayout(5,5, 2, 2)); 
     	letterPanel.setLayout(new GridLayout(0,26, 2, 2));
     	
     	//frame set up 
-    	
     	browsingPanel.setLayout(null);
     	
     	//icon set up currently with a bug 
-    	ImageIcon logoIcon = new ImageIcon("logo.png");
-    	
+    	ImageIcon logoIcon = new ImageIcon("logo.png"); 
     	//Title for the page set up 
 		Title.setText("Store Catalogue");
 		Title.setFont(new Font("Mv Boli",Font.PLAIN,20));
 		//Title.setVerticalAlignment(JLabel.TOP);
 		//Title.setHorizontalAlignment(JLabel.CENTER);
 		Title.setBounds(650, 25, 200, 50); //set x,y position within a frame as well as dimensions
-		
-		
-		//butons set up for panel search by letter and catalogue panel 
+		 
 		letterPanel.setBackground(Color.WHITE);
 		letterPanel.setBounds(75,190,1250,100);
 		
@@ -167,19 +162,28 @@ public class AddItemByBrowsing extends JPanel {
 		// Buttons will be added to this list as customer types in letters.
 		num_items = 0;
 		
-		//current widgets to the GUI
+		// Add letter buttons.
 		addAlphabet();
+		// Add delete button.
+		deleteButton = new JButton("Delete");
+		deleteButton.addActionListener(e -> {
+			// When delete button is pressed, pop a character from entered string and update display.
+			stringEntered.remove(stringEntered.size() - 1);
+			// Update catalogue and display.
+			updateCatalogue();
+			displayCatalogue();
+		});
 		
 		//adding everything to the main frame 
 		//browsingFrame.pack();
+		cusView.mainFrame.add(browsingPanel);
 		browsingPanel.add(Title);
+		browsingPanel.add(searchLabel);
 		browsingPanel.add(letterPanel);	
 		browsingPanel.add(cataloguePanel);
 		browsingPanel.add(nextPanel);
 		browsingPanel.add(previousPanel);
-		browsingFrame.add(browsingPanel);
 		browsingPanel.setVisible(true);
-		browsingFrame.validate();
 	}
 	
 	
@@ -239,13 +243,14 @@ public class AddItemByBrowsing extends JPanel {
     // Update catalogue based on current contents of stringEntered.
     // Search database and update items list.
     private void updateCatalogue() {
+    	// Begin by clearing catalogue.
+    	catalogue.clear();
     	// We have a collection of PLUCodedProducts. search by description.
-    	PLUCodedProduct[] productArray = (PLUCodedProduct[]) products.toArray();
-    	for (int i = 0; i < productArray.length; ++i) {
+    	for (PLUCodedProduct product : products) {
     		// If first stringEntered.length letters are the same, add to catalogue.
-    		if (stringEntered.toString() == productArray[i].getDescription().substring(0, stringEntered.size())) {
+    		if (stringEntered.toString() == product.getDescription().substring(0, stringEntered.size())) {
     			// Match! Add to catalogue.
-    			catalogue.add(productArray[i]);
+    			catalogue.add(product);
     		}
     	}
     	num_items = catalogue.size();
@@ -254,17 +259,20 @@ public class AddItemByBrowsing extends JPanel {
     
     // Display current catalogue based on items list and current page number.
     public void displayCatalogue() {
-    	PLUCodedProduct[] catArray = (PLUCodedProduct[]) catalogue.toArray();
     	// Display all items in range [(page_number - 1)*MAX_ITEMS, page_number*MAX_ITEMS)
     	for (int i = (page_number - 1)*MAX_ITEMS; i < page_number*MAX_ITEMS; ++i) {
     		// Create button with product description.
-    		itemButtons[i] = new JButton(catArray[i].getDescription());
+    		itemButtons[i] = new JButton(catalogue.get(i).getDescription());
     		// Set action of button...
-    		ItemButtonListener listener = new ItemButtonListener(catArray[i]);
+    		ItemButtonListener listener = new ItemButtonListener(catalogue.get(i));
     		itemButtons[i].addActionListener(listener);
     		// Add button to catalogue panel.
     		cataloguePanel.add(itemButtons[i]);
     	}
+    	
+    	// Update searchLabel to be stringEntered.
+    	searchLabel.setText(stringEntered.toString());
+    	
     }
 	
 	
