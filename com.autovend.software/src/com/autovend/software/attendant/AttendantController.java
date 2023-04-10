@@ -30,7 +30,10 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.devices.OverloadException;
+import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
+import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
 
@@ -76,5 +79,27 @@ public class AttendantController {
 
 	public boolean startRemoveItem(ItemFacade item, Product product) {
 		return item.removeProduct(product);
+	}
+
+	// This is triggered from the INITIAL state
+	public void addInkToStation(int stationNumber, int inkLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addInk(inkLevel);
+			customerStations.get(stationNumber).getController().inkAdded += inkLevel;
+			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+		} catch (OverloadException e) {
+			// TODO: Show attendant screen that too much ink was tried to be added
+		}
+	}
+	public void addPaperToStation(int stationNumber, int paperLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addPaper(paperLevel);
+			customerStations.get(stationNumber).getController().paperAdded += paperLevel;
+			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+		} catch (OverloadException e) {
+			// TODO: Show attendant screen that too much paper was tried to be added
+		}
 	}
 }
