@@ -46,10 +46,10 @@ import com.autovend.products.PLUCodedProduct;
 
 import java.math.*;
 
-public class AddItemByBrowsing {
+public class CustomerView {
 	
 	public static void main(String[] args) {
-		AddItemByBrowsing cv = new AddItemByBrowsing();
+		CustomerView cv = new CustomerView();
 		cv.addItemByBrowsing();
 		cv.cataloguePanel.add(new JLabel("Hello world"));
 	}
@@ -78,6 +78,7 @@ public class AddItemByBrowsing {
     	    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
     	    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
     JButton[] letterButtons = new JButton[letters.length];
+    JButton deleteButton;
     
     // Get collection of products to display.
     static Collection<PLUCodedProduct> products = ProductDatabases.PLU_PRODUCT_DATABASE.values();
@@ -122,9 +123,7 @@ public class AddItemByBrowsing {
 		//Title.setVerticalAlignment(JLabel.TOP);
 		//Title.setHorizontalAlignment(JLabel.CENTER);
 		Title.setBounds(650, 25, 200, 50); //set x,y position within a frame as well as dimensions
-		
-		
-		//butons set up for panel search by letter and catalogue panel 
+		 
 		letterPanel.setBackground(Color.WHITE);
 		letterPanel.setBounds(75,190,1250,100);
 		
@@ -141,7 +140,7 @@ public class AddItemByBrowsing {
 		previousPanel.setLayout(null);
 		
 		// Set up previous and next buttons.
-		AddItemByBrowsing reference = this;
+		CustomerView reference = this;
     	nextButton = new JButton(">");
     	nextButton.setBounds(0, 0, 75, 130);
     	nextButton.addActionListener(e -> {
@@ -172,8 +171,17 @@ public class AddItemByBrowsing {
 		// Buttons will be added to this list as customer types in letters.
 		num_items = 0;
 		
-		//current widgets to the GUI
+		// Add letter buttons.
 		addAlphabet();
+		// Add delete button.
+		deleteButton = new JButton("Delete");
+		deleteButton.addActionListener(e -> {
+			// When delete button is pressed, pop a character from entered string and update display.
+			stringEntered.remove(stringEntered.size() - 1);
+			// Update catalogue and display.
+			updateCatalogue();
+			displayCatalogue();
+		});
 		
 		//adding everything to the main frame 
 		//browsingFrame.pack();
@@ -268,6 +276,10 @@ public class AddItemByBrowsing {
     		// Add button to catalogue panel.
     		cataloguePanel.add(itemButtons[i]);
     	}
+    	
+    	// TO BE ADDED: PRINT stringEntered somewhere on the screen so that user can
+    	// see what they are typing.
+    	
     }
 	
 	
