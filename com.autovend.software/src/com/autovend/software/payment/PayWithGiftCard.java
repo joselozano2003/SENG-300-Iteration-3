@@ -39,8 +39,6 @@ import com.autovend.devices.CardReader;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
-import com.autovend.external.CardIssuer;
-import com.autovend.software.BankIO;
 
 @SuppressWarnings("serial")
 public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
@@ -68,7 +66,7 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 			BigDecimal value = getAmountDue();
 	
 			if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
-				for (PaymentEventListener listener : listeners) {
+				for (PaymentEventListener listener : getListeners()) {
 					listener.onPaymentFailure();
 			}
 				return;
@@ -80,16 +78,16 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 				if (((GiftCardInsertData) data).deduct(value)) {
 					subtractAmountDue(value);
 					reader.remove();
-					for (PaymentEventListener listener : listeners) {
+					for (PaymentEventListener listener : getListeners()) {
 						listener.onPaymentAddedEvent(value);
 					}
 				} else {
-					for (PaymentEventListener listener : listeners) {
+					for (PaymentEventListener listener : getListeners()) {
 						listener.onPaymentFailure();
 					}
 				}
 			} catch (ChipFailureException e) {
-				for (PaymentEventListener listener : listeners) {
+				for (PaymentEventListener listener : getListeners()) {
 					listener.onPaymentFailure();
 				}
 			}

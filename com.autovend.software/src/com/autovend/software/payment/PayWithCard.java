@@ -77,27 +77,27 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 		String cardIssuerName = data.getType();
 		CardIssuer issuer = BankIO.CARD_ISSUER_DATABASE.get(cardIssuerName);
 		if (issuer == null) {
-			for (PaymentEventListener listener : listeners) {
+			for (PaymentEventListener listener : getListeners()) {
 				listener.onPaymentFailure();
 			}
 		} else {
 			int holdNumber = issuer.authorizeHold(data.getNumber(), value);
 			if (holdNumber == -1) {
-				for (PaymentEventListener listener : listeners) {
+				for (PaymentEventListener listener : getListeners()) {
 					listener.onPaymentFailure();
 				}
 			} else {
 
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
-					for (PaymentEventListener listener : listeners) {
+					for (PaymentEventListener listener : getListeners()) {
 						
 						listener.onPaymentAddedEvent(value);
 
 					}
 
 				} else {
-					for (PaymentEventListener listener : listeners) {
+					for (PaymentEventListener listener : getListeners()) {
 						listener.onPaymentFailure();
 					}
 				}

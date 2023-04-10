@@ -39,7 +39,6 @@ import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class ItemFacade extends AbstractFacade<ItemEventListener> {
-	protected static ArrayList<ItemEventListener> listeners = new ArrayList<>();
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
@@ -106,10 +105,10 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	}
 
 	/**
-	 * @return This current active instance of this class. Could be null.
+	 * @return The listeners relative to the parent instance.
 	 */
-	public static ItemFacade getInstance() {
-		return instance;
+	protected ArrayList<ItemEventListener> getListeners() {
+		return instance.listeners;
 	}
 
 }

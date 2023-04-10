@@ -62,7 +62,7 @@ class PayWithBill extends PaymentFacade implements BillDispenserObserver, BillSl
 	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
 	public void reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value) {
-		for (PaymentEventListener listener : listeners)
+		for (PaymentEventListener listener : getListeners())
 			listener.onPaymentAddedEvent(BigDecimal.valueOf(value));
 	}
 	

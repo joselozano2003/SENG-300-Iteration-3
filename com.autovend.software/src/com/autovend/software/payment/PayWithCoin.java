@@ -68,9 +68,8 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 
 	@Override
 	public void reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value) {
-		for (PaymentEventListener listener : listeners)
+		for (PaymentEventListener listener : getListeners())
 			listener.onPaymentAddedEvent(value);
-
 	}
 
 	@Override
