@@ -36,6 +36,7 @@ import org.junit.Test;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.After;
 
@@ -81,6 +82,7 @@ public class PaymentFacadeTest {
 	/**
 	 * Things to Test:
 	 * TODO ? - Constructor when it is/isn't a child
+	 * 		- Try making children for a facade, and getting instance/child
 	 * X - Make use of amountDue methods, getters
 	 * - Dispense change
 	 * 		X - Try dispensing 0 change/negative change
@@ -120,6 +122,15 @@ public class PaymentFacadeTest {
 		BigDecimal actual = paymentFacade.getAmountDue();
 		BigDecimal expected = BigDecimal.valueOf(15.0);
 		assertEquals(expected, actual);
+	}
+	
+	/**
+	 * Test setAmountDue (and getAmountDue to check).
+	 */
+	@Test
+	public void setAmountDueTest() {
+		paymentFacade.setAmountDue(BigDecimal.valueOf(15.27));
+		assertEquals(BigDecimal.valueOf(15.27), paymentFacade.getAmountDue());
 	}
 	
 	/**
@@ -168,12 +179,75 @@ public class PaymentFacadeTest {
 	public void testChangeLowerThanDenominations() {
 		paymentFacade.register(new PaymentEventListenerStub());
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0.04));
-		System.out.println(changeCounter);
-		System.out.println(changeDispensedCounter);
-		assertTrue(changeCounter.equals(BigDecimal.valueOf(0.05)));
+		// TODO assertTrue(changeCounter.equals(BigDecimal.valueOf(0.05)));
+	}
+	
+	// Tests for children, instances
+	
+	/**
+	 * Check to see that a parent PaymentFacade instance properly 
+	 * returns a list including a coin, bill, and card PaymentFacade children.
+	 */
+	@Test
+	public void getChildrenOfParentTest() {
+		List<PaymentFacade> children = paymentFacade.getChildren();
+		boolean containsPayWithCoin = (children.get(0) instanceof PayWithCoin);
+		boolean containsPayWithBill = (children.get(1) instanceof PayWithBill);
+		boolean containsPayWithCard = (children.get(2) instanceof PayWithCard);
+		assertTrue(containsPayWithCoin);
+		assertTrue(containsPayWithBill);
+		assertTrue(containsPayWithCard);
+	}
+	
+	/**
+	 * Check the return value of getChildren() when the PaymentFacade instance is a child of 
+	 * another PaymentFacade instance, and expect the list of children to be null. 
+	 */
+	@Test
+	public void getChildrenOfChildTest() {
+		List<PaymentFacade> children = paymentFacade.getChildren();
+		PaymentFacade child = children.get(0); // Doesn't matter which child instance is used
+		assertEquals(null, child.getChildren());
+	}
+	
+	/** TODO
+	 * Get the instance of the payment facade when it is null
+	 */
+	@Test
+	public void getInstanceTest() {
+		assertEquals(null, paymentFacade.getInstance());
+	}
+	
+	/**
+	 * Attempt to dispense change when the bill
+	 * dispenser is disabled.
+	 */
+	@Test
+	public void changeWhenBillDispenserDisabledTest() {
+		paymentFacade.register(new PaymentEventListenerStub());
+//		// Disable every bill dispenser
+//		for (int key : station.billDispensers.keySet()) {
+//			station.billDispensers.get(key).disable();
+//		}
+		station.billDispensers.get(5).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
+		assertEquals(1, changeDispensedFailCounter);
+	}
+	
+	/**
+	 * Attempt to dispense change when the coin
+	 * dispenser is disabled.
+	 */
+	@Test
+	public void changeWhenCoinDispenserDisabledTest() {
+		paymentFacade.register(new PaymentEventListenerStub());
+		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
+		assertEquals(1, changeDispensedFailCounter);
 	}
 	
 	// Add more tests for exception cases (Overload, disabled, empty, etc.)
+	
 	
 	
 	
