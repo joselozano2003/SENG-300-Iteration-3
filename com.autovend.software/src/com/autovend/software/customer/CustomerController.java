@@ -365,6 +365,7 @@ public class CustomerController
 
 	}
 	
+	//call this when item is too heavy for bagging, attendent IO will be called and approval will be needed before moving on
 	public void itemTooHeavyForBagging(double weightInGrams) {
 		//call attendentIO first for approval
 		
