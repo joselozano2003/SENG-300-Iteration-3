@@ -37,10 +37,13 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
+import com.autovend.external.ProductDatabases;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractFacade<MembershipListener> {
+	
+	private boolean membershipEntered = false;
 
 	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);
@@ -61,17 +64,83 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		@Override
 		public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 		@Override
-		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {}
+		
+		/**
+		 * If the system is in 'scanning for membership' mode, this function checks if a barcode exists in the current
+		 * MembershipDataBase, if it does it sets membershipEntered = true, otherwise false
+		 */
+		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+
+			if (MemberShipDatabase.userExists(barcode.toString()) == true) {
+				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(barcode.toString());
+			} else {
+				membershipEntered = false;
+				if (!ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
+			}
+		}
 		@Override
-		public void reactToCardInsertedEvent(CardReader reader) {}
+		public void reactToCardRemovedEvent(CardReader reader) {
+			// TO DO, UNSURE OF FUNCTIONALITY
+		}
 		@Override
-		public void reactToCardRemovedEvent(CardReader reader) {}
+		public void reactToCardInsertedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardTappedEvent(CardReader reader) {}
+		public void reactToCardTappedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardSwipedEvent(CardReader reader) {}
+		public void reactToCardSwipedEvent(CardReader reader) {
+			// reactToCardDataReadEvent is called regardless of input method, not sure what the point of these 3 functions is.
+		}
 		@Override
-		public void reactToCardDataReadEvent(CardReader reader, CardData data) {}
+		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
+			if (MemberShipDatabase.userExists(data.getNumber()) == true) {
+				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(data.getNumber());
+			} else {
+				membershipEntered = false;
+				if (data.getType().equals("membership")) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
+			}
+		}
+
+		/**
+		 * Manually activated event. to be called when the user inputs their membership code via a keyboard / touch screen.
+		 * Checks if the specified input string is a membership number stored in the data base, if yes, membershipEntered is true, 
+		 * otherwise false.
+		 * @param input
+		 */
+		
+		@SuppressWarnings("unused")
+		public void reactToCodeInputEvent(String input) {
+			if (MemberShipDatabase.userExists(input) == true) {
+				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(input);
+			} else {
+				membershipEntered = false;
+				for (MembershipListener listener : listeners)
+					listener.reactToInvalidMembershipEntered();
+			}
+		}
 	}
+	
+	/**
+	 * @return True or false if a valid membership number has been entered.
+	 */
+	public boolean membershipEntered() {
+		return membershipEntered;
+	}
+
 
 }
