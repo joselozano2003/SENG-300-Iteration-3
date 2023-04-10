@@ -121,6 +121,7 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 			}
 		} catch (OverloadException | EmptyException e) {
 			System.err.println("Failed to print receipt: " + e.getMessage());
+			// TODO: Notify listeners
 		}
 
 	}
