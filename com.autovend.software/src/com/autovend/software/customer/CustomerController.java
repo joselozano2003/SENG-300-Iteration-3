@@ -31,15 +31,18 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.autovend.ReusableBag;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
+import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ItemFacade;
 import com.autovend.software.membership.MembershipFacade;
@@ -64,6 +67,11 @@ public class CustomerController
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
+	private int inkUsed, paperUsed;
+	public int inkAdded, paperAdded;
+	final int ALERT_THRESHOLD = 10;
+
+
 
 	public enum State {
 
@@ -99,6 +107,9 @@ public class CustomerController
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
+
+		inkUsed = 0;
+		paperUsed = 0;
 	}
 
 	public void setState(State newState) {
@@ -121,6 +132,7 @@ public class CustomerController
 			selfCheckoutStation.mainScanner.disable();
 
 			selfCheckoutStation.printer.disable();
+			checkLevels();
 			break;
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
@@ -199,6 +211,7 @@ public class CustomerController
 	// In reaction to UI
 	public void startNewSession() {
 		currentSession = new CustomerSession();
+		// set state to initial?
 	}
 
 	// In reaction to UI
@@ -294,6 +307,11 @@ public class CustomerController
 	}
 
 	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// Display try again? message in UI
+	}
+
+	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
 		boolean paymentComplete = currentSession.isPaymentComplete();
@@ -313,6 +331,8 @@ public class CustomerController
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 		setState(State.FINISHED);
+		inkUsed += getInkUsed(receiptText);
+		paperUsed += getPaperUsed(receiptText);
 
 		// To "see" the receipt, uncomment the line below
 		//System.out.println(receiptText.toString());
@@ -388,10 +408,40 @@ public class CustomerController
 		setState(State.INITIAL);
 	}
 
-	@Override
-	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-		// TODO Auto-generated method stub
-		
+	public SelfCheckoutStation getStation() {
+		return this.selfCheckoutStation;
 	}
 
+
+	public int getInkUsed(StringBuilder sb){
+		int inkCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (!Character.isWhitespace(c)) {
+				inkCount++;
+			}
+		}
+		return inkCount;
+	}
+
+	public int getPaperUsed(StringBuilder sb){
+		int paperCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (c == '\n') {
+				paperCount++;
+			}
+		}
+		return paperCount;
+	}
+
+	public void checkLevels(){
+		int inkLevel = inkAdded - inkUsed;
+		int paperLevel = paperAdded - paperUsed;
+
+		if (inkLevel < ALERT_THRESHOLD || paperLevel < ALERT_THRESHOLD){
+			setState(State.DISABLED);
+			// TODO: notify attendant & change state to disabled
+		}
+	}
 }

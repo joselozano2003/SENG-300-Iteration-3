@@ -12,16 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
-import com.autovend.Numeral;
-import com.autovend.PriceLookUpCode;
 import com.autovend.ReusableBag;
-import com.autovend.devices.BillDispenser;
-import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
@@ -31,20 +26,18 @@ import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
-import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
-import com.autovend.software.bagging.ReusableBagProduct;
-import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 
 public class SomeBasicTests {
-	private SelfCheckoutStation station;
+
+	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispenser;
 	private CustomerController customerSessionController;
 	private CustomerSession currentSession;
@@ -52,14 +45,14 @@ public class SomeBasicTests {
 	private AttendantModel model;
 	private AttendantView view;
 	private List<CustomerStationLogic> customerStations;
-	private AttendantController attendantController;
-
+	
 	private BarcodedProduct barcodeProduct;
 	private BarcodedProduct barcodeProduct2;
-	private PLUCodedProduct pluProduct;
+	//private ReusableBagProduct bagProduct;
+
+	//private PLUCodedProduct pluProduct;
 	private CardIssuer credit;
 	private CreditCard creditCard;
-	public ReusableBagProduct bagProduct;
 
 	@Before
 	public void setUp() throws Exception {
@@ -69,49 +62,42 @@ public class SomeBasicTests {
 		date.set(Calendar.MONTH, 7);
 		date.set(Calendar.DAY_OF_MONTH, 4);
 
-		station = Setup.createSelfCheckoutStation();
+		selfCheckoutStation = Setup.createSelfCheckoutStation();
+
 		bagDispenser = new ReusableBagDispenser(100);
 		int n = 0;
 		while (n < 100) {
 			bagDispenser.load(new ReusableBag());
 			n++;
 		}
+		//bagProduct = new ReusableBagProduct();
 
-		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
-		Barcode barcode = new Barcode(code1);
-		barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
-		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
-
-		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
-		Barcode barcode2 = new Barcode(code2);
-		barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
-		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
-
-		bagProduct = new ReusableBagProduct();
+		barcodeProduct = Setup.createBarcodedProduct123(1.00, 500, false);
+		barcodeProduct2 = Setup.createBarcodedProduct456(2.50, 750, false);
+		ProductDatabases.INVENTORY.put(barcodeProduct, 10);
+		ProductDatabases.INVENTORY.put(barcodeProduct, 36);
 
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
 
-
-		customerSessionController = new CustomerController(station, bagDispenser);
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
 		model = new AttendantModel();
 		view = new AttendantView();
 		customerStations = new ArrayList<>();
-		attendantController = new AttendantController(model, view, customerStations);
+		AttendantController attendantController = new AttendantController(model, view, customerStations);
 		
 		// Add 100 bills to each dispenser
-		Setup.fillBillDispensers(station, 100);
+		Setup.fillBillDispensers(selfCheckoutStation, 100);
 		// Add 100 coins to each dispenser
-		Setup.fillCoinDispensers(station, 100);
-		ReceiptPrinter printer = station.printer;
+		Setup.fillCoinDispensers(selfCheckoutStation, 100);
 
+		// Load printer with ink and paper
+		ReceiptPrinter printer = selfCheckoutStation.printer;
 		try {
 			// Initialize ink amount to 1000
 			printer.addInk(100);
@@ -124,8 +110,6 @@ public class SomeBasicTests {
 
 	@After
 	public void tearDown() throws Exception {
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.clear();
-		ProductDatabases.INVENTORY.clear();
 	}
 
 	@Test
@@ -133,13 +117,13 @@ public class SomeBasicTests {
 
 		customerSessionController.startAddingItems();
 
-		station.mainScanner
+		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		customerSessionController.startPaying();
 
 		Coin coin = new Coin(BigDecimal.valueOf(0.05), Setup.getCurrency());
-		station.coinSlot.accept(coin);
+		selfCheckoutStation.coinSlot.accept(coin);
 
 		assertEquals(coin.getValue(), currentSession.getTotalPaid());
 
@@ -149,14 +133,15 @@ public class SomeBasicTests {
 	public void payWithValidBill() throws DisabledException, OverloadException {
 
 		customerSessionController.startAddingItems();
-
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 		customerSessionController.startPaying();
 
 		Bill bill = new Bill(10, Setup.getCurrency());
-		station.billInput.accept(bill);
+		selfCheckoutStation.billInput.accept(bill);
 		assertEquals(currentSession.getTotalPaid(), BigDecimal.valueOf(bill.getValue()));
 
 	}
@@ -165,27 +150,36 @@ public class SomeBasicTests {
 	public void payWithCardTap() throws IOException {
 		customerSessionController.startAddingItems();
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
 		customerSessionController.startPaying();
 
-		station.cardReader.tap(creditCard);
+		selfCheckoutStation.cardReader.tap(creditCard);
 
 		assertEquals(currentSession.getTotalCost(), currentSession.getTotalPaid());
 
@@ -195,16 +189,22 @@ public class SomeBasicTests {
 	public void addItemByScanning() {
 		customerSessionController.startAddingItems();
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+		assertEquals(1, currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
@@ -215,35 +215,45 @@ public class SomeBasicTests {
 
 		customerSessionController.startAddingItems();
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-
-		station.baggingArea
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
 		customerSessionController.startPaying();
+
 		Bill tenDollarBill = new Bill(10, Setup.getCurrency());
 		try {
-			station.billInput.accept(tenDollarBill);
+			selfCheckoutStation.billInput.accept(tenDollarBill);
 		} catch (DisabledException | OverloadException e) {
 
 		}
 
 		// Dispense 1 $5 bill and 2 $0.25 coins
-		assertEquals(99, station.billDispensers.get(5).size());
-		assertEquals(98, station.coinDispensers.get(BigDecimal.valueOf(0.25)).size());
+		assertEquals(selfCheckoutStation.billDispensers.get(5).size(), 99);
+		assertEquals(selfCheckoutStation.coinDispensers.get(BigDecimal.valueOf(0.25)).size(), 98);
+
 	}
 
 	// @Test
@@ -281,28 +291,28 @@ public class SomeBasicTests {
 		customerSessionController.startAddingItems();
 
 		// Scan first unit, and add to bagging
-		station.mainScanner
+		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		try {
-			assertEquals(barcodeProduct.getExpectedWeight(), station.baggingArea.getCurrentWeight(), 0.1);
+			assertEquals(barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(), 0.1);
 		} catch (OverloadException e) {
 
 		}
 		assertEquals(State.ADDING_ITEMS, customerSessionController.getCurrentState());
 
 		// Scan second unit, and also add to bagging
-		station.mainScanner
+		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.baggingArea
+		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		try {
-			assertEquals(2 * barcodeProduct.getExpectedWeight(), station.baggingArea.getCurrentWeight(),
+			assertEquals(2 * barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(),
 					0.1);
 		} catch (OverloadException e) {
 
@@ -315,32 +325,33 @@ public class SomeBasicTests {
 		customerSessionController.startAddingItems();
 
 		// Scan first unit, and add to bagging
-		station.mainScanner
+		selfCheckoutStation.mainScanner
 				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
+		selfCheckoutStation.baggingArea
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
 
 		assertEquals(State.DISABLED, customerSessionController.getCurrentState());
 
 	}
 
-
 	@Test
 	public void dispenseBagsTest() throws InterruptedException {
 		customerSessionController.purchaseBags(2);
-		Thread.sleep(3000);
+		Thread.sleep(1);
 
-		station.baggingArea.add(new ReusableBag());
-		station.baggingArea.add(new ReusableBag());
+		selfCheckoutStation.baggingArea.add(new ReusableBag());
+		selfCheckoutStation.baggingArea.add(new ReusableBag());
 
 		assertEquals(1, currentSession.getShoppingCart().size());
 
-		Thread.sleep(5000);
+		Thread.sleep(1);
 
 		customerSessionController.startPaying();
 
 		Coin coin = new Coin(BigDecimal.valueOf(1), Setup.getCurrency());
-		station.coinSlot.accept(coin);
+		selfCheckoutStation.coinSlot.accept(coin);
 
 	}
+
 }

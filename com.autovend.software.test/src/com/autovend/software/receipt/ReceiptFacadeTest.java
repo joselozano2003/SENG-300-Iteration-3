@@ -77,7 +77,7 @@ public class ReceiptFacadeTest {
 		bcProduct2 = Setup.createBarcodedProduct456(4.20, 99, false);
 		
 		pluProduct1 = Setup.createPLUProduct1234(5.00, 69, false);
-		pluProduct2 = Setup.createPLUProduct5678(4.20, 99, false);
+		pluProduct2 = Setup.createPLUProduct56789(4.20, 99, false);
 		
 		printSuccess = false;
 	}
