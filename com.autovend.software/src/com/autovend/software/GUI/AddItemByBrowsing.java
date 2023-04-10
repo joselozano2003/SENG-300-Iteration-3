@@ -49,7 +49,7 @@ import com.autovend.software.customer.CustomerView;
 
 import java.math.*;
 
-public class AddItemByBrowsing {
+public class AddItemByBrowsing extends JPanel {
 	
 	// CODE TO COPY BELOW:
 	
@@ -59,6 +59,7 @@ public class AddItemByBrowsing {
 	CustomerController controller;
 	
 	JFrame browsingFrame;
+	JPanel browsingPanel;
 	JPanel cataloguePanel;
 	JPanel letterPanel;
 	JPanel previousPanel;
@@ -90,7 +91,9 @@ public class AddItemByBrowsing {
 	// make calls to the controller to add items to shopping cart.
 	public void addItemByBrowsing(CustomerView view) {
     	//swing compounents needed for the GUI
-    	browsingFrame = new JFrame();
+		
+		browsingFrame = view.mainFrame;
+    	browsingPanel = new JPanel();
     	cataloguePanel = new JPanel();
     	letterPanel = new JPanel();
     	previousPanel = new JPanel();
@@ -102,18 +105,12 @@ public class AddItemByBrowsing {
     	letterPanel.setLayout(new GridLayout(0,26, 2, 2));
     	
     	//frame set up 
-    	browsingFrame.setTitle("Add Item By Browsing");
-    	browsingFrame.setSize(1500,750);
     	
-    	browsingFrame.setLayout(null);
-    	browsingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    	browsingPanel.setLayout(null);
     	
     	//icon set up currently with a bug 
     	ImageIcon logoIcon = new ImageIcon("logo.png");
-    	browsingFrame.setIconImage(logoIcon.getImage());
-    	browsingFrame.getContentPane().setBackground(Color.LIGHT_GRAY);
     	
-    	 
     	//Title for the page set up 
 		Title.setText("Store Catalogue");
 		Title.setFont(new Font("Mv Boli",Font.PLAIN,20));
@@ -175,13 +172,14 @@ public class AddItemByBrowsing {
 		
 		//adding everything to the main frame 
 		//browsingFrame.pack();
-		browsingFrame.add(Title);
-		browsingFrame.add(letterPanel);	
-		browsingFrame.add(cataloguePanel);
-		browsingFrame.add(nextPanel);
-		browsingFrame.add(previousPanel);
-		browsingFrame.setVisible(true);
-		browsingFrame.setLocationRelativeTo(view.mainFrame);
+		browsingPanel.add(Title);
+		browsingPanel.add(letterPanel);	
+		browsingPanel.add(cataloguePanel);
+		browsingPanel.add(nextPanel);
+		browsingPanel.add(previousPanel);
+		browsingFrame.add(browsingPanel);
+		browsingPanel.setVisible(true);
+		browsingFrame.validate();
 	}
 	
 	

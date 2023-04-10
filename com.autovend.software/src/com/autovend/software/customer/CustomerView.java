@@ -36,6 +36,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.text.*;
 
+import com.autovend.devices.TouchScreen;
 import com.autovend.software.GUI.AddItemByBrowsing;
 import com.autovend.software.GUI.StartScreen;
 
@@ -44,15 +45,18 @@ public class CustomerView {
 	public JFrame mainFrame;
 	
 	public static void main(String[] args) {
-		CustomerView testView = new CustomerView();
+		TouchScreen tScreen = new TouchScreen();
+		CustomerView mainView = new CustomerView(tScreen.getFrame());
+		tScreen.getFrame().setLayout(new OverlayLayout(tScreen.getFrame().getContentPane()));
+		tScreen.getFrame().setVisible(true);
 	}
-	public CustomerView() {
+	public CustomerView(JFrame touchFrame) {
 		
 		{
 			
 			CustomerView customerView = this;
 			
-			mainFrame = new JFrame("CUSTOMER I/O INTERFACE [DEV BUILD]");	
+			mainFrame = touchFrame;
 			JPanel mainPanel = new JPanel();
 			JLabel cartLabel = new JLabel();
 			JLabel searchLabel = new JLabel();
@@ -62,9 +66,6 @@ public class CustomerView {
 			cartLabel.setText("Current Items in Cart: ");
 			searchLabel.setText("Search for item: ");
 			totalLabel.setText("Current Total: $0.00 CAD");
-		    	    
-		    
-		    mainFrame.setDefaultCloseOperation(mainFrame.EXIT_ON_CLOSE);
 		    
 		    cartPanel.setLayout(new BoxLayout(cartPanel,BoxLayout.PAGE_AXIS));
 		    
@@ -77,14 +78,7 @@ public class CustomerView {
 		    JButton searchPLUButton = new JButton("by PLU code");
 		    JButton purchaseBagButton = new JButton("Purchase Bag");
 		    JButton addOwnBagsButton = new JButton("Add own Bags");
-		    JButton paymentButton = new JButton("Proceed to Payment");
-		    
-		    searchBrowseButton.setSize(100,200);
-		    searchPLUButton.setSize(100,200);
-		    addOwnBagsButton.setSize(100,200);
-		    paymentButton.setSize(100,200);
-		    
-		    
+		    JButton paymentButton = new JButton("Proceed to Payment");  
 		    
 		    cartPanel.setBorder(new TitledBorder(new EtchedBorder (),"Cart"));
 
@@ -129,17 +123,14 @@ public class CustomerView {
 		    paymentButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
 		    buttonPanel.add(Box.createVerticalStrut(10));
 		    mainFrame.add(mainPanel);
-		    mainFrame.setResizable(false);
-		    mainFrame.setSize(900,600);
-		    mainFrame.setVisible(false);
-		    mainFrame.setLocationRelativeTo(null);
-		    StartScreen startScreen = new StartScreen(this);
+		    // mainFrame.validate();
+		    mainFrame.validate();
 		    
 		    searchBrowseButton.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent e) {
 		    		AddItemByBrowsing browseWindow = new AddItemByBrowsing();
 		    		browseWindow.addItemByBrowsing(customerView);
-		    		mainFrame.setVisible(false);
+		    		mainPanel.setVisible(false);
 		    	}
 		    });
 		    
