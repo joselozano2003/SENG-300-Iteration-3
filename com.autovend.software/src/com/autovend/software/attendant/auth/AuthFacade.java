@@ -1,4 +1,4 @@
-package auth;
+package com.autovend.software.attendant.auth;
 
 public class AuthFacade implements AuthEvenListener {
 	public AuthFacade() {

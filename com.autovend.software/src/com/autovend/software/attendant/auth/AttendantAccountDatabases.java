@@ -1,4 +1,4 @@
-package auth;
+package com.autovend.software.attendant.auth;
 
 import java.util.ArrayList;
 

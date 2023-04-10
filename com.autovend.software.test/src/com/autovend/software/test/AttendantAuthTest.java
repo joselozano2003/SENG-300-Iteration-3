@@ -14,10 +14,9 @@ import org.junit.Test;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
+import com.autovend.software.attendant.auth.AttendantAccount;
+import com.autovend.software.attendant.auth.AttendantAccountDatabases;
 import com.autovend.software.customer.CustomerStationLogic;
-
-import auth.AttendantAccount;
-import auth.AttendantAccountDatabases;
 
 public class AttendantAuthTest {
 

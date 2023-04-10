@@ -33,12 +33,11 @@ import java.util.List;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
+import com.autovend.software.attendant.auth.AttendantAccount;
+import com.autovend.software.attendant.auth.AuthFacade;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
-
-import auth.AttendantAccount;
-import auth.AuthFacade;
 
 public class AttendantController {
 
