@@ -1,30 +1,22 @@
 package com.autovend.software.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
-import com.autovend.Numeral;
-import com.autovend.PriceLookUpCode;
 import com.autovend.ReusableBag;
-import com.autovend.devices.BillDispenser;
-import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReceiptPrinter;
@@ -34,14 +26,10 @@ import com.autovend.devices.SimulationException;
 import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
-import com.autovend.products.PLUCodedProduct;
-import com.autovend.products.Product;
 import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
-import com.autovend.software.bagging.ReusableBagProduct;
-import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
@@ -49,29 +37,22 @@ import com.autovend.software.customer.CustomerStationLogic;
 
 public class SomeBasicTests {
 
-	public SelfCheckoutStation selfCheckoutStation;
-	public ReusableBagDispenser bagDispenser;
-	public CustomerController customerSessionController;
-	public CustomerSession currentSession;
+	private SelfCheckoutStation selfCheckoutStation;
+	private ReusableBagDispenser bagDispenser;
+	private CustomerController customerSessionController;
+	private CustomerSession currentSession;
 
-	public AttendantModel model;
-	public AttendantView view;
-	public List<CustomerStationLogic> customerStations;
-	public AttendantController attendantController;
+	private AttendantModel model;
+	private AttendantView view;
+	private List<CustomerStationLogic> customerStations;
+	
+	private BarcodedProduct barcodeProduct;
+	private BarcodedProduct barcodeProduct2;
+	//private ReusableBagProduct bagProduct;
 
-	public int[] billDenominations;
-	public BigDecimal[] coinDenominations;
-	public Currency currency;
-	public int scaleMaximumWeight;
-	public int scaleSensitivity;
-
-	public BarcodedProduct barcodeProduct;
-	public BarcodedProduct barcodeProduct2;
-	public ReusableBagProduct bagProduct;
-
-	public PLUCodedProduct pluProduct;
-	public CardIssuer credit;
-	public CreditCard creditCard;
+	//private PLUCodedProduct pluProduct;
+	private CardIssuer credit;
+	private CreditCard creditCard;
 
 	@Before
 	public void setUp() throws Exception {
@@ -81,17 +62,7 @@ public class SomeBasicTests {
 		date.set(Calendar.MONTH, 7);
 		date.set(Calendar.DAY_OF_MONTH, 4);
 
-		// Variables for SelfCheckoutStation constructor
-		billDenominations = new int[] { 5, 10, 20, 50, 100 };
-		coinDenominations = new BigDecimal[] { BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.10),
-				BigDecimal.valueOf(0.25), BigDecimal.valueOf(1), BigDecimal.valueOf(2) };
-		currency = Currency.getInstance("CAD");
-
-		scaleMaximumWeight = 20;
-		scaleSensitivity = 1;
-
-		selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
-				scaleMaximumWeight, scaleSensitivity);
+		selfCheckoutStation = Setup.createSelfCheckoutStation();
 
 		bagDispenser = new ReusableBagDispenser(100);
 		int n = 0;
@@ -99,20 +70,10 @@ public class SomeBasicTests {
 			bagDispenser.load(new ReusableBag());
 			n++;
 		}
+		//bagProduct = new ReusableBagProduct();
 
-		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
-		Barcode barcode = new Barcode(code1);
-		barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
-		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
-
-		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
-		Barcode barcode2 = new Barcode(code2);
-		barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
-		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
-
-		bagProduct = new ReusableBagProduct();
+		barcodeProduct = Setup.createBarcodedProduct123(1.00, 500, true);
+		barcodeProduct2 = Setup.createBarcodedProduct456(2.50, 750, true);
 
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
@@ -126,31 +87,12 @@ public class SomeBasicTests {
 		model = new AttendantModel();
 		view = new AttendantView();
 		customerStations = new ArrayList<>();
-		attendantController = new AttendantController(model, view, customerStations);
+		AttendantController attendantController = new AttendantController(model, view, customerStations);
+		
 		// Add 100 bills to each dispenser
-		for (int i = 0; i < billDenominations.length; i++) {
-			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Bill bill = new Bill(billDenominations[i], currency);
-				try {
-					dispenser.load(bill);
-				} catch (SimulationException | OverloadException e) {
-				}
-			}
-		}
+		Setup.fillBillDispensers(selfCheckoutStation, 100);
 		// Add 100 coins to each dispenser
-
-		for (int i = 0; i < coinDenominations.length; i++) {
-			CoinDispenser dispenser = selfCheckoutStation.coinDispensers.get(coinDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Coin coin = new Coin(coinDenominations[i], currency);
-				try {
-					dispenser.load(coin);
-				} catch (SimulationException | OverloadException e) {
-
-				}
-			}
-		}
+		Setup.fillCoinDispensers(selfCheckoutStation, 100);
 
 		// Load printer with ink and paper
 		ReceiptPrinter printer = selfCheckoutStation.printer;
@@ -178,7 +120,7 @@ public class SomeBasicTests {
 
 		customerSessionController.startPaying();
 
-		Coin coin = new Coin(BigDecimal.valueOf(0.05), currency);
+		Coin coin = new Coin(BigDecimal.valueOf(0.05), Setup.getCurrency());
 		selfCheckoutStation.coinSlot.accept(coin);
 
 		assertEquals(coin.getValue(), currentSession.getTotalPaid());
@@ -196,7 +138,7 @@ public class SomeBasicTests {
 		}
 		customerSessionController.startPaying();
 
-		Bill bill = new Bill(10, currency);
+		Bill bill = new Bill(10, Setup.getCurrency());
 		selfCheckoutStation.billInput.accept(bill);
 		assertEquals(currentSession.getTotalPaid(), BigDecimal.valueOf(bill.getValue()));
 
@@ -254,7 +196,7 @@ public class SomeBasicTests {
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+		assertEquals(1, currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 		flag = false;
 		while (!flag){
@@ -299,7 +241,7 @@ public class SomeBasicTests {
 
 		customerSessionController.startPaying();
 
-		Bill tenDollarBill = new Bill(10, currency);
+		Bill tenDollarBill = new Bill(10, Setup.getCurrency());
 		try {
 			selfCheckoutStation.billInput.accept(tenDollarBill);
 		} catch (DisabledException | OverloadException e) {
@@ -394,18 +336,15 @@ public class SomeBasicTests {
 	@Test
 	public void dispenseBagsTest() throws InterruptedException {
 		customerSessionController.purchaseBags(2);
-		Thread.sleep(3000);
 
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 
 		assertEquals(1, currentSession.getShoppingCart().size());
 
-		Thread.sleep(5000);
-
 		customerSessionController.startPaying();
 
-		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
+		Coin coin = new Coin(BigDecimal.valueOf(1), Setup.getCurrency());
 		selfCheckoutStation.coinSlot.accept(coin);
 
 	}
