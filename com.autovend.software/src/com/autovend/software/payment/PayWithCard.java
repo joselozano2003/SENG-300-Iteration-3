@@ -44,12 +44,7 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithCard(SelfCheckoutStation station) {
 		super(station, true);
-		try {
-			station.cardReader.register(this);
-		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.cardReader.register(this);
 	}
 
 	@Override

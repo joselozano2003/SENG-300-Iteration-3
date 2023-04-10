@@ -47,15 +47,10 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 
 	public MembershipFacade(SelfCheckoutStation station) {
 		super(station);
-		try {
-			InnerListener inner = new InnerListener();
-			station.mainScanner.register(inner);
-			station.handheldScanner.register(inner);
-			station.cardReader.register(inner);
-		} catch (Exception e) {
-			for (MembershipListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		InnerListener inner = new InnerListener();
+		station.mainScanner.register(inner);
+		station.handheldScanner.register(inner);
+		station.cardReader.register(inner);
 	}
 	
 	private class InnerListener implements BarcodeScannerObserver, CardReaderObserver {

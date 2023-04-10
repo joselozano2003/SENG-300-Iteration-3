@@ -49,12 +49,7 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 
 	public ReceiptFacade(SelfCheckoutStation station) {
 		super(station);
-		try {
-			station.printer.register(new InnerListener());
-		} catch (Exception e) {
-			for (ReceiptEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.printer.register(new InnerListener());
 	}
 
 	private class InnerListener implements ReceiptPrinterObserver {

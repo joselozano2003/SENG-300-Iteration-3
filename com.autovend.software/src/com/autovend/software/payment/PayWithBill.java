@@ -49,16 +49,11 @@ class PayWithBill extends PaymentFacade implements BillDispenserObserver, BillSl
 	
 	public PayWithBill(SelfCheckoutStation station) {
 		super(station, true);
-		try {
-			station.billDispensers.forEach((k,v) -> v.register(this));
-			station.billInput.register(this);
-			station.billOutput.register(this);
-			station.billStorage.register(this);
-			station.billValidator.register(this);
-		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.billDispensers.forEach((k,v) -> v.register(this));
+		station.billInput.register(this);
+		station.billOutput.register(this);
+		station.billStorage.register(this);
+		station.billValidator.register(this);
 	}
 
 	@Override

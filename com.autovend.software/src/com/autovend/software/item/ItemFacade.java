@@ -39,17 +39,17 @@ import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class ItemFacade extends AbstractFacade<ItemEventListener> {
+	protected static ArrayList<ItemEventListener> listeners = new ArrayList<>();
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-	private SelfCheckoutStation selfCheckoutStation;
 
 	public ItemFacade(SelfCheckoutStation station, boolean isChild) {
 		super(station);
-		this.selfCheckoutStation = station;
 		// Initialize this instance and children once.
 
-		if (!isChild) {
+		if (!isChild || instance == null) {
+			instance = this;
 			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
 			children.add(new ByScanning(station));
@@ -103,13 +103,6 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 
 	public List<Product> getItemList() {
 		return itemList;
-	}
-
-	/**
-	 * @return List of active subclasses.
-	 */
-	public List<ItemFacade> getChildren() {
-		return children;
 	}
 
 	/**

@@ -42,6 +42,7 @@ import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
 public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
+	protected static ArrayList<PaymentEventListener> listeners = new ArrayList<>();
 	private static PaymentFacade instance;
 	private List<PaymentFacade> children;
 	private static BigDecimal amountDue;
@@ -49,7 +50,8 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	public PaymentFacade(SelfCheckoutStation station, boolean isChild) {
 		super(station);
 		// this.selfCheckoutStation = station;
-		if (!isChild) {
+		if (!isChild || instance == null) {
+			instance = this;
 			children = new ArrayList<PaymentFacade>();
 			children.add(new PayWithCoin(station));
 			children.add(new PayWithBill(station));
@@ -76,13 +78,6 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	 */
 	public BigDecimal getAmountDue() {
 		return amountDue;
-	}
-
-	/**
-	 * @return List of active subclasses.
-	 */
-	public List<PaymentFacade> getChildren() {
-		return children;
 	}
 
 	/**

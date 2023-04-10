@@ -42,13 +42,8 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
     public ByScanning(SelfCheckoutStation station) {
 		super(station, true);
-		try {
-			station.mainScanner.register(this);
-			station.handheldScanner.register(this);
-		} catch (Exception e) {
-			for (ItemEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.mainScanner.register(this);
+		station.handheldScanner.register(this);
 	}
 
 	@Override

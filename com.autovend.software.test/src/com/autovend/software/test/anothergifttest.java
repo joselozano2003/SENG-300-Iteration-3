@@ -5,34 +5,19 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Currency;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
-import com.autovend.Bill;
-import com.autovend.Coin;
-import com.autovend.CreditCard;
 import com.autovend.GiftCard;
 import com.autovend.InvalidPINException;
-import com.autovend.Numeral;
-import com.autovend.devices.BillDispenser;
-import com.autovend.devices.CoinDispenser;
-import com.autovend.devices.DisabledException;
-import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.SimulationException;
-import com.autovend.external.CardIssuer;
-import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.software.BankIO;
 import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.payment.GiftCardDatabase;
 import com.autovend.software.customer.CustomerSession;
 
