@@ -39,7 +39,8 @@ import com.autovend.devices.observers.ReusableBagDispenserObserver;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
-public class BaggingFacade extends AbstractFacade<BaggingEventListener> implements ElectronicScaleObserver, ReusableBagDispenserObserver {
+public class BaggingFacade extends AbstractFacade<BaggingEventListener>
+		implements ElectronicScaleObserver, ReusableBagDispenserObserver {
 
 	ReusableBagDispenser bagDispenser;
 	ReusableBagProduct bagProduct;
@@ -52,6 +53,7 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 
 			// station.scale.register(this);
 			station.baggingArea.register(this);
+
 			this.bagDispenser.register(this);
 
 		} catch (Exception e) {
@@ -124,6 +126,7 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 				bagDispenser.dispense();
 				amount--;
 				successfullyDispensed++;
+
 			} catch (EmptyException e) {
 				for (BaggingEventListener listener : listeners)
 					listener.onBagsDispensedFailure(bagProduct, amount);
@@ -134,4 +137,5 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener> implemen
 		for (BaggingEventListener listener : listeners)
 			listener.onBagsDispensedEvent(bagProduct, successfullyDispensed);
 	}
+
 }

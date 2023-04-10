@@ -43,9 +43,11 @@ public interface BaggingEventListener extends AbstractEventListener {
 	/**
 	 * Signals that the customer purchased x number of reusable bags
 	 * @param bagProduct 
+	 * 
 	 * @param numberOfBags
 	 */
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount);
 
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct,int amount);
+
 }

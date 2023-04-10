@@ -113,7 +113,7 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 				}
 			}
 		}
-
+			
 		/**
 		 * Manually activated event. to be called when the user inputs their membership code via a keyboard / touch screen.
 		 * Checks if the specified input string is a membership number stored in the data base, if yes, membershipEntered is true, 
@@ -133,6 +133,7 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 					listener.reactToInvalidMembershipEntered();
 			}
 		}
+		
 	}
 	
 	/**

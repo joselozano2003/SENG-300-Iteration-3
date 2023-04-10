@@ -33,6 +33,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.item.ProductsDatabase2;
 
 import java.math.BigDecimal;
@@ -41,21 +42,18 @@ import java.util.Map;
 
 public class CustomerSession {
 	private Map<Product, Double> shoppingCart;
-	private int bagsPurchased;
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
-		bagsPurchased = 0;
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
-
 		// Checks if item has been previously added to cart
 		if (shoppingCart.containsKey(product)) {
 			double updatedQuantity = shoppingCart.get(product) + quantityToAdd;
@@ -77,20 +75,12 @@ public class CustomerSession {
 			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
 		}
 
-	}
-	
-	/**
-	 * Updates customer session info after customer chooses to purchase reusable bags
-	 * 
-	 * @param numberOfBags: number of bags customer chose to purchase
-	 */
-	public void addBagsPurchasedToCustomerSession(int numberOfBags) {
-		bagsPurchased += numberOfBags; 
-		
-		ReusableBag reusableBag = new ReusableBag();
-		for (int i = 1; i <= numberOfBags; i++) {
-			expectedWeight += reusableBag.getWeight();
-			totalCost = totalCost.add(ProductsDatabase2.costOfReusableBag);
+		// Checks if product is a bag product
+		else if (product instanceof ReusableBagProduct) {
+			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
+			expectedWeight += bagProduct.getExpectedWeight() * quantityToAdd;
+			totalCost = totalCost.add(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+			
 		}
 	}
 

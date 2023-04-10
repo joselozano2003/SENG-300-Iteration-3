@@ -72,10 +72,8 @@ public class SomeBasicTests {
 		}
 		//bagProduct = new ReusableBagProduct();
 
-		barcodeProduct = Setup.createBarcodedProduct123(1.00, 500, false);
-		barcodeProduct2 = Setup.createBarcodedProduct456(2.50, 750, false);
-		ProductDatabases.INVENTORY.put(barcodeProduct, 10);
-		ProductDatabases.INVENTORY.put(barcodeProduct, 36);
+		barcodeProduct = Setup.createBarcodedProduct123(1.00, 500, true);
+		barcodeProduct2 = Setup.createBarcodedProduct456(2.50, 750, true);
 
 		credit = new CardIssuer("credit");
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
@@ -338,14 +336,11 @@ public class SomeBasicTests {
 	@Test
 	public void dispenseBagsTest() throws InterruptedException {
 		customerSessionController.purchaseBags(2);
-		Thread.sleep(1);
 
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 
 		assertEquals(1, currentSession.getShoppingCart().size());
-
-		Thread.sleep(1);
 
 		customerSessionController.startPaying();
 

@@ -42,6 +42,7 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
+import com.autovend.software.bagging.ReusableBagProduct;
 
 @SuppressWarnings("serial")
 public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
@@ -93,7 +94,10 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 				name = ((BarcodedProduct) product).getDescription();
 			} else if (product instanceof PLUCodedProduct) {
 				name = ((PLUCodedProduct) product).getDescription();
-			} else {
+			} else if (product instanceof ReusableBagProduct) {
+				name = "Reusable Bag";
+			}
+			else {
 				name = "Unknown";
 			}
 
