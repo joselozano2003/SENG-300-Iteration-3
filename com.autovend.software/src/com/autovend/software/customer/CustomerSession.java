@@ -83,7 +83,12 @@ public class CustomerSession {
 			
 		}
 	}
-
+	
+	public void itemTooHeavyForBagging(double weightInGrams) {
+		expectedWeight -= weightInGrams;
+		//call attendent for approval
+	}
+	
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
 	}
