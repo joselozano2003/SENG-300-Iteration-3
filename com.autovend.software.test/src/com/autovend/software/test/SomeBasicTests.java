@@ -189,10 +189,11 @@ public class SomeBasicTests {
 	public void payWithValidBill() throws DisabledException, OverloadException {
 
 		customerSessionController.startAddingItems();
-
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 		customerSessionController.startPaying();
 
 		Bill bill = new Bill(10, currency);
@@ -205,20 +206,29 @@ public class SomeBasicTests {
 	public void payWithCardTap() throws IOException {
 		customerSessionController.startAddingItems();
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
@@ -235,16 +245,22 @@ public class SomeBasicTests {
 	public void addItemByScanning() {
 		customerSessionController.startAddingItems();
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
@@ -255,21 +271,29 @@ public class SomeBasicTests {
 
 		customerSessionController.startAddingItems();
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-
+		flag = false;
+		while (!flag){
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
