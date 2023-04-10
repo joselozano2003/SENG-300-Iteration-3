@@ -45,6 +45,7 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private SelfCheckoutStation station;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
@@ -120,6 +121,9 @@ public class CustomerSession {
 
 	public BigDecimal getChangeDue() {
 		return totalPaid.subtract(totalCost);
+	}
+	public SelfCheckoutStation getStation(){
+		return station;
 	}
 
 	public boolean isPaymentComplete() {

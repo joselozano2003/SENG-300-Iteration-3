@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
+    <list default="true" id="2b51f176-a2ee-4143-bae3-20c0d2faaac6" name="Changes" comment="" />
+=======
     <list default="true" id="2b51f176-a2ee-4143-bae3-20c0d2faaac6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/CheckoutScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/CheckoutScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/StartScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/GUI/StartScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/customer/CustomerSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/customer/CustomerSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PayWithBill.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PayWithBill.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PayWithCoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PayWithCoin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PaymentFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/com.autovend.software/src/com/autovend/software/payment/PaymentFacade.java" afterDir="false" />
     </list>
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

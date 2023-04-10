@@ -29,25 +29,27 @@
 package com.autovend.software.payment;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import com.autovend.Coin;
-import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.CoinDispenser;
-import com.autovend.devices.CoinSlot;
-import com.autovend.devices.CoinStorage;
-import com.autovend.devices.CoinTray;
-import com.autovend.devices.CoinValidator;
-import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.*;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CoinDispenserObserver;
 import com.autovend.devices.observers.CoinSlotObserver;
 import com.autovend.devices.observers.CoinStorageObserver;
 import com.autovend.devices.observers.CoinTrayObserver;
 import com.autovend.devices.observers.CoinValidatorObserver;
+import com.autovend.software.customer.CustomerSession;
 
 @SuppressWarnings("serial")
-class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver,
+public class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver,
 		CoinTrayObserver, CoinValidatorObserver {
+	private  SelfCheckoutStation station;
+	private CustomerSession session;
+	private BigDecimal amountPaid;
+	BigDecimal change;
+	Object validator;
+	Object value;
 
 	public PayWithCoin(SelfCheckoutStation station) {
 		super(station, true);
@@ -128,6 +130,47 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 
 	@Override
 	public void reactToCoinsUnloadedEvent(CoinDispenser dispenser, Coin... coins) {
+	}
+
+	public boolean payWithCoin(ArrayList<Coin> coins) throws DisabledException, OverloadException, EmptyException{
+		boolean addItems = false;
+		if(coins == null) throw new NullPointerException("No argument can be null");
+		BigDecimal cValue = new BigDecimal("0");
+		for (Coin coin: coins){
+			cValue = cValue.add(coin.getValue());
+		}
+		 amountPaid = session.getTotalPaid();
+		amountPaid = cValue;
+		BigDecimal change = cValue.subtract(session.getTotalCost());
+
+		boolean coinAccepted = false;
+		for (Coin coin: coins){
+			coinAccepted = acceptCoin(coin);
+			if (!coinAccepted) cValue = cValue.subtract(coin.getValue());
+		}
+		if (cValue.compareTo(session.getTotalCost()) < 0){
+			return  false;
+		}
+
+		if (cValue.compareTo(session.getTotalCost())> 0){
+			BigDecimal changeDue = cValue.subtract(session.getTotalCost());
+			return dispenseChange(changeDue);
+		}
+
+		return true;
+	}
+
+	private boolean acceptCoin(Coin coin) throws DisabledException{
+		if(station.coinStorage.hasSpace()){
+			station.coinSlot.accept(coin);
+
+			if (reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value)){
+				return true;
+			}else {
+				station.coinSlot.disable();
+			}
+		}
+		return false;
 	}
 
 }
