@@ -30,17 +30,18 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.Product;
-import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.customer.*;
 import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
 
-public class AttendantController {
+public class AttendantController implements CustomerStationListener {
 
 	private static List<CustomerStationLogic> customerStations;
 	private AttendantModel model;
@@ -77,8 +78,9 @@ public class AttendantController {
 		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 
-	public boolean startRemoveItem(ItemFacade item, Product product) {
-		return item.removeProduct(product);
+	public void startRemoveItem(Product product, double quantity,int stationNumber) {
+		CustomerSession session=  customerStations.get(stationNumber).getController().getSession();
+
 	}
 
 	// This is triggered from the INITIAL state
@@ -101,5 +103,49 @@ public class AttendantController {
 		} catch (OverloadException e) {
 			// TODO: Show attendant screen that too much paper was tried to be added
 		}
+	}
+
+	@Override
+	public void reactToHardwareFailure() {
+
+	}
+
+	@Override
+	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToDisableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToEnableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToRemoveItemRequest(Product product, double quantity, CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		String productName = "Request to remove " + quantity + " of " + product.toString() + " from station " + stationNumber;
+		// TODO: Show this message in attendant view
+	}
+
+	@Override
+	public void lowInkAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		// TODO: Show to attendant view the station number that needs ink
+	}
+
+	@Override
+	public void lowPaperAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		// TODO: Show to attendant view the station number that needs paper
 	}
 }

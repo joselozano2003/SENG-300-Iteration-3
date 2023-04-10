@@ -39,6 +39,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
@@ -52,7 +53,7 @@ import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
 
-public class CustomerController
+public class CustomerController extends AbstractFacade<CustomerControllerListener>
 		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
@@ -83,6 +84,7 @@ public class CustomerController
 	private State currentState;
 
 	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
+		super(selfCheckoutStation);
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.currentState = State.INITIAL;
@@ -107,7 +109,6 @@ public class CustomerController
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
-
 		inkUsed = 0;
 		paperUsed = 0;
 	}
@@ -245,6 +246,10 @@ public class CustomerController
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
 
+	}
+
+	public CustomerSession getSession(){
+		return currentSession;
 	}
 
 	// In reaction to UI
@@ -439,9 +444,18 @@ public class CustomerController
 		int inkLevel = inkAdded - inkUsed;
 		int paperLevel = paperAdded - paperUsed;
 
-		if (inkLevel < ALERT_THRESHOLD || paperLevel < ALERT_THRESHOLD){
+		if (inkLevel < ALERT_THRESHOLD) {
 			setState(State.DISABLED);
-			// TODO: notify attendant & change state to disabled
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowInkAlert();
+			}
+		}
+
+		if (paperLevel < ALERT_THRESHOLD){
+			setState(State.DISABLED);
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowPaperAlert();
+			}
 		}
 	}
 }
