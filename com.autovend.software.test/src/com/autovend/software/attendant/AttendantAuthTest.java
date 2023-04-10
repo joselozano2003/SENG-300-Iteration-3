@@ -1,4 +1,4 @@
-package com.autovend.software.test;
+package com.autovend.software.attendant;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -16,8 +16,11 @@ import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
 import com.autovend.software.customer.CustomerStationLogic;
 
+
 import auth.AttendantAccount;
 import auth.AttendantAccountDatabases;
+
+//pinikpinik
 
 public class AttendantAuthTest {
 
