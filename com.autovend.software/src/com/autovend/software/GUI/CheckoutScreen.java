@@ -1,14 +1,17 @@
 package com.autovend.software.GUI;
 
 
+import com.autovend.Bill;
 import com.autovend.Card;
+import com.autovend.Coin;
 import com.autovend.GiftCard;
-import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.*;
+import com.autovend.devices.observers.BillValidatorObserver;
+import com.autovend.devices.observers.CoinValidatorObserver;
 import com.autovend.external.CardIssuer;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerSession;
-import com.autovend.software.payment.GiftCardDatabase;
-import com.autovend.software.payment.PayWithCard;
+import com.autovend.software.payment.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -17,10 +20,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
-import com.autovend.software.BankIO;
-import com.autovend.software.payment.PayWithGiftCard;
+import java.util.ArrayList;
+import java.util.Currency;
 
-public class CheckoutScreen extends JPanel{
+import com.autovend.software.BankIO;
+
+public class CheckoutScreen<object> extends JPanel{
 
     private  TextArea receipt;
     private  JTextArea infoText;
@@ -29,12 +34,21 @@ public class CheckoutScreen extends JPanel{
     private com.autovend.devices.SelfCheckoutStation SelfCheckoutStation;
     private String num;
     JPanel jPanel = new JPanel();
+    private ArrayList<Coin> coins = new ArrayList<Coin>();
+    private ArrayList<Bill> bills = new ArrayList<Bill>();
+    private Object value;
+    private Object currency;
+    private object validator;
 
     PayWithCard payWithCard = new PayWithCard(SelfCheckoutStation);
     PayWithGiftCard payWithGiftCard = new PayWithGiftCard(SelfCheckoutStation);
+    PayWithCoin payWithCoin = new PayWithCoin(SelfCheckoutStation);
+    WithBill payWithBill = new WithBill(SelfCheckoutStation);
     CustomerSession session = new CustomerSession();
-
     private BigDecimal amountEntered;
+
+
+
     public CheckoutScreen(){
 
 
@@ -303,6 +317,48 @@ public class CheckoutScreen extends JPanel{
         giftCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                String bankNote = JOptionPane.showInputDialog("Enter the value of the note", "");
+                if(bankNote.equals("")){
+                    JOptionPane.showMessageDialog(new JPanel(), "Invalid Inputs!", "Please Try Again!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int bValue = Integer.parseInt(bankNote);
+                Bill bill = new Bill(bValue,session.getStation().coinValidator.currency);
+                bills.add(bill);
+                boolean transactionApproved= false;
+                try{
+                    transactionApproved = payWithBill.payWithBill(bills);
+
+                    if (payWithBill.reactToValidBillDetectedEvent(BillValidator validator, Currency currency, int value)){
+                        amountEntered = amountEntered.add(new BigDecimal(bValue));
+
+                    }else{
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "Invalid Note!",
+                                "Error!",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (transactionApproved){
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "You have payed enough!",
+                                "Bill Entered Successfully!",
+                                JOptionPane.PLAIN_MESSAGE);
+                    }else {
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "You still need to pay more!",
+                                "Not Enough!",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception error) {
+                    JOptionPane.showMessageDialog(new JPanel(),
+                            "Could not pay with bill!",
+                            "Bill Enter Failed!",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                update();
 
 
             }});
@@ -320,9 +376,56 @@ public class CheckoutScreen extends JPanel{
         giftCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                String coin = JOptionPane.showInputDialog("Enter the value of coin: ", "");
+                if(coin.equals("")){
+                    JOptionPane.showMessageDialog(new JPanel(), "Invalid Inputs!",
+                            "Please Try Again!",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                BigDecimal coinValue = new BigDecimal(coin);
+                Coin cValue = new Coin(coinValue, session.getStation().coinValidator.currency);
+                coins.add(cValue);
+                boolean transactionApproved = false;
+                try{
+                    transactionApproved = payWithCoin.payWithCoin(coins);
 
 
-            }});
+                    if(payWithCoin.reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value)){
+                        amountEntered = amountEntered.add(coinValue);
+
+                    }else{
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "Invalid Denomination!",
+                                "Error!",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if(transactionApproved) {
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "You have payed enough!",
+                                "Coin Entered Success!",
+                                JOptionPane.PLAIN_MESSAGE);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(new JPanel(),
+                                "You still need to pay more!",
+                                "Not Enough!",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+
+
+
+            } catch (Exception error) {
+                    JOptionPane.showMessageDialog(new JPanel(),
+                            "Could not pay with coin!",
+                            "Coin Enter Failed!",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                update();
+                }
+            });
         coin.setOpaque(true);
         coin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         coin.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
