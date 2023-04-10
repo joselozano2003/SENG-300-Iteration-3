@@ -28,14 +28,15 @@
  */
 package com.autovend.software.customer;
 
-public class CustomerView {
+import com.autovend.software.ui.PLUView;
 
-	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
+public class CustomerView {
+	
+	public PLUView pluView;
+	
+	public CustomerView() {
+		this.pluView = new PLUView();
 		
 	}
-	
-	//view for customer
-	
 
 }

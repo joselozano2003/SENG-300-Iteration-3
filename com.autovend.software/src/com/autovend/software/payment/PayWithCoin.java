@@ -44,13 +44,14 @@ import com.autovend.devices.observers.CoinSlotObserver;
 import com.autovend.devices.observers.CoinStorageObserver;
 import com.autovend.devices.observers.CoinTrayObserver;
 import com.autovend.devices.observers.CoinValidatorObserver;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver,
 		CoinTrayObserver, CoinValidatorObserver {
 
-	public PayWithCoin(SelfCheckoutStation station) {
-		super(station, true);
+	public PayWithCoin(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, true, customerView);
 		try {
 			station.coinDispensers.forEach((k, v) -> v.register(this));
 			station.coinSlot.register(this);

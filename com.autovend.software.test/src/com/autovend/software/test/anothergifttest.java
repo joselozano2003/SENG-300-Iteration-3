@@ -84,7 +84,7 @@ public class anothergifttest {
 		giftCard = new GiftCard("Gift", "12345678", "2001", currency, new BigDecimal("100"));
 		GiftCardDatabase.addCard("12345678", giftCard);
 
-		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
+//		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 

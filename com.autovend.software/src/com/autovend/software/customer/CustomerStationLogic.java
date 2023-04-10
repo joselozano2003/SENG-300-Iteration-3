@@ -25,11 +25,11 @@ public class CustomerStationLogic {
 
 	private CustomerStationLogic(SelfCheckoutStation station) {
 		// Initiate facades.
-		ItemFacade item = new ItemFacade(station, false);
-		PaymentFacade payment = new PaymentFacade(station, false);
-		ReceiptFacade receipt = new ReceiptFacade(station);
+	//	ItemFacade item = new ItemFacade(station, false);
+	//	PaymentFacade payment = new PaymentFacade(station, false);
+	//	ReceiptFacade receipt = new ReceiptFacade(station);
 	//	BaggingFacade bagging = new BaggingFacade(station);
-		MembershipFacade membership = new MembershipFacade(station);
+	//	MembershipFacade membership = new MembershipFacade(station);
 		// Initiate station with MVC design.
 		//model = new CustomerModel(item, payment, receipt, bagging, membership);
 		view = new CustomerView();
@@ -37,7 +37,7 @@ public class CustomerStationLogic {
 	}
 
 	public void turnOnDisplay() {
-		view.setVisible(true);
+//		view.setVisible(true);
 	}
 
 	/**

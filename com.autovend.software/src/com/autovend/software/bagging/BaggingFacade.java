@@ -37,6 +37,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.devices.observers.ReusableBagDispenserObserver;
 import com.autovend.software.AbstractFacade;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 public class BaggingFacade extends AbstractFacade<BaggingEventListener>
@@ -45,8 +46,8 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 	ReusableBagDispenser bagDispenser;
 	ReusableBagProduct bagProduct;
 
-	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser) {
-		super(station);
+	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser, CustomerView customerView) {
+		super(station, customerView);
 	    this.bagDispenser = bagDispenser;
 		bagProduct = new ReusableBagProduct();
 		try {

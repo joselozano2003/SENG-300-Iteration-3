@@ -38,14 +38,15 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.software.AbstractFacade;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractFacade<MembershipListener> {
 	
 	private boolean membershipEntered = false;
 
-	public MembershipFacade(SelfCheckoutStation station) {
-		super(station);
+	public MembershipFacade(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView);
 		try {
 			InnerListener inner = new InnerListener();
 			station.mainScanner.register(inner);

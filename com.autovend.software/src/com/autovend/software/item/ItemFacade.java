@@ -36,26 +36,27 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
+import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.PLUView;
 
 @SuppressWarnings("serial")
 public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-	private SelfCheckoutStation selfCheckoutStation;
 
-	public ItemFacade(SelfCheckoutStation station, boolean isChild) {
-		super(station);
-		this.selfCheckoutStation = station;
+	public ItemFacade(SelfCheckoutStation station, CustomerView customerView, boolean isChild) {
+		super(station, customerView);
+
 		// Initialize this instance and children once.
 
 		if (!isChild) {
 			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
-			children.add(new ByScanning(station));
-			children.add(new ByBrowsing(station));
-			children.add(new ByPLUCode(station));
-			children.add(new ByTextSearch(station));
+			children.add(new ByScanning(station, customerView));
+			children.add(new ByBrowsing(station, customerView));
+			children.add(new ByPLUCode(station, customerView));
+			children.add(new ByTextSearch(station, customerView));
 		}
 	}
 

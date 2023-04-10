@@ -46,6 +46,8 @@ import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.PLUView;
 
 public class SomeBasicTests {
 
@@ -72,6 +74,9 @@ public class SomeBasicTests {
 	public PLUCodedProduct pluProduct;
 	public CardIssuer credit;
 	public CreditCard creditCard;
+	
+//	public PLUView pluView;
+	public CustomerView customerView;
 
 	@Before
 	public void setUp() throws Exception {
@@ -111,6 +116,13 @@ public class SomeBasicTests {
 		barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
 		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+		
+		Numeral[] code3 = {Numeral.one, Numeral.one, Numeral.one, Numeral.one};
+		PriceLookUpCode pluCode = new PriceLookUpCode(code3);
+		
+		pluProduct = new PLUCodedProduct(pluCode, "PLU Coded Apple", new BigDecimal("1.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
+
 
 		bagProduct = new ReusableBagProduct();
 
@@ -118,8 +130,10 @@ public class SomeBasicTests {
 		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
 		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
 		credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
-
-		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser);
+		
+		customerView = new CustomerView();
+		
+		customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser, customerView);
 		customerSessionController.startNewSession();
 		currentSession = customerSessionController.getCurrentSession();
 
@@ -248,6 +262,12 @@ public class SomeBasicTests {
 
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
+	}
+	
+	@Test
+	public void addItemByPLUCode() {
+		customerSessionController.startAddingItems();
+		customerSessionController.getCurrentView().pluView.notifyItemAdded("1111", 2);	
 	}
 
 	@Test

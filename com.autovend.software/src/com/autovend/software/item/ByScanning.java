@@ -36,12 +36,13 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
-    public ByScanning(SelfCheckoutStation station) {
-		super(station, true);
+    public ByScanning(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView, true);
 		try {
 			station.mainScanner.register(this);
 			station.handheldScanner.register(this);

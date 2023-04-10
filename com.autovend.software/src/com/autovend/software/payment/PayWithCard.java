@@ -38,12 +38,13 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
-	public PayWithCard(SelfCheckoutStation station) {
-		super(station, true);
+	public PayWithCard(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, true, customerView);
 		try {
 			station.cardReader.register(this);
 		} catch (Exception e) {

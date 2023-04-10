@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.customer.CustomerView;
 
 /**
  * Ported from hardware and changed a bit for software use.
@@ -61,6 +62,11 @@ public abstract class AbstractFacade<T extends AbstractEventListener> implements
 	/**
 	 * A list of the registered listeners on this software.
 	 */
+	
+	protected final CustomerView customerView;
+
+
+	
 	protected ArrayList<T> listeners = new ArrayList<>();
 
 	/**
@@ -101,10 +107,11 @@ public abstract class AbstractFacade<T extends AbstractEventListener> implements
 	 * 
 	 * @param station
 	 */
-	protected AbstractFacade(SelfCheckoutStation station) {
-		if (station == null)
+	protected AbstractFacade(SelfCheckoutStation station, CustomerView customerView) {
+		if (station == null || customerView == null)
 			throw new NullPointerException("SelfCheckoutStation cannot be null");
 		this.station = station;
+		this.customerView = customerView;
 	}
 	
 }

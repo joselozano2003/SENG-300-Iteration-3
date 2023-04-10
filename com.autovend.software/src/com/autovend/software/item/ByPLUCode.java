@@ -28,22 +28,50 @@
  */
 package com.autovend.software.item;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.autovend.Numeral;
 import com.autovend.PriceLookUpCode;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.PLUViewObserver;
 
-public class ByPLUCode extends ItemFacade  {
-    protected ByPLUCode(SelfCheckoutStation station) {
-		super(station, true);
+public class ByPLUCode extends ItemFacade implements PLUViewObserver {
+
+	protected ByPLUCode(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView, true);
+		customerView.pluView.addObserver(this);
 	}
 
-    
-    
+	@Override
+	public void reactToPLUCodeEntered(String pluCode, double quantity) {
+		processPLUInput(pluCode, quantity);
 
-	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
-       PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
-       double weight = weightToPurchase;
-       //addItem()
-    }
+	}
+
+	public void processPLUInput(String stringToProcess, double quantity) {
+		Numeral[] numerals = new Numeral[stringToProcess.length()];
+
+		for (int i = 0; i < stringToProcess.length(); i++) {
+			byte number = Byte.parseByte(Character.toString(stringToProcess.charAt(i)));
+			Numeral numeral = Numeral.valueOf(number);
+			numerals[i] = numeral;
+		}
+
+		PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(new PriceLookUpCode(numerals));
+
+		if (pluCodedProduct.getPLUCode() != null) {
+			for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(pluCodedProduct, quantity);
+		} else {
+			for (ItemEventListener listener : listeners)
+				listener.onItemNotFoundEvent();
+		}
+
+	}
+
 }

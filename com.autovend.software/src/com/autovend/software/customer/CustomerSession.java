@@ -73,6 +73,11 @@ public class CustomerSession {
 			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
 			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
 			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+
+			System.out.println(pluCodedProduct.getDescription());
+			System.out.println(pluCodedProduct.getPrice());
+			System.out.println(quantityToAdd);
+
 		}
 
 		// Checks if product is a bag product
@@ -80,7 +85,7 @@ public class CustomerSession {
 			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
 			expectedWeight += bagProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-			
+
 		}
 	}
 

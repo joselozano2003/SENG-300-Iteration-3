@@ -43,12 +43,13 @@ import com.autovend.devices.observers.BillDispenserObserver;
 import com.autovend.devices.observers.BillSlotObserver;
 import com.autovend.devices.observers.BillStorageObserver;
 import com.autovend.devices.observers.BillValidatorObserver;
+import com.autovend.software.customer.CustomerView;
 
 @SuppressWarnings("serial")
 class PayWithBill extends PaymentFacade implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
 	
-	public PayWithBill(SelfCheckoutStation station) {
-		super(station, true);
+	public PayWithBill(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, true, customerView);
 		try {
 			station.billDispensers.forEach((k,v) -> v.register(this));
 			station.billInput.register(this);

@@ -37,6 +37,7 @@ import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
@@ -50,9 +51,10 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.PLUView;
 
-public class CustomerController
-		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
+public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
+		ReceiptEventListener, MembershipListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -67,25 +69,31 @@ public class CustomerController
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
 
+	private CustomerView customerView;
+
 	public enum State {
 
-		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
-		DISABLED,
+		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
+		PRINTING_RECEIPT, FINISHED, DISABLED,
 
 	}
 
 	private State currentState;
 
-	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
+	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser,
+			CustomerView customerView) {
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
-		this.currentState = State.INITIAL;
-		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
-		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
-		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
-		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
+		this.customerView = customerView;
+		
 
-		this.membershipFacade = new MembershipFacade(selfCheckoutStation);
+		this.currentState = State.INITIAL;
+		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
+		this.itemFacade = new ItemFacade(selfCheckoutStation, customerView, false);
+		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation, customerView);
+		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser, customerView);
+
+		this.membershipFacade = new MembershipFacade(selfCheckoutStation, customerView);
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -101,6 +109,10 @@ public class CustomerController
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
+
+		// Instantiate views
+		
+
 	}
 
 	public void setState(State newState) {
@@ -231,13 +243,13 @@ public class CustomerController
 	@Override
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
 		currentSession.addItemToCart(bagProduct, amount);
-		setState(State.CHECKING_WEIGHT);		
+		setState(State.CHECKING_WEIGHT);
 	}
 
 	@Override
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -272,6 +284,7 @@ public class CustomerController
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
 		currentSession.addItemToCart(product, quantity);
+
 		setState(State.CHECKING_WEIGHT);
 
 	}
@@ -304,7 +317,7 @@ public class CustomerController
 		setState(State.FINISHED);
 
 		// To "see" the receipt, uncomment the line below
-		//System.out.println(receiptText.toString());
+		// System.out.println(receiptText.toString());
 
 	}
 
@@ -356,22 +369,30 @@ public class CustomerController
 		return this.currentSession;
 	}
 
+	public CustomerView getCurrentView() {
+		return this.customerView;
+	}
+
 	public State getCurrentState() {
 		return this.currentState;
 	}
 
-
-
 	@Override
 	public void reactToValidMembershipEntered(String number) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reactToInvalidMembershipEntered() {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
