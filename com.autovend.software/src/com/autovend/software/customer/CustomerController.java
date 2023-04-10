@@ -128,6 +128,19 @@ public class CustomerController
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
 		case SCANNING_MEMBERSHIP:
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+			
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+			
+			selfCheckoutStation.cardReader.enable();
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.mainScanner.enable();
+			
+			selfCheckoutStation.printer.disable();	
 			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
@@ -370,8 +383,11 @@ public class CustomerController
 
 	@Override
 	public void reactToInvalidMembershipEntered() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Bad membership number detected\n. It is possible that you:"
+				+ "\n scanned an invalid membership card,"
+				+ "\n the card is not activated,\n "
+				+ "or there is a typo in the entered membership number\n");
+		setState(State.INITIAL);
 	}
 
 }

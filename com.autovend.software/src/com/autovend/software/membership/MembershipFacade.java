@@ -37,6 +37,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
+import com.autovend.external.ProductDatabases;
 import com.autovend.software.AbstractFacade;
 
 @SuppressWarnings("serial")
@@ -69,10 +70,17 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		 * MembershipDataBase, if it does it sets membershipEntered = true, otherwise false
 		 */
 		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
-			//if valid
-			membershipEntered = false;
+
 			if (MemberShipDatabase.userExists(barcode.toString()) == true) {
 				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(barcode.toString());
+			} else {
+				membershipEntered = false;
+				if (!ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
 			}
 		}
 		@Override
@@ -93,9 +101,16 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		}
 		@Override
 		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-			membershipEntered = false;
 			if (MemberShipDatabase.userExists(data.getNumber()) == true) {
 				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(data.getNumber());
+			} else {
+				membershipEntered = false;
+				if (data.getType().equals("membership")) {
+					for (MembershipListener listener : listeners)
+						listener.reactToInvalidMembershipEntered();
+				}
 			}
 		}
 			
@@ -108,9 +123,14 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		
 		@SuppressWarnings("unused")
 		public void reactToCodeInputEvent(String input) {
-			membershipEntered = false;
 			if (MemberShipDatabase.userExists(input) == true) {
 				membershipEntered = true;
+				for (MembershipListener listener : listeners)
+					listener.reactToValidMembershipEntered(input);
+			} else {
+				membershipEntered = false;
+				for (MembershipListener listener : listeners)
+					listener.reactToInvalidMembershipEntered();
 			}
 		}
 		
