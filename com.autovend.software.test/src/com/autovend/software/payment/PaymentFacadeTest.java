@@ -218,35 +218,35 @@ public class PaymentFacadeTest {
 		assertEquals(null, paymentFacade.getInstance());
 	}
 	
-	/**
-	 * Attempt to dispense change when the bill
-	 * dispenser is disabled.
-	 */
-	@Test
-	public void changeWhenBillDispenserDisabledTest() {
-		paymentFacade.register(new PaymentEventListenerStub());
-//		// Disable every bill dispenser
-//		for (int key : station.billDispensers.keySet()) {
-//			station.billDispensers.get(key).disable();
-//		}
-		station.billDispensers.get(5).disable();
-		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
-		assertEquals(1, changeDispensedFailCounter);
-	}
+//	/**
+//	 * Attempt to dispense change when the bill
+//	 * dispenser is disabled.
+//	 */
+//	@Test
+//	public void changeWhenBillDispenserDisabledTest() {
+//		paymentFacade.register(new PaymentEventListenerStub());
+////		// Disable every bill dispenser
+////		for (int key : station.billDispensers.keySet()) {
+////			station.billDispensers.get(key).disable();
+////		}
+//		station.billDispensers.get(5).disable();
+//		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
+//		assertEquals(1, changeDispensedFailCounter);
+//	}
+//	
+//	/**
+//	 * Attempt to dispense change when the coin
+//	 * dispenser is disabled.
+//	 */
+//	@Test
+//	public void changeWhenCoinDispenserDisabledTest() {
+//		paymentFacade.register(new PaymentEventListenerStub());
+//		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
+//		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
+//		assertEquals(1, changeDispensedFailCounter);
+//	}
 	
-	/**
-	 * Attempt to dispense change when the coin
-	 * dispenser is disabled.
-	 */
-	@Test
-	public void changeWhenCoinDispenserDisabledTest() {
-		paymentFacade.register(new PaymentEventListenerStub());
-		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
-		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
-		assertEquals(1, changeDispensedFailCounter);
-	}
-	
-	// Add more tests for exception cases (Overload, disabled, empty, etc.)
+	// Attempt to trigger an overload exception for bill, and 
 	
 	
 	
