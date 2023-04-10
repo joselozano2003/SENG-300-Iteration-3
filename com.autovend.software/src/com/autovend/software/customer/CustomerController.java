@@ -353,9 +353,7 @@ public class CustomerController
 		if (currentState == State.ADDING_OWN_BAGS) {
 			// do nothing
 		} else {
-			if (getCurrentState() == State.ADDING_ITEMS) {
-				currentSession.itemTooHeavyForBagging(weightInGrams);
-			} else if (expectedWeightEqualsActual) {
+			if (expectedWeightEqualsActual) {
 				setState(State.ADDING_ITEMS);
 			} else {
 				setState(State.DISABLED);
@@ -365,6 +363,13 @@ public class CustomerController
 
 		}
 
+	}
+	
+	public void itemTooHeavyForBagging(double weightInGrams) {
+		//call attendentIO first for approval
+		
+		setState(State.ADDING_ITEMS);
+		currentSession.itemAddedToCartTooHeavyForScale(weightInGrams);
 	}
 
 	public CustomerSession getCurrentSession() {

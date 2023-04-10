@@ -84,9 +84,8 @@ public class CustomerSession {
 		}
 	}
 	
-	public void itemTooHeavyForBagging(double weightInGrams) {
+	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
 		expectedWeight -= weightInGrams;
-		//call attendent for approval
 	}
 	
 	public void addPayment(BigDecimal amount) {
