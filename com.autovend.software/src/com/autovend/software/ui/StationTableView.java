@@ -41,8 +41,6 @@ import auth.AttendantAccount;
 
 public class StationTableView extends JPanel {
 	
-	String lang_code;			// Language code for interface.
-	
 	// Interface can support any number of stations. Window will
 	// consist of rows representing each station. First column
 	// indicates whether there is a weight discrepancy at any stations,
