@@ -126,7 +126,7 @@ public class testItemTooHeavyForScale {
 		model = new AttendantModel();
 		view = new AttendantView();
 		customerStations = new ArrayList<>();
-		attendantController = new AttendantController(model, view, customerStations);
+		attendantController = new AttendantController(model, view);
 		// Add 100 bills to each dispenser
 		for (int i = 0; i < billDenominations.length; i++) {
 			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
