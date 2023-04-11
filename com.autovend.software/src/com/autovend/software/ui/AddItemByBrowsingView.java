@@ -20,6 +20,8 @@ public class AddItemByBrowsingView extends JPanel {
 	
 	// CODE TO COPY BELOW:
 	
+		// a
+	
 		// Maximum number of items per screen.
 		static int MAX_ITEMS = 20;
 		
