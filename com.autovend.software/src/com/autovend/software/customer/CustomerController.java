@@ -60,6 +60,7 @@ import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.PaymentView;
 import com.autovend.software.ui.UIEventListener;
 
 public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
@@ -160,8 +161,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
-		//	selfCheckoutStation.handheldScanner.disable();
-		//	selfCheckoutStation.mainScanner.disable();
+			// selfCheckoutStation.handheldScanner.disable();
+			// selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
 			selfCheckoutStation.billInput.enable();
@@ -228,7 +229,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		currentSession = new CustomerSession();
 		setState(State.ADDING_ITEMS);
 		updateView(customerView.checkoutView);
-
 	}
 
 	@Override
@@ -236,12 +236,13 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		setState(State.PAYING);
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+		updateView(customerView.paymentView);
+		customerView.paymentView.setAmountDueLabelText(amountDue.toString());
 	}
 
 	@Override
 	public void onStartAddingOwnBags() {
 		setState(State.ADDING_OWN_BAGS);
-
 	}
 
 	@Override
@@ -249,13 +250,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		setState(State.DISABLED);
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
-
 	}
 
 	@Override
 	public void onPurchaseBags(int amount) {
 		baggingFacade.dispenseBags(amount);
-
 	}
 
 	@Override
@@ -281,7 +280,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
 		// comes from the attendant
 		// device.enable();
-
 	}
 
 	@Override
@@ -296,7 +294,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
-		System.out.println(quantity);
+
 		currentSession.addItemToCart(product, quantity);
 		customerView.checkoutView.updateShoppingCart(currentSession);
 
@@ -316,7 +314,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		boolean paymentComplete = currentSession.isPaymentComplete();
 		if (paymentComplete) {
 			setState(State.DISPENSING_CHANGE);
-
 		}
 	}
 
@@ -332,10 +329,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 		setState(State.FINISHED);
-
 		// To "see" the receipt, uncomment the line below
 		// System.out.println(receiptText.toString());
-
 	}
 
 	@Override
@@ -347,7 +342,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void onReceiptPrinterFailed() {
 		setState(State.DISABLED);
-
 	}
 
 	@Override
