@@ -38,6 +38,7 @@ import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.item.TextSearchProduct;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,15 +47,18 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private Map<Product, Double> heavyItems;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
+		heavyItems = new HashMap<>();
 	}
 
 	public void removeItemFromCart(Product product, double quantityToRemove) {
+		boolean itemIsHeavy = false;
 		// Checks if item has been previously added to cart
 		if (shoppingCart.containsKey(product)) {
 			double updatedQuantity = shoppingCart.get(product) - quantityToRemove;
@@ -62,17 +66,25 @@ public class CustomerSession {
 		} else {
 			shoppingCart.put(product, quantityToRemove);
 		}
+		
+		if (heavyItems.containsKey(product)) {
+			itemIsHeavy = true;
+		}
 
 		// Checks if product is barcoded
 		if (product instanceof BarcodedProduct) {
 			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
-			expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
+			if (!itemIsHeavy) {
+				expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
+			}
 			totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
 		}
 		// Checks if product is PLU coded
 		else if (product instanceof PLUCodedProduct) {
 			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
-			expectedWeight -= quantityToRemove;
+			if (!itemIsHeavy) {
+				expectedWeight -= quantityToRemove;
+			}
 			totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
 		}
 		else if (product instanceof ReusableBagProduct) {
@@ -119,8 +131,19 @@ public class CustomerSession {
 		}
 	}
 	
-	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
-		expectedWeight -= weightInGrams;
+//	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
+//		expectedWeight -= weightInGrams;
+//	}
+	
+	public void addHeavyItem(BarcodedProduct item) {
+		if (heavyItems.containsKey(item)) {
+			double updatedQuantity = shoppingCart.get(item) + 1;
+			heavyItems.put(item, updatedQuantity);
+		} else {
+			heavyItems.put(item, 1.0);
+		}
+		expectedWeight -= item.getExpectedWeight();
+
 	}
 	
 	public void addPayment(BigDecimal amount) {

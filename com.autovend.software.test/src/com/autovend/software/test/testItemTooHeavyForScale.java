@@ -126,7 +126,7 @@ public class testItemTooHeavyForScale {
 		model = new AttendantModel();
 		view = new AttendantView();
 		customerStations = new ArrayList<>();
-		attendantController = new AttendantController(model, view, customerStations);
+		attendantController = new AttendantController(model, view);
 		// Add 100 bills to each dispenser
 		for (int i = 0; i < billDenominations.length; i++) {
 			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
@@ -218,7 +218,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 
 		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -248,7 +248,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 
 		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -279,7 +279,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 
 		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -303,7 +303,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(4, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
@@ -321,7 +321,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 
 		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -346,7 +346,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 
 		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(3, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -370,7 +370,7 @@ public class testItemTooHeavyForScale {
 		}
 
 		
-		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct);
 		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(5, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
@@ -380,7 +380,47 @@ public class testItemTooHeavyForScale {
 	
 	//all remove products require attendent IO so need to implement these afterwards
 	@Test
-	public void addHeavyItemThenRemove() throws OverloadException {}
+	public void addHeavyItemThenRemove() throws OverloadException {
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        attendantController.addPaperToStation(0, 10);
+        attendantController.addInkToStation(0, 10);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        CustomerController.State state = station.getController().getState();
+        assertEquals(CustomerController.State.INITIAL, state);
+
+        CustomerController customerController = station.getController();
+        customerController.startNewSession();
+        customerController.startAddingItems();
+        selfCheckoutStation = customerController.getStation();
+
+		currentSession = customerController.getCurrentSession();
+
+
+
+		boolean flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		
+		customerController.itemTooHeavyForBagging(barcodeProduct);
+
+		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+        attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct.getBarcode(), "product1", new BigDecimal("1.00"), 10), 1);
+        
+        assertEquals(0, customerController.getSession().getTotalCost().intValue());
+		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(0, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+
+	}
 	
 	@Test
 	public void addNormalItemThenRemove() throws OverloadException {}
