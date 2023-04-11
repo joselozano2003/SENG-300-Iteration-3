@@ -77,7 +77,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	public enum State {
 
 		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
-		DISABLED,
+		DISABLED, STARTUP, SHUTDOWN
 
 	}
 
@@ -203,6 +203,42 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
 			break;
+		case SHUTDOWN:
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.screen.disable();
+			selfCheckoutStation.printer.disable();
+			selfCheckoutStation.cardReader.disable();
+			selfCheckoutStation.mainScanner.disable();
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+			selfCheckoutStation.billStorage.disable();
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+			selfCheckoutStation.coinStorage.disable();
+			selfCheckoutStation.coinValidator.disable();
+			break;
+		case STARTUP:
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.scale.enable();
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.printer.enable();
+			selfCheckoutStation.cardReader.enable();
+			selfCheckoutStation.mainScanner.enable();
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.billInput.enable();
+			selfCheckoutStation.billOutput.enable();
+			selfCheckoutStation.billStorage.enable();
+			selfCheckoutStation.coinSlot.enable();
+			selfCheckoutStation.coinTray.enable();
+			selfCheckoutStation.coinStorage.enable();
+			selfCheckoutStation.coinValidator.enable();
+			selfCheckoutStation.screen.disable();
+			// everything is on but screen is off, so it cannot be interacted with
+			break;
+
 		default:
 			break;
 
@@ -212,6 +248,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	// In reaction to UI
 	public void startNewSession() {
 		currentSession = new CustomerSession();
+		setState(State.INITIAL);
 		// set state to initial?
 	}
 

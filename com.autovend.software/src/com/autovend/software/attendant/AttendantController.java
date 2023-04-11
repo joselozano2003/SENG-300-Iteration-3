@@ -105,6 +105,22 @@ public class AttendantController implements CustomerStationListener {
 		}
 	}
 
+	public void shutDownStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
+	}
+
+	public void startUpStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.STARTUP);
+	}
+
+	public void permitStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+	}
+
+	public void denyStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
+	}
+
 	@Override
 	public void reactToHardwareFailure() {
 
