@@ -101,18 +101,7 @@ public class PaymentView<object> extends JPanel{
 
 
 
-        JButton creditCard = new JButton("Pay with Credit Card");
-
-        creditCard.setOpaque(true);
-        creditCard.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        creditCard.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
-        creditCard.setBackground(new Color(255, 203, 107));
-        creditCard.setBounds(980, 400 , 280, 55);
-        jPanel.add(creditCard);
-
-
-
-        JButton debitCard = new JButton("Pay with Debit Card");
+        JButton debitCard = new JButton("Pay with Credit / Debit Card");
 
         debitCard.setOpaque(true);
         debitCard.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -121,7 +110,7 @@ public class PaymentView<object> extends JPanel{
         debitCard.setBounds(980, 325 , 280, 55);
         jPanel.add(debitCard);
 
-
+        
 
         JButton giftCard = new JButton("Pay with Gift Card");
 
@@ -132,8 +121,8 @@ public class PaymentView<object> extends JPanel{
         giftCard.setBounds(980, 250 , 280, 55);
         jPanel.add(giftCard);
 
+        JButton cash = new JButton("Pay with Cash / Coin");
 
-        JButton cash = new JButton("Pay with Cash");
 
         cash.setOpaque(true);
         cash.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -141,19 +130,6 @@ public class PaymentView<object> extends JPanel{
         cash.setBackground(new Color(255, 203, 107));
         cash.setBounds(980, 175 , 280, 55);
         jPanel.add(cash);
-
-
-
-
-        JButton coin = new JButton("Pay with Coin");
-
-        coin.setOpaque(true);
-        coin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        coin.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
-        coin.setBackground(new Color(255, 203, 107));
-        coin.setBounds(980, 100 , 280, 55);
-        jPanel.add(coin);
-
 
         JLabel title =  new JLabel("Check Out");
         title.setFont(new Font("Lucida Grande", Font.BOLD, 60));
