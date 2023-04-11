@@ -29,6 +29,8 @@
 package com.autovend.software.membership;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -40,9 +42,169 @@ import com.autovend.MembershipCard;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.software.membership.MembershipFacade.InnerListener;
 import com.autovend.software.test.Setup;
 
 public class MembershipFacadeTest {
+	private SelfCheckoutStation station;
+	private MembershipFacade membershipFacade;
+	private boolean flag;
+	private int found;
+	
+	@Before
+	public void setup() {
+		//Setup the class to test
+		station = Setup.createSelfCheckoutStation();
+		membershipFacade = new MembershipFacade(station);
+		flag = false;
+		found = 0;
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullStation() {
+		new MembershipFacade(null);
+	}
+	
+	/**
+	 * Pre: Valid Membership card is scanned.
+	 * Expected: reactToValidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventValidMembershipScan() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToValidMembershipEntered(String number) {
+				found++;
+				assertEquals("1234", number);
+			}
+		});
+		MembershipCard card = new MembershipCard("membership", "1234", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
+		while (!flag)
+			try {
+				station.mainScanner.scan(card);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, found);
+		assertTrue(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Membership card is scanned, but card number not in database.
+	 * Expected: reactToInvalidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventInvalidScan() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToInvalidMembershipEntered() {
+				found++;
+			}
+		});
+		MembershipCard card = new MembershipCard("membership", "9999", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
+		while (!flag)
+			try {
+				station.mainScanner.scan(card);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, found);
+		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Valid Membership card data is read through swipe.
+	 * Expected: reactToValidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventValidMembershipSwipe() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToValidMembershipEntered(String number) {
+				found++;
+				assertEquals("1234", number);
+			}
+		});
+		MembershipCard card = new MembershipCard("membership", "1234", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1234");
+		while (!flag)
+			try {
+				station.cardReader.swipe(card, null);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, found);
+		assertTrue(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Membership card is swiped, but card number not in database.
+	 * Expected: reactToInvalidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventInvalidSwipe() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToInvalidMembershipEntered() {
+				found++;
+			}
+		});
+		MembershipCard card = new MembershipCard("membership", "9999", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
+		while (!flag)
+			try {
+				station.cardReader.swipe(card, null);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, found);
+		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Valid Membership card is entered through GUI keyboard or touch screen.
+	 * Expected: reactToValidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventValidMembershipPLU() {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToValidMembershipEntered(String number) {
+				found++;
+				assertEquals("1234", number);
+			}
+		});
+		//MembershipCard card = new MembershipCard("membership", "1234", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1234");
+		InnerListener inner = membershipFacade.new InnerListener();
+		inner.reactToCodeInputEvent("1234");
+		assertEquals(1, found);
+		assertTrue(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Membership card is entered through GUI keyboard or
+	 * touch screen, but the card number is not in the database.
+	 * Expected: reactToInvalidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventInvalidKey() throws IOException {
+		membershipFacade.register(new ListenerStub() {
+			@Override
+			public void reactToInvalidMembershipEntered() {
+				found++;
+			}
+		});
+		//MembershipCard card = new MembershipCard("membership", "9999", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
+		InnerListener inner = membershipFacade.new InnerListener();
+		inner.reactToCodeInputEvent("9999");
+		assertEquals(1, found);
+		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
 	class ListenerStub implements MembershipListener {
 		@Override
 		public void reactToHardwareFailure() {fail();}
@@ -58,42 +220,6 @@ public class MembershipFacadeTest {
 		public void reactToValidMembershipEntered(String number) {fail();}
 		@Override
 		public void reactToInvalidMembershipEntered() {fail();}
-	}
-	
-	private SelfCheckoutStation station;
-	private MembershipFacade membershipFacade;
-	private int found;
-	
-	@Before
-	public void setup() {
-		//Setup the class to test
-		station = Setup.createSelfCheckoutStation();
-		membershipFacade = new MembershipFacade(station);
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new MembershipFacade(null);
-	}
-	
-	/**
-	 * Pre: Valid Membership card data is read.
-	 * Expected: reactToValidMembershipEntered event is called.
-	 */
-	@Test
-	public void testEventValidMembershipEntered() throws IOException {
-		membershipFacade.register(new ListenerStub() {
-			@Override
-			public void reactToValidMembershipEntered(String number) {
-				found++;
-			}
-		});
-		//TODO: Add card to some database.
-		MembershipCard card = new MembershipCard("type", "1234", "cardHolder", true);
-		//NOTE: Might fail from random swipe failure. Should test in another way to avoid this.
-		station.cardReader.swipe(card, null);
-		
-		assertEquals(1, found);
 	}
 
 }
