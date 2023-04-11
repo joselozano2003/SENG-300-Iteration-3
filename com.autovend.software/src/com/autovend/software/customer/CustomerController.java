@@ -97,7 +97,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		this.customerView = customerView;
 
 		this.currentState = State.INITIAL;
-		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
+		this.paymentFacade = new PaymentFacade(selfCheckoutStation, customerView, false);
 		this.itemFacade = new ItemFacade(selfCheckoutStation, customerView, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation, customerView);
 		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser, customerView);

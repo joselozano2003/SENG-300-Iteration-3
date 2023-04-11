@@ -50,7 +50,7 @@ class PayWithBill extends PaymentFacade
 		implements BillDispenserObserver, BillSlotObserver, BillStorageObserver, BillValidatorObserver {
 
 	public PayWithBill(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, true, customerView);
+		super(station, customerView, true);
 
 		station.billDispensers.forEach((k, v) -> v.register(this));
 		station.billInput.register(this);

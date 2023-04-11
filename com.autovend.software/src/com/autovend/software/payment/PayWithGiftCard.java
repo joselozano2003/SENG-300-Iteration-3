@@ -47,7 +47,7 @@ import com.autovend.software.ui.CustomerView;
 public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithGiftCard(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, true, customerView);
+		super(station, customerView, true);
 
 		station.cardReader.register(this);
 

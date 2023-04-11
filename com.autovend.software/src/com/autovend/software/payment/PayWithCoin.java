@@ -51,7 +51,7 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 		CoinTrayObserver, CoinValidatorObserver {
 
 	public PayWithCoin(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, true, customerView);
+		super(station, customerView, true);
 			station.coinDispensers.forEach((k, v) -> v.register(this));
 			station.coinSlot.register(this);
 			station.coinStorage.register(this);
