@@ -71,6 +71,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	private int inkUsed, paperUsed;
 	public int inkAdded, paperAdded;
 	final int ALERT_THRESHOLD = 10;
+	private boolean cardInserted;
 
 
 
@@ -94,6 +95,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
 
 		this.membershipFacade = new MembershipFacade(selfCheckoutStation);
+		cardInserted = false;
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -181,10 +183,13 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			break;
 		case PRINTING_RECEIPT:
 			selfCheckoutStation.printer.enable();
-
 			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
+			if (cardInserted){
+				selfCheckoutStation.cardReader.remove();
+			}
 			break;
 		case FINISHED:
+
 			startNewSession();
 			break;
 		case DISABLED:
@@ -402,6 +407,16 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		// here, or just tell
 		// the attendant this value
 		// paymentFacade.dispenseChange(totalChangeLeft);
+	}
+
+	@Override
+	public void cardInserted() {
+		cardInserted = true;
+	}
+
+	@Override
+	public void cardRemoved() {
+		cardInserted = false;
 	}
 
 	@Override
