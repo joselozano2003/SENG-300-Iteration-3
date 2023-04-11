@@ -124,8 +124,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		customerView.checkoutView.register(this);
 		customerView.pluView.register(this);
 
-		
-
 		// Make view visible
 		selfCheckoutStation.screen.setVisible(true);
 		selfCheckoutStation.screen.getFrame().add(customerView.startView);
@@ -207,7 +205,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.handheldScanner.disable();
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
-			
+
 			break;
 		default:
 			break;
@@ -235,7 +233,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		setState(State.ADDING_ITEMS);
 		updateView(customerView.checkoutView);
 	}
-	
+
 	@Override
 	public void goBackToCheckout() {
 		updateView(customerView.checkoutView);
@@ -270,7 +268,10 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
+
 		currentSession.addItemToCart(bagProduct, amount);
+		customerView.checkoutView.updateShoppingCart(currentSession);
+
 		setState(State.CHECKING_WEIGHT);
 	}
 
@@ -302,17 +303,18 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public void reactToEnableStationRequest() {
 		// comes from the attendant
 	}
-	
+
 	@Override
 	public void onSelectAddItemByPLU() {
 		updateView(customerView.pluView);
-		
+
 	}
 
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
 
 		currentSession.addItemToCart(product, quantity);
+		System.out.println("hey");
 		customerView.checkoutView.updateShoppingCart(currentSession);
 
 		setState(State.CHECKING_WEIGHT);
@@ -433,9 +435,5 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// TODO Auto-generated method stub
 
 	}
-
-	
-
-	
 
 }

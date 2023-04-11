@@ -42,7 +42,7 @@ public class AttendantController {
 
 	private List<CustomerController> customerControllers;
 	private AttendantModel model;
-	private AttendantView view;
+//	private AttendantView view;
 	private AuthFacade auth;
 	//testing
 

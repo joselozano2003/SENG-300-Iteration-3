@@ -23,7 +23,7 @@ public class PLUView extends JPanel {
 	private JButton addButton;
 	private JButton backButton;
 	private List<PLUViewObserver> observers;
-	private List <UIEventListener> listeners;
+	private List<UIEventListener> listeners;
 
 	public PLUView() {
 
@@ -50,9 +50,9 @@ public class PLUView extends JPanel {
 
 			}
 		});
-		
+
 		backButton = new JButton("Go Back");
-		
+
 		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -60,7 +60,6 @@ public class PLUView extends JPanel {
 
 			}
 		});
-		
 
 		panel.add(infoLabel);
 		panel.add(inputField);
@@ -71,12 +70,10 @@ public class PLUView extends JPanel {
 
 	public void notifyGoBackToCheckout() {
 		for (UIEventListener listener : listeners) {
-            listener.goBackToCheckout();
-        }
-		
+			listener.goBackToCheckout();
+		}
 	}
-	
-	
+
 	public void register(UIEventListener listener) {
 		listeners.add(listener);
 	}
@@ -93,8 +90,8 @@ public class PLUView extends JPanel {
 		for (PLUViewObserver observer : observers) {
 			observer.reactToPLUCodeEntered(pluCode);
 		}
-		JOptionPane.showMessageDialog(new JPanel(), "Please place item on scale.",
-				"Notification", JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(new JPanel(), "Please place item on scale.", "Notification",
+				JOptionPane.PLAIN_MESSAGE);
 	}
 
 }
