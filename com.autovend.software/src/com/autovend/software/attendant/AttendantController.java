@@ -29,6 +29,8 @@
 package com.autovend.software.attendant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.autovend.devices.AbstractDevice;
@@ -49,6 +51,7 @@ public class AttendantController implements CustomerStationListener {
 	private AttendantModel model;
 	private AttendantView view;
 	private AuthFacade auth;
+	private ArrayList<HashMap<Product, Double>> removedProductsRequest;
 	//testing
 
 	public AttendantController(AttendantModel model, AttendantView view) {
@@ -58,6 +61,7 @@ public class AttendantController implements CustomerStationListener {
 		this.view = view;
 		this.auth = new AuthFacade();
 		customerStations = new ArrayList<CustomerStationLogic>();
+		removedProductsRequest = new ArrayList<HashMap<Product, Double>>();
 	}
 
 	public boolean startLogIn(AttendantAccount attendantAccount) {
@@ -80,8 +84,13 @@ public class AttendantController implements CustomerStationListener {
 	public void addItemToStationByTextSearch(int stationNumber, String product, double quantity) {
 		CustomerStationLogic station = customerStations.get(stationNumber);
 		CustomerSession currentSession = station.getController().getCurrentSession();
-		Product item = ProductsDatabase2.Products_Textsearch_Keywords_Database.get(product);
-		currentSession.addItemToCart(item, quantity);
+		if (ProductsDatabase2.Products_Textsearch_Keywords_Database.containsKey(product)) {
+			Product item = ProductsDatabase2.Products_Textsearch_Keywords_Database.get(product);
+			currentSession.addItemToCart(item, quantity);
+		}
+		else {
+			//TODO: Display Item not found
+		}
 	}
 
 	// This is triggered from the INITIAL state
@@ -102,7 +111,7 @@ public class AttendantController implements CustomerStationListener {
 			customerStations.get(stationNumber).getController().paperAdded += paperLevel;
 			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
 		} catch (OverloadException e) {
-			// TODO: Show attendant screen that too much paper was tried to be added
+			//TODO: Show attendant screen that too much paper was tried to be added
 		}
 	}
 
@@ -152,25 +161,26 @@ public class AttendantController implements CustomerStationListener {
 
 	@Override
 	public void reactToDisableStationRequest() {
-		// TODO Send message to attendant view
+		//TODO: Send message to attendant view
 	}
 
 	@Override
 	public void reactToRemoveItemRequest(Product product, double quantity, CustomerStationLogic stationLogic) {
 		int stationNumber = customerStations.indexOf(stationLogic);
+		removedProductsRequest.get(stationNumber).put(product, quantity);
 		String productName = "Request to remove " + quantity + " of " + product.toString() + " from station " + stationNumber;
-		// TODO: Show this message in attendant view
+		//TODO: Show this message in attendant view
 	}
 
 	@Override
 	public void lowInkAlert(CustomerStationLogic stationLogic) {
 		int stationNumber = customerStations.indexOf(stationLogic);
-		// TODO: Show to attendant view the station number that needs ink
+		//TODO: Show to attendant view the station number that needs ink
 	}
 
 	@Override
 	public void lowPaperAlert(CustomerStationLogic stationLogic) {
 		int stationNumber = customerStations.indexOf(stationLogic);
-		// TODO: Show to attendant view the station number that needs paper
+		//TODO: Show to attendant view the station number that needs paper
 	}
 }

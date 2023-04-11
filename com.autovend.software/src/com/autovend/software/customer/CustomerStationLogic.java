@@ -37,6 +37,7 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		// Initiate station with MVC design.
 		view = new CustomerView();
 
+		controller.register(this);
 	}
 	public CustomerController getController() {
 		return this.controller;
