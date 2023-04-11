@@ -90,7 +90,6 @@ public class CustomerSession {
 			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
 			expectedWeight += bagProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-
 		}
 	}
 

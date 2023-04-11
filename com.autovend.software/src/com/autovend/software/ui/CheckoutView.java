@@ -70,8 +70,22 @@ public class CheckoutView extends JPanel {
 			}
 		});
 		JButton purchaseBagButton = new JButton("Purchase Bag");
+		purchaseBagButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyPurchaseBagsButtonPressed();
+			}
+		});
+
 		JButton addOwnBagsButton = new JButton("Add own Bags");
+		
 		JButton paymentButton = new JButton("Proceed to Payment");
+		paymentButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyStartPayingButtonPressed();
+			}
+		});
 
 		shoppingCartTableModel = new DefaultTableModel(new Object[] { "Product", "Quantity", "Price" }, 0);
 		shoppingCartTable = new JTable(shoppingCartTableModel);
@@ -124,11 +138,21 @@ public class CheckoutView extends JPanel {
 		observers.add(listener);
 	}
 
-	public void notifyAddItemByPLUButtonPressed() {
+	public void notifyPurchaseBagsButtonPressed() {
 		for (UIEventListener listener : observers) {
-			listener.onSelectAddItemByPLU();
+			listener.onPurchaseBags(1);
 		}
+	}
 
+	public void notifyAddItemByPLUButtonPressed() {
+		for (UIEventListener listener : observers) 
+			listener.onSelectAddItemByPLU();
+	}
+	
+	public void notifyStartPayingButtonPressed() {
+		for (UIEventListener listener : observers) {
+			listener.onStartPaying();
+		}
 	}
 
 	public void updateShoppingCart(CustomerSession session) {
