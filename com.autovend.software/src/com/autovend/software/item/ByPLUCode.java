@@ -33,23 +33,29 @@ import java.util.List;
 
 import com.autovend.Numeral;
 import com.autovend.PriceLookUpCode;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
 import com.autovend.software.ui.PLUViewObserver;
 
-public class ByPLUCode extends ItemFacade implements PLUViewObserver {
+public class ByPLUCode extends ItemFacade implements PLUViewObserver, ElectronicScaleObserver {
+	private String currentPLUCode;
 
 	protected ByPLUCode(SelfCheckoutStation station, CustomerView customerView) {
 		super(station, customerView, true);
 		customerView.pluView.addObserver(this);
+		station.scale.register(this);
 	}
 
 	@Override
-	public void reactToPLUCodeEntered(String pluCode, double quantity) {
-		processPLUInput(pluCode, quantity);
+	public void reactToPLUCodeEntered(String pluCode) {
+		this.currentPLUCode = pluCode;
 
 	}
 
@@ -71,7 +77,38 @@ public class ByPLUCode extends ItemFacade implements PLUViewObserver {
 			for (ItemEventListener listener : listeners)
 				listener.onItemNotFoundEvent();
 		}
+	}
+	
+	@Override
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
+		processPLUInput(currentPLUCode, weightInGrams);
+		
+	}
 
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
+	@Override
+	public void reactToOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

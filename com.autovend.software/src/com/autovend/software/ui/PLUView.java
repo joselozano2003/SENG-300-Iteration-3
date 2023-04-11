@@ -18,44 +18,67 @@ import java.util.List;
 public class PLUView extends JPanel {
 	private JPanel panel;
 	private JTextField inputField;
-	private JTextField quantityField;
 
 	private JLabel infoLabel;
 	private JButton addButton;
+	private JButton backButton;
 	private List<PLUViewObserver> observers;
+	private List <UIEventListener> listeners;
 
 	public PLUView() {
 
 		observers = new ArrayList<>();
+		listeners = new ArrayList<>();
 
 		setSize(400, 400);
 
 		panel = new JPanel();
 		inputField = new JTextField(20);
-		quantityField = new JTextField(20);
 		infoLabel = new JLabel("Enter PLU Code and Quantity for the product:");
 		addButton = new JButton("Add Item");
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String pluString = inputField.getText();
-				double pluQuantity = Double.valueOf(quantityField.getText());
 				if (pluString.equals("")) {
 					JOptionPane.showMessageDialog(new JPanel(), "Please enter a PLU code.",
 							"Invalid PLU! Please try again!", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 
-				notifyItemAdded(pluString, pluQuantity);
+				notifyItemAdded(pluString);
 
 			}
 		});
+		
+		backButton = new JButton("Go Back");
+		
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyGoBackToCheckout();
+
+			}
+		});
+		
 
 		panel.add(infoLabel);
 		panel.add(inputField);
-		panel.add(quantityField);
 		panel.add(addButton);
+		panel.add(backButton);
 		add(panel);
+	}
+
+	public void notifyGoBackToCheckout() {
+		for (UIEventListener listener : listeners) {
+            listener.goBackToCheckout();
+        }
+		
+	}
+	
+	
+	public void register(UIEventListener listener) {
+		listeners.add(listener);
 	}
 
 	public void addObserver(PLUViewObserver observer) {
@@ -66,12 +89,12 @@ public class PLUView extends JPanel {
 		observers.remove(observer);
 	}
 
-	public void notifyItemAdded(String pluCode, double pluQuantity) {
+	public void notifyItemAdded(String pluCode) {
 		for (PLUViewObserver observer : observers) {
-			observer.reactToPLUCodeEntered(pluCode, pluQuantity);
+			observer.reactToPLUCodeEntered(pluCode);
 		}
-		JOptionPane.showMessageDialog(new JPanel(), "Item with PLU code " + pluCode + " was added to the cart.",
-				"Item is added", JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(new JPanel(), "Please place item on scale.",
+				"Notification", JOptionPane.PLAIN_MESSAGE);
 	}
 
 }

@@ -8,10 +8,13 @@ import java.util.List;
 import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
+import com.autovend.PriceLookUpCodedUnit;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.ui.CustomerView;
@@ -23,8 +26,8 @@ public class Main {
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
 		BigDecimal[] coinDenoms = { new BigDecimal("0.05"), new BigDecimal("0.10"), new BigDecimal("0.25"),
 				new BigDecimal("1"), new BigDecimal("2") };
-		int scaleMaximumWeight = 50;
-		int scaleSensitivity = 10;
+		int scaleMaximumWeight = 1000;
+		int scaleSensitivity = 1;
 		SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenoms, coinDenoms,
 				scaleMaximumWeight, scaleSensitivity);
 		ReusableBagDispenser dispenser = new ReusableBagDispenser(100);
@@ -46,6 +49,18 @@ public class Main {
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
 		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
 		
+		Numeral[] code3 = {Numeral.one, Numeral.one, Numeral.one, Numeral.one};
+		PriceLookUpCode pluCode = new PriceLookUpCode(code3);
+		
+		PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "product3", new BigDecimal("1.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
+		
+		Numeral[] code4 = {Numeral.zero, Numeral.zero, Numeral.zero, Numeral.zero};
+		PriceLookUpCode pluCode2 = new PriceLookUpCode(code4);
+		
+		PLUCodedProduct pluProduct2 = new PLUCodedProduct(pluCode2, "grapes", new BigDecimal("2.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode2, pluProduct2);
+		
 		Thread.sleep(6000);
 		station.mainScanner
 		.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
@@ -61,6 +76,12 @@ public class Main {
 		.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		station.baggingArea
 		.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
+		
+		Thread.sleep(10000);
+		station.scale
+		.add(new PriceLookUpCodedUnit(pluCode2, 999));
+		
+		
 		
 	}
 
