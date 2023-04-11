@@ -54,16 +54,18 @@ public class StationTableView extends JPanel {
 	// modified by methods called by the controller.
 	JPanel attendantPanel = this;
 	JLabel discrepancyLabels[];
-	JButton approveButtons[];
-	JButton refuseButtons[];
+	JButton overrideButtons[];
+	JButton addByTextButtons[];
+	JButton removeItemButtons[];
 	
 	
 	// Constructor
 	public StationTableView(int num_stations) {
 		this.num_stations = num_stations;
 		discrepancyLabels = new JLabel[num_stations];
-		approveButtons = new JButton[num_stations];
-		refuseButtons = new JButton[num_stations];
+		overrideButtons = new JButton[num_stations];
+		addByTextButtons = new JButton[num_stations];
+		removeItemButtons = new JButton[num_stations];
 	
 		attendantPanel.setLayout(new GridLayout(num_stations, 3));
 		
@@ -71,12 +73,14 @@ public class StationTableView extends JPanel {
 		for (int i = 0; i < num_stations; ++i) {
 			discrepancyLabels[i] = new JLabel("Station"
 					+ " " + (i + 1) + ": " + "Working normally" + "...");
-			approveButtons[i] = new JButton("");
-			refuseButtons[i] = new JButton("");
+			overrideButtons[i] = new JButton("Override");
+			addByTextButtons[i] = new JButton("Add Item By Name");
+			removeItemButtons[i] = new JButton("Remove Item");
 			
 			attendantPanel.add(discrepancyLabels[i]);
-			attendantPanel.add(approveButtons[i]);
-			attendantPanel.add(refuseButtons[i]);
+			attendantPanel.add(overrideButtons[i]);
+			attendantPanel.add(addByTextButtons[i]);
+			attendantPanel.add(removeItemButtons[i]);
 		}
 	}
 
@@ -89,6 +93,12 @@ public class StationTableView extends JPanel {
 		testFrame.add(testView);
 		testFrame.setVisible(true);
 		testFrame.pack();
+		testView.declareIssue(4, "test");
+	}
+	
+	public void declareIssue(int stationNum, String issue) {
+		this.discrepancyLabels[stationNum].setText(
+				"Station " + (stationNum + 1) + ": " + issue);
 	}
 	
 	
