@@ -70,7 +70,7 @@ public class AttendantController {
 		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 
-	public boolean startRemoveItem(ItemFacade item, Product product) {
-		return item.removeProduct(product);
-	}
+//	public boolean startRemoveItem(ItemFacade item, Product product) {
+//		return item.removeProduct(product);
+//	}
 }

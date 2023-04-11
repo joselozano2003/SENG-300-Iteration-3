@@ -71,10 +71,10 @@ public class ByPLUCode extends ItemFacade implements PLUViewObserver, Electronic
 		PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(new PriceLookUpCode(numerals));
 
 		if (pluCodedProduct.getPLUCode() != null) {
-			for (ItemEventListener listener : listeners)
+			for (ItemEventListener listener : getListeners())
 				listener.onItemAddedEvent(pluCodedProduct, quantity);
 		} else {
-			for (ItemEventListener listener : listeners)
+			for (ItemEventListener listener : getListeners())
 				listener.onItemNotFoundEvent();
 		}
 	}
@@ -86,29 +86,15 @@ public class ByPLUCode extends ItemFacade implements PLUViewObserver, Electronic
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOverloadEvent(ElectronicScale scale) {}
 
 	@Override
-	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
 
 }

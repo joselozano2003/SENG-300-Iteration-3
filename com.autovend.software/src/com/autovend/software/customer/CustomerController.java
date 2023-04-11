@@ -111,10 +111,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			child.register(this);
 		}
 		itemFacade.register(this);
-		itemAdditionMethods = itemFacade.getChildren();
-		for (ItemFacade child : itemAdditionMethods) {
-			child.register(this);
-		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);

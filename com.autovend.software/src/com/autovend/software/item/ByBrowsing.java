@@ -46,7 +46,7 @@ public class ByBrowsing extends ItemFacade  {
 	 */
 	public void productFromVisualCatalogueSelected(Product product) {
 		if(product != null) {
-        	for (ItemEventListener listener : listeners)
+        	for (ItemEventListener listener : getListeners())
 				listener.onItemAddedEvent(product, 1);;
 		}
 	}

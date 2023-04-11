@@ -54,6 +54,7 @@ import com.autovend.software.ui.CustomerView;
 public class ByScanningTest {
 	private SelfCheckoutStation station;
 	private ByScanning byScanning;
+	private ItemFacade instance;
 	private int found;
 	
 	/**
@@ -65,6 +66,7 @@ public class ByScanningTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		byScanning = new ByScanning(station, new CustomerView());
+		instance = new ItemFacade(station, new CustomerView(), false);
 	}
 	
 	/**
@@ -99,7 +101,7 @@ public class ByScanningTest {
 		BarcodedProduct barcodedProduct123 = Setup.createBarcodedProduct123(1.00, 15, true);
 		BarcodedProduct barcodedProduct456 = Setup.createBarcodedProduct456(5.5, 20, true);
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -119,7 +121,7 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(27.99, 10, false);
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void onItemNotFoundEvent() {
 				found++;
@@ -137,7 +139,7 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct1 = null;
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
 				assertEquals(barcodedProduct1, barcodedProduct);
@@ -155,7 +157,7 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct1 = Setup.createBarcodedProduct123(12.91, 5, true);
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
 				found++;
@@ -174,7 +176,7 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct2 = Setup.createBarcodedProduct123(12.91, 5, true);
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
 				found++;
@@ -195,7 +197,7 @@ public class ByScanningTest {
 		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
 		BarcodedProduct barcodedProduct4 = null;
 		
-		byScanning.register(new ItemListenerStub() {
+		instance.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				assertEquals(barcodedProduct3, product);

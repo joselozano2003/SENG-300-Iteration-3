@@ -68,7 +68,7 @@ public class ByTextSearch extends ItemFacade {
 	 */
 	public void productFromTextSearchSelected(Product product) {
 		if(product != null) {
-        	for (ItemEventListener listener : listeners)
+        	for (ItemEventListener listener : getListeners())
 				listener.onItemAddedEvent(product, 1);;
 		}
 	}

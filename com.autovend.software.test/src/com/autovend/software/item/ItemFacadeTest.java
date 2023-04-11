@@ -86,44 +86,46 @@ public class ItemFacadeTest {
 		new ItemFacade(station, null, false);
 	}
 	
-	/**
-	 * Test a null item being added.
-	 */
-	@Test
-	public void testAddNullItem() {
-		int expected = 0;
-		Product nullProd = null;
-		itemFacade.addProduct(nullProd);
-		
-		int actual = itemFacade.getItemList().size();
-		assertEquals(expected, actual);
-	}
 	
-	/**
-	 * Tests a single BarcodedProduct being added.
-	 */
-	@Test
-	public void testSingleBarcodedProductBeingAdded() {
-		int expected = 1;
-		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(12.34, 56, true);
-		itemFacade.addProduct(barcodedProduct0);
-		
-		int actual = itemFacade.getItemList().size();
-		assertEquals(expected, actual);	
-	}
 	
-	/**
-	 * Tests a single PLUCodedProduct being added.
-	 */
-	@Test
-	public void testSinglePLUCodedProductBeingAdded() {
-		int expected = 1;
-		PLUCodedProduct pluProduct0 = Setup.createPLUProduct1234(11.10, 2, true);
-		itemFacade.addProduct(pluProduct0);
-		
-		int actual = itemFacade.getItemList().size();
-		assertEquals(expected, actual);	
-	}
+//	/**
+//	 * Test a null item being added.
+//	 */
+//	@Test
+//	public void testAddNullItem() {
+//		int expected = 0;
+//		Product nullProd = null;
+//		itemFacade.addProduct(nullProd);
+//		
+//		int actual = itemFacade.getItemList().size();
+//		assertEquals(expected, actual);
+//	}
+//	
+//	/**
+//	 * Tests a single BarcodedProduct being added.
+//	 */
+//	@Test
+//	public void testSingleBarcodedProductBeingAdded() {
+//		int expected = 1;
+//		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(12.34, 56, true);
+//		itemFacade.addProduct(barcodedProduct0);
+//		
+//		int actual = itemFacade.getItemList().size();
+//		assertEquals(expected, actual);	
+//	}
+//	
+//	/**
+//	 * Tests a single PLUCodedProduct being added.
+//	 */
+//	@Test
+//	public void testSinglePLUCodedProductBeingAdded() {
+//		int expected = 1;
+//		PLUCodedProduct pluProduct0 = Setup.createPLUProduct1234(11.10, 2, true);
+//		itemFacade.addProduct(pluProduct0);
+//		
+//		int actual = itemFacade.getItemList().size();
+//		assertEquals(expected, actual);	
+//	}
 	
 	/**
 	 * Tests that ItemFacade getChildren list contains the correct number of children
@@ -140,7 +142,6 @@ public class ItemFacadeTest {
 	 */
 	@Test
 	public void testGetNullInstanceOfItemFacade() {
-		itemFacade = null;
-		assertEquals(null, itemFacade.getInstance());
+		assertEquals(itemFacade, itemFacade.getInstance());
 	}
 }

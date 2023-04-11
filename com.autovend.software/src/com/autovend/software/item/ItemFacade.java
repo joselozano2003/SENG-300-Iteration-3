@@ -37,87 +37,47 @@ import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
 import com.autovend.software.ui.CustomerView;
-import com.autovend.software.ui.PLUView;
 
 @SuppressWarnings("serial")
 public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
-	private static List<Product> itemList;
+	private SelfCheckoutStation selfCheckoutStation;
 
-	public ItemFacade(SelfCheckoutStation station, CustomerView customerView, boolean isChild) {
-		super(station, customerView);
-
+	public ItemFacade(SelfCheckoutStation station, CustomerView view, boolean isChild) {
+		super(station, view);
+		this.selfCheckoutStation = station;
 		// Initialize this instance and children once.
 
-		if (!isChild) {
-			itemList = new ArrayList<Product>();
+		if (!isChild || instance == null) {
+			instance = this;
 			children = new ArrayList<ItemFacade>();
-			children.add(new ByScanning(station, customerView));
-			children.add(new ByBrowsing(station, customerView));
-			children.add(new ByPLUCode(station, customerView));
-			children.add(new ByTextSearch(station, customerView));
+			children.add(new ByScanning(station, view));
+			children.add(new ByBrowsing(station, view));
+			children.add(new ByPLUCode(station, view));
+			children.add(new ByTextSearch(station, view));
 		}
-	}
-
-	public void addProduct(Product product) {
-		if (product != null)
-			itemList.add(product);
-	}
-
-	public boolean removeProduct(Product removedProduct) {
-		if (removedProduct != null) {
-			if (removedProduct instanceof BarcodedProduct) {
-				for (Product product : itemList) {
-					if (product instanceof BarcodedProduct) {
-						if (((BarcodedProduct) product).getBarcode()
-								.equals(((BarcodedProduct) removedProduct).getBarcode())
-								&& ((BarcodedProduct) product).getDescription()
-										.equals(((BarcodedProduct) removedProduct).getDescription())
-								&& ((BarcodedProduct) product)
-										.getExpectedWeight() == (((BarcodedProduct) removedProduct).getExpectedWeight())
-								&& ((BarcodedProduct) product).getPrice()
-										.equals(((BarcodedProduct) removedProduct).getPrice())) {
-							itemList.remove(product);
-							return true;
-						}
-					}
-				}
-			} else if (removedProduct instanceof PLUCodedProduct) {
-				for (Product product : itemList) {
-					if (product instanceof PLUCodedProduct) {
-						if (((PLUCodedProduct) product).getPLUCode()
-								.equals(((PLUCodedProduct) removedProduct).getPLUCode())
-								&& ((PLUCodedProduct) product).getDescription()
-										.equals(((PLUCodedProduct) removedProduct).getDescription())
-								&& ((PLUCodedProduct) product).getPrice()
-										.equals(((PLUCodedProduct) removedProduct).getPrice())) {
-							itemList.remove(product);
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	public List<Product> getItemList() {
-		return itemList;
-	}
-
-	/**
-	 * @return List of active subclasses.
-	 */
-	public List<ItemFacade> getChildren() {
-		return children;
 	}
 
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
+	public static ArrayList<ItemEventListener> getListeners() {
+		return instance.listeners;
+	}
+	
+	/**
+	 * @return This current active instance of this class. Could be null.
+	 */
 	public static ItemFacade getInstance() {
 		return instance;
+	}
+	
+	/**
+	 * @return List of active subclasses.
+	 */
+	protected List<ItemFacade> getChildren() {
+		return children;
 	}
 
 }

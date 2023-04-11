@@ -17,6 +17,7 @@ import com.autovend.software.ui.CustomerView;
 public class ByPLUCodeTest {
 	private SelfCheckoutStation station;
 	private ByPLUCode byPLUCode;
+	private ItemFacade instance;
 	private int found;
 	
 	/**
@@ -28,6 +29,7 @@ public class ByPLUCodeTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		byPLUCode = new ByPLUCode(station, new CustomerView());
+		instance = new ItemFacade(station, new CustomerView(), false);
 	}
 	
 	/**
@@ -57,10 +59,19 @@ public class ByPLUCodeTest {
 		
 		//byPLUCode.reactToPLUCodeEnteredEvent(PLUProd.getPLUCode(), 3);
 		
-		
-		
 	}
 	
-	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvents() {
+		//Will fail if any listener event is entered.
+		instance.register(new ItemListenerStub());
+		byPLUCode.reactToEnabledEvent(station.scale);
+		byPLUCode.reactToDisabledEvent(station.scale);
+		byPLUCode.reactToOverloadEvent(station.scale);
+		byPLUCode.reactToOutOfOverloadEvent(station.scale);
+	}
 
 }
