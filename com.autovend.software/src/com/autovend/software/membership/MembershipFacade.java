@@ -38,7 +38,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractFacade<MembershipListener> {
@@ -47,15 +47,11 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 
 	public MembershipFacade(SelfCheckoutStation station, CustomerView customerView) {
 		super(station, customerView);
-		try {
 			InnerListener inner = new InnerListener();
 			station.mainScanner.register(inner);
 			station.handheldScanner.register(inner);
 			station.cardReader.register(inner);
-		} catch (Exception e) {
-			for (MembershipListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		
 	}
 	
 	private class InnerListener implements BarcodeScannerObserver, CardReaderObserver {

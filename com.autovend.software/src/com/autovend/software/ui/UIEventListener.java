@@ -1,45 +1,24 @@
 package com.autovend.software.ui;
 
-public class UIEventListener {
+public interface UIEventListener {
 
-	public void onStartNewSession() {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	public void onStartAddingItems() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onStartAddingItems();
 	
-	public void onStartPayment() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onStartPaying();
 	
-	public void onStartAddingOwnBags() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onStartAddingOwnBags();
 	
-	public void onFinishAddingOwnBags() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onFinishAddingOwnBags();
 	
-	public void onStartFinishAddingOwnBags() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void onAddMoreItems() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void onPurchaseBags(int amount) {
-		
-	}
+	public void onPurchaseBags(int amount);
 
+	
+	
+
+
+
+
+	
 
 }

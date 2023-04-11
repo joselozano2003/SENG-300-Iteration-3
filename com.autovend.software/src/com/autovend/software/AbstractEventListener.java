@@ -42,7 +42,6 @@ public interface AbstractEventListener {
 	/**
 	 * Announces that the indicated software failed to complete due to a hardware failure.
 	 */
-	public void reactToHardwareFailure();
 	/**
 	 * Announces that a device should be disabled.
 	 * 

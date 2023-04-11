@@ -30,8 +30,9 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
+import com.autovend.devices.SupervisionStation;
 import com.autovend.products.Product;
-import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.customer.CustomerController;
 import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
@@ -39,19 +40,14 @@ import auth.AuthFacade;
 
 public class AttendantController {
 
-	private static List<CustomerStationLogic> customerStations;
+	private List<CustomerController> customerControllers;
 	private AttendantModel model;
 	private AttendantView view;
 	private AuthFacade auth;
 	//testing
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
-			throw new NullPointerException("Null arguments given");
-		this.model = model;
-		this.view = view;
-		this.auth = new AuthFacade();
-		customerStations = list;
+	public AttendantController(SupervisionStation station ) {
+		
 	}
 
 	public void startupStation(/* station */) {

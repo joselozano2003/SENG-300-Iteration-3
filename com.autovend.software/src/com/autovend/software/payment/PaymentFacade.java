@@ -39,7 +39,7 @@ import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class PaymentFacade extends AbstractFacade<PaymentEventListener> {

@@ -45,12 +45,16 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private String membershipNumber;
+	private int numberOfFailedPayments;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
+		membershipNumber = null;
+		numberOfFailedPayments = 0;
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
@@ -67,6 +71,7 @@ public class CustomerSession {
 			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
 			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+			System.out.println(product);
 		}
 		// Checks if product is PLU coded
 		else if (product instanceof PLUCodedProduct) {
@@ -93,6 +98,10 @@ public class CustomerSession {
 		totalPaid = totalPaid.add(amount);
 	}
 
+	public void addMembershipNumber(String numberToAdd) {
+		this.membershipNumber = numberToAdd;
+	}
+
 	public Map<Product, Double> getShoppingCart() {
 		return shoppingCart;
 	}
@@ -115,6 +124,14 @@ public class CustomerSession {
 
 	public BigDecimal getChangeDue() {
 		return totalPaid.subtract(totalCost);
+	}
+
+	public int getNumberOfFailedPayments() {
+		return numberOfFailedPayments;
+	}
+
+	public void addFailedPayment() {
+		numberOfFailedPayments++;
 	}
 
 	public boolean isPaymentComplete() {

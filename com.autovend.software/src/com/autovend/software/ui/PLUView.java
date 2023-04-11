@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PLUView extends JFrame {
+public class PLUView extends JPanel {
 	private JPanel panel;
 	private JTextField inputField;
 	private JTextField quantityField;
@@ -28,9 +28,7 @@ public class PLUView extends JFrame {
 
 		observers = new ArrayList<>();
 
-		setTitle("Add Item By PLU");
 		setSize(400, 400);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		panel = new JPanel();
 		inputField = new JTextField(20);
@@ -76,10 +74,4 @@ public class PLUView extends JFrame {
 				"Item is added", JOptionPane.PLAIN_MESSAGE);
 	}
 
-	private static void createAndShowGUI() {
-		PLUView frame = new PLUView();
-		frame.setVisible(true);
-	}
-
-	
 }

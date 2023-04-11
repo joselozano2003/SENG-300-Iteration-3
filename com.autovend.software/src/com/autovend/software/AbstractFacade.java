@@ -32,7 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 /**
  * Ported from hardware and changed a bit for software use.

@@ -38,19 +38,16 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
 	public PayWithCard(SelfCheckoutStation station, CustomerView customerView) {
 		super(station, true, customerView);
-		try {
-			station.cardReader.register(this);
-		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+
+		station.cardReader.register(this);
+
 	}
 
 	@Override
@@ -97,7 +94,7 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 				boolean transactionResult = issuer.postTransaction(data.getNumber(), holdNumber, value);
 				if (transactionResult) {
 					for (PaymentEventListener listener : listeners) {
-						
+
 						listener.onPaymentAddedEvent(value);
 
 					}

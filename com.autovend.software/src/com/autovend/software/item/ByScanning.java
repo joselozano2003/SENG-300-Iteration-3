@@ -36,38 +36,37 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
-    public ByScanning(SelfCheckoutStation station, CustomerView customerView) {
+	public ByScanning(SelfCheckoutStation station, CustomerView customerView) {
 		super(station, customerView, true);
-		try {
-			station.mainScanner.register(this);
-			station.handheldScanner.register(this);
-		} catch (Exception e) {
-			for (ItemEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+
+		station.mainScanner.register(this);
+		station.handheldScanner.register(this);
+
 	}
 
 	@Override
-    public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
 
-    @Override
-    public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+	}
 
-    @Override
-    public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
-        BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
-        if(barcodedProduct != null) {
-        	for (ItemEventListener listener : listeners)
-				listener.onItemAddedEvent(barcodedProduct, 1);;
-        }
-		else {
+	@Override
+	public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
+		BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+		if (barcodedProduct != null) {
+			for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(barcodedProduct, 1);
+			;
+		} else {
 			for (ItemEventListener listener : listeners)
 				listener.reactToInvalidBarcode(barcodedProduct, 1);
 		}
-    }
+	}
 }

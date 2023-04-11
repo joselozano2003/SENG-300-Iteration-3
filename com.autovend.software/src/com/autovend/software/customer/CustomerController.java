@@ -31,8 +31,15 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.autovend.Bill;
+import com.autovend.Coin;
 import com.autovend.ReusableBag;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
@@ -51,10 +58,12 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.UIEventListener;
 
 public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
-		ReceiptEventListener, MembershipListener {
+		ReceiptEventListener, MembershipListener, UIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -74,7 +83,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public enum State {
 
 		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
-		PRINTING_RECEIPT, FINISHED, DISABLED,
+		PRINTING_RECEIPT, FINISHED, DISABLED
 
 	}
 
@@ -85,7 +94,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
-		
 
 		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
@@ -110,8 +118,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		baggingFacade.register(this);
 		membershipFacade.register(this);
 
-		// Instantiate views
-		
+		// Register the CustomerController to listen to views
+		customerView.startView.register(this);
+
+		// Make view visible
+		selfCheckoutStation.screen.setVisible(true);
+		selfCheckoutStation.screen.getFrame().add(customerView.startView);
 
 	}
 
@@ -148,8 +160,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
-			selfCheckoutStation.handheldScanner.disable();
-			selfCheckoutStation.mainScanner.disable();
+		//	selfCheckoutStation.handheldScanner.disable();
+		//	selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
 			selfCheckoutStation.billInput.enable();
@@ -173,7 +185,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
 			break;
 		case FINISHED:
-			startNewSession();
+			onTransactionFinished();
 			break;
 		case DISABLED:
 			selfCheckoutStation.baggingArea.disable();
@@ -197,47 +209,53 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		}
 	}
 
-	// In reaction to UI
-	public void startNewSession() {
+	public void updateView(JPanel newView) {
+		JFrame frame = selfCheckoutStation.screen.getFrame();
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(newView);
+		frame.revalidate();
+		frame.repaint();
+
+	}
+
+	private void onTransactionFinished() {
+		updateView(customerView.startView);
+
+	}
+
+	@Override
+	public void onStartAddingItems() {
 		currentSession = new CustomerSession();
-	}
-
-	// In reaction to UI
-	public void startAddingOwnBags() {
-		setState(State.ADDING_OWN_BAGS);
-		// Signal customer to add their own bags (e.g., via customerIO)
-	}
-
-	// In reaction to UI
-	public void finishAddingOwnBags() {
-		setState(State.DISABLED);
-		// Require attendant approval before changing state
-		// Signal attendant to approve the added bags (e.g., via attendantIO)
-	}
-
-	// In reaction to UI
-	public void startAddingItems() {
 		setState(State.ADDING_ITEMS);
+		updateView(customerView.checkoutView);
+
 	}
 
-	// In reaction to UI
-	public void addMoreItems() {
-		if (currentState == State.PAYING) {
-			setState(State.ADDING_ITEMS);
-		}
-	}
-
-	// In reaction to UI
-	public void startPaying() {
+	@Override
+	public void onStartPaying() {
 		setState(State.PAYING);
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+	}
+
+	@Override
+	public void onStartAddingOwnBags() {
+		setState(State.ADDING_OWN_BAGS);
 
 	}
 
-	// In reaction to UI
-	public void purchaseBags(int amount) {
+	@Override
+	public void onFinishAddingOwnBags() {
+		setState(State.DISABLED);
+		// Require attendant approval before changing state
+		// Signal attendant to approve the added bags (e.g., via attendantIO)
+
+	}
+
+	@Override
+	public void onPurchaseBags(int amount) {
 		baggingFacade.dispenseBags(amount);
+
 	}
 
 	@Override
@@ -277,13 +295,10 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
-	public void reactToHardwareFailure() {
-		// notify attendant
-	}
-
-	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
+		System.out.println(quantity);
 		currentSession.addItemToCart(product, quantity);
+		customerView.checkoutView.updateShoppingCart(currentSession);
 
 		setState(State.CHECKING_WEIGHT);
 
@@ -307,9 +322,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onPaymentFailure() {
-		// display a try again message in UI and maybe keep track of the number of
-		// successive failures in the session object
-		// if currentSession.numberOfFailedPayments > 5 {notify attendant}
+		currentSession.addFailedPayment();
+		if (currentSession.getNumberOfFailedPayments() > 5) {
+			// notify attendant
+		}
+
 	}
 
 	@Override
@@ -379,18 +396,29 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void reactToValidMembershipEntered(String number) {
-		// TODO Auto-generated method stub
+		currentSession.addMembershipNumber(number);
 
 	}
 
 	@Override
 	public void reactToInvalidMembershipEntered() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onLowCoins(CoinDispenser dispenser, Coin coin) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onLowBills(BillDispenser dispenser, Bill bill) {
 		// TODO Auto-generated method stub
 
 	}

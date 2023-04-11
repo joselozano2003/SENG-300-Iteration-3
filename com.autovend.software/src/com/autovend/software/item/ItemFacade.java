@@ -36,7 +36,7 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
 
 @SuppressWarnings("serial")

@@ -36,7 +36,7 @@ import com.autovend.PriceLookUpCode;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
 import com.autovend.software.ui.PLUViewObserver;
 

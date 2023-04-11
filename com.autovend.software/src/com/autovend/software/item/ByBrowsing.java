@@ -30,7 +30,7 @@ package com.autovend.software.item;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
-import com.autovend.software.customer.CustomerView;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class ByBrowsing extends ItemFacade  {

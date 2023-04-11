@@ -12,6 +12,7 @@ import com.autovend.software.item.ItemFacade;
 import com.autovend.software.membership.MembershipFacade;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerView;
 
 public class CustomerStationLogic {
 

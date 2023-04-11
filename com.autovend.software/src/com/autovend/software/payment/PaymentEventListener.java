@@ -30,6 +30,10 @@ package com.autovend.software.payment;
 
 import java.math.BigDecimal;
 
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.software.AbstractEventListener;
 
 public interface PaymentEventListener extends AbstractEventListener {
@@ -48,6 +52,13 @@ public interface PaymentEventListener extends AbstractEventListener {
 	public void onChangeDispensedEvent();
 	
 	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
+
+	public void onLowCoins(CoinDispenser dispenser, Coin coin);
+	
+	public void onLowBills(BillDispenser dispenser, Bill bill);
+
+	
+	
 	
 	
 }
