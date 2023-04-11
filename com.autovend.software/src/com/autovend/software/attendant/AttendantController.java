@@ -35,6 +35,7 @@ import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.customer.*;
 import com.autovend.software.item.ItemFacade;
@@ -160,6 +161,17 @@ public class AttendantController implements CustomerStationListener {
 		int stationNumber = customerStations.indexOf(stationLogic);
 		String productName = "Request to remove " + quantity + " of " + product.toString() + " from station " + stationNumber;
 		// TODO: Show this message in attendant view
+	}
+	
+	public void reactToItemTooHeavyRequest(Product product, CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		String message = "Request to not place " + product.toString() + " in bagging area as product is too heavy from station " + stationNumber;
+		
+		boolean attendentResponse = true;
+		// TODO: Show this message in attendant view and wait for response. response should be false first, true for testing
+		if (attendentResponse) {
+			stationLogic.getCustomerController().itemTooHeavyForBagging((BarcodedProduct) product);
+		}
 	}
 
 	@Override

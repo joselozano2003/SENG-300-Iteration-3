@@ -74,6 +74,12 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 			listener.reactToRemoveItemRequest(product, quantity, this);
 		}
 	}
+	
+	public void itemTooHeavyRequest(Product product) {
+		for (CustomerStationListener listener : listeners) {
+			listener.reactToItemTooHeavyRequest(product, this);
+		}
+	}
 
 
 	@Override
@@ -108,5 +114,9 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		for (CustomerStationListener listener : listeners) {
 			listener.lowPaperAlert(this);
 		}
+	}
+	
+	public CustomerController getCustomerController() {
+		return controller;
 	}
 }

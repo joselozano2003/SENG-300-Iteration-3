@@ -130,11 +130,7 @@ public class CustomerSession {
 			totalCost = totalCost.add(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
 		}
 	}
-	
-//	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
-//		expectedWeight -= weightInGrams;
-//	}
-	
+		
 	public void addHeavyItem(BarcodedProduct item) {
 		if (heavyItems.containsKey(item)) {
 			double updatedQuantity = shoppingCart.get(item) + 1;
