@@ -54,32 +54,51 @@ public class CustomerSession {
 		totalPaid = BigDecimal.ZERO;
 	}
 
-	public void removeItemFromCart(Product product, double quantityToRemove) {
-		// Checks if item has been previously added to cart
-		if (shoppingCart.containsKey(product)) {
-			double updatedQuantity = shoppingCart.get(product) - quantityToRemove;
-			shoppingCart.put(product, updatedQuantity);
-		} else {
-			shoppingCart.put(product, quantityToRemove);
-		}
-
-		// Checks if product is barcoded
+	public void removeItemFromCart(Product product, double quantityToRemove){
 		if (product instanceof BarcodedProduct) {
-			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
-			expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
-			totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof BarcodedProduct){
+					BarcodedProduct barcodedProduct = (BarcodedProduct) p;
+					if (barcodedProduct.getBarcode() == ((BarcodedProduct) product).getBarcode()){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						break;
+					}
+				}
+			}
 		}
-		// Checks if product is PLU coded
 		else if (product instanceof PLUCodedProduct) {
-			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
-			expectedWeight -= quantityToRemove;
-			totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof PLUCodedProduct){
+					PLUCodedProduct pluCodedProduct = (PLUCodedProduct) p;
+					if (pluCodedProduct.getPLUCode() == ((PLUCodedProduct) product).getPLUCode()){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						break;
+					}
+				}
+			}
 		}
 		else if (product instanceof ReusableBagProduct) {
-			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
-			expectedWeight -= bagProduct.getExpectedWeight() * quantityToRemove;
-			totalCost = totalCost.subtract(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
-
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof ReusableBagProduct){
+					shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+					totalCost = totalCost.subtract(((ReusableBagProduct) p).getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+					break;
+				}
+			}
+		}
+		else if (product instanceof TextSearchProduct) {
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof TextSearchProduct){
+					TextSearchProduct textSearchProduct = (TextSearchProduct) p;
+					if (textSearchProduct.getName().equals(((TextSearchProduct) product).getName())){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						break;
+					}
+				}
+			}
 		}
 	}
 
