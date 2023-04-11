@@ -41,6 +41,7 @@ import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
+import com.autovend.software.item.ProductsDatabase2;
 
 public class AttendantController implements CustomerStationListener {
 
@@ -75,9 +76,12 @@ public class AttendantController implements CustomerStationListener {
 		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 
-	public void startRemoveItem(Product product, double quantity,int stationNumber) {
-		CustomerSession session=  customerStations.get(stationNumber).getController().getSession();
-
+	// TODO: Gets triggered from GUI
+	public void addItemToStationByTextSearch(int stationNumber, String product, double quantity) {
+		CustomerStationLogic station = customerStations.get(stationNumber);
+		CustomerSession currentSession = station.getController().getCurrentSession();
+		Product item = ProductsDatabase2.Products_Textsearch_Keywords_Database.get(product);
+		currentSession.addItemToCart(item, quantity);
 	}
 
 	// This is triggered from the INITIAL state
