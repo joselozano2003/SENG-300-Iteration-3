@@ -183,12 +183,17 @@ public class AddItemByBrowsingView extends JPanel {
 	    }
 		
 		public void notifyProductButtonPressedEvent(Product product) {
+			if (this.observers == null) {
+				System.out.printf("No registered observers for AddItemByBrowsingView\n");
+				return;
+			}
 			for (ItemEventListener listener : observers) {
 				listener.onItemAddedEvent(product, 1);
 			}
 		}
 		
 		public void register(ItemEventListener listener) {
+			if (listener == null) return;
 			observers.add(listener);
 		}
 
