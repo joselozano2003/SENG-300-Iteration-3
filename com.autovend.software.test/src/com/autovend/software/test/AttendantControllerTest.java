@@ -283,7 +283,7 @@ public class AttendantControllerTest {
 
         station.removeItemRequest(new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
 
-        attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
+        attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct2.getBarcode(), " removed product2", new BigDecimal("2"), 15), 1);
         assertEquals(1, customerController.getSession().getTotalCost().intValue());
         }
 

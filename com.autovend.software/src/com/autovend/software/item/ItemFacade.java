@@ -59,47 +59,6 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 		}
 	}
 
-	public void addProduct(Product product) {
-		if (product != null)
-			itemList.add(product);
-	}
-
-	public boolean removeProduct(Product removedProduct) {
-		if (removedProduct != null) {
-			if (removedProduct instanceof BarcodedProduct) {
-				for (Product product : itemList) {
-					if (product instanceof BarcodedProduct) {
-						if (((BarcodedProduct) product).getBarcode()
-								.equals(((BarcodedProduct) removedProduct).getBarcode())
-								&& ((BarcodedProduct) product).getDescription()
-										.equals(((BarcodedProduct) removedProduct).getDescription())
-								&& ((BarcodedProduct) product)
-										.getExpectedWeight() == (((BarcodedProduct) removedProduct).getExpectedWeight())
-								&& ((BarcodedProduct) product).getPrice()
-										.equals(((BarcodedProduct) removedProduct).getPrice())) {
-							itemList.remove(product);
-							return true;
-						}
-					}
-				}
-			} else if (removedProduct instanceof PLUCodedProduct) {
-				for (Product product : itemList) {
-					if (product instanceof PLUCodedProduct) {
-						if (((PLUCodedProduct) product).getPLUCode()
-								.equals(((PLUCodedProduct) removedProduct).getPLUCode())
-								&& ((PLUCodedProduct) product).getDescription()
-										.equals(((PLUCodedProduct) removedProduct).getDescription())
-								&& ((PLUCodedProduct) product).getPrice()
-										.equals(((PLUCodedProduct) removedProduct).getPrice())) {
-							itemList.remove(product);
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
 
 	public List<Product> getItemList() {
 		return itemList;
