@@ -9,6 +9,8 @@ public interface UIEventListener {
 	
 	public void onSelectAddItemByPLU();
 	
+	public void onSelectAddItemByBrowsing();
+	
 	public void onStartAddingOwnBags();
 	
 	public void onFinishAddingOwnBags();

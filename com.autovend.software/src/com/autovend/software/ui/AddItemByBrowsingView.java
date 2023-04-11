@@ -44,6 +44,7 @@ public class AddItemByBrowsingView extends JPanel {
 		static int MAX_ITEMS = 20;
 		
 		private List<ItemEventListener> observers;
+		private List<UIEventListener> listeners;
 		
 		JPanel browsingPanel = this;
 		JPanel middlePanel;
@@ -195,6 +196,12 @@ public class AddItemByBrowsingView extends JPanel {
 		public void register(ItemEventListener listener) {
 			if (listener == null) return;
 			observers.add(listener);
+		}
+		
+		public void notifyGoBackToCheckout() {
+			for (UIEventListener listener : listeners) {
+				listener.goBackToCheckout();
+			}
 		}
 
 }

@@ -307,7 +307,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void onSelectAddItemByPLU() {
 		updateView(customerView.pluView);
-
+	}
+	
+	@Override
+	public void onSelectAddItemByBrowsing() {
+		updateView(customerView.browsingView);
 	}
 
 	@Override
