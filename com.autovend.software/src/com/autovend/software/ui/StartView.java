@@ -1,8 +1,8 @@
 package com.autovend.software.ui;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,9 +13,21 @@ public class StartView extends JPanel {
     private List<UIEventListener> observers;
 
     public StartView() {
-        // ...
         observers = new ArrayList<>();
+        setLayout(null);
+        setForeground(new Color(65, 73, 96));
+        setBackground(new Color(65, 73, 96));
+        setMinimumSize(new Dimension(1280, 720));
+        setMaximumSize(new Dimension(1280, 720));
+        setPreferredSize(new Dimension(1280, 720));
+        setSize(new Dimension(1280, 720));
+
         startButton = new JButton("Start");
+        startButton.setOpaque(true);
+        startButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        startButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        startButton.setBackground(new Color(255, 203, 107));
+        startButton.setBounds(500, 325, 280, 70);
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -23,13 +35,19 @@ public class StartView extends JPanel {
             }
         });
         add(startButton);
+
+        JLabel title = new JLabel("Welcome");
+        title.setFont(new Font("Lucida Grande", Font.BOLD, 60));
+        title.setForeground(new Color(255, 255, 255));
+        title.setBounds(570, 20, 656, 72);
+        add(title);
     }
 
     public void register(UIEventListener listener) {
         observers.add(listener);
     }
 
-    private void notifyStartButtonPressed() {
+    public void notifyStartButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onStartAddingItems();
         }

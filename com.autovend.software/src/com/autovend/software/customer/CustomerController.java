@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.autovend.Bill;
 import com.autovend.Coin;
@@ -122,6 +123,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// Register the CustomerController to listen to views
 		customerView.startView.register(this);
 		customerView.checkoutView.register(this);
+		customerView.paymentView.register(this);
 		customerView.pluView.register(this);
 
 		// Make view visible
@@ -167,9 +169,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			// selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
-			selfCheckoutStation.billInput.enable();
-			selfCheckoutStation.coinSlot.enable();
-			selfCheckoutStation.cardReader.enable();
 			break;
 		case DISPENSING_CHANGE:
 			selfCheckoutStation.billInput.disable();
@@ -180,12 +179,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.coinTray.enable();
 
 			paymentFacade.dispenseChange(currentSession.getChangeDue());
-
 			break;
 		case PRINTING_RECEIPT:
 			selfCheckoutStation.printer.enable();
 
 			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
+
 			break;
 		case FINISHED:
 			onTransactionFinished();
@@ -222,7 +221,14 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	}
 
-	private void onTransactionFinished() {
+	public void onTransactionFinished() {
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+
+		}
+
 		updateView(customerView.startView);
 
 	}
@@ -246,7 +252,22 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
 		updateView(customerView.paymentView);
-		customerView.paymentView.setAmountDueLabelText(amountDue.toString());
+		customerView.paymentView.updateAmountDue(amountDue.toString());
+
+	}
+
+	@Override
+	public void onSelectPaymentMethod(String payment) {
+		if (payment == "Debit/Credit Card" || payment == "Gift Card") {
+
+			selfCheckoutStation.cardReader.enable();
+		} else {
+			selfCheckoutStation.billInput.enable();
+			selfCheckoutStation.coinSlot.enable();
+		}
+
+		currentSession.setPaymentMethod(payment);
+
 	}
 
 	@Override
@@ -277,7 +298,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
-		// TODO Auto-generated method stub
+		// notify attendant
 
 	}
 
@@ -314,7 +335,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		updateView(customerView.browsingView);
 	}
 
-	@Override
+
 	public void onItemAddedEvent(Product product, double quantity) {
 
 		currentSession.addItemToCart(product, quantity);
@@ -324,6 +345,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		setState(State.CHECKING_WEIGHT);
 
 	}
+
+
 
 	@Override
 	public void onItemNotFoundEvent() {
@@ -336,8 +359,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		currentSession.addPayment(amount);
 		boolean paymentComplete = currentSession.isPaymentComplete();
 		if (paymentComplete) {
+			customerView.paymentView.updateAmountDue("0.00");
+			customerView.paymentView.updateChangeDue(currentSession.getChangeDue().toString());
+
 			setState(State.DISPENSING_CHANGE);
 		}
+		customerView.paymentView.updateAmountDue(currentSession.getAmountLeft().toString());
 	}
 
 	@Override
@@ -351,7 +378,16 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
+
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+
+		}
 		setState(State.FINISHED);
+		
+		customerView.paymentView.updateReceipt(receiptText.toString());
+		
 		// To "see" the receipt, uncomment the line below
 		// System.out.println(receiptText.toString());
 	}

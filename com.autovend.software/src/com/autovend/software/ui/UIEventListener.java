@@ -19,6 +19,8 @@ public interface UIEventListener {
 
 	public void goBackToCheckout();
 
+	public void onSelectPaymentMethod(String payment);
+
 	
 	
 

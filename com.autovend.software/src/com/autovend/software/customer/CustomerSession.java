@@ -46,6 +46,7 @@ public class CustomerSession {
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
 	private String membershipNumber;
+	private String paymentMethod;
 	private int numberOfFailedPayments;
 
 	public CustomerSession() {
@@ -71,17 +72,13 @@ public class CustomerSession {
 			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
 			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-			System.out.println(product);
+
 		}
 		// Checks if product is PLU coded
 		else if (product instanceof PLUCodedProduct) {
 			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
 			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
 			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-
-			System.out.println(pluCodedProduct.getDescription());
-			System.out.println(pluCodedProduct.getPrice());
-			System.out.println(quantityToAdd);
 
 		}
 
@@ -99,6 +96,10 @@ public class CustomerSession {
 
 	public void addMembershipNumber(String numberToAdd) {
 		this.membershipNumber = numberToAdd;
+	}
+
+	public void setPaymentMethod(String paymentMethodToSet) {
+		this.paymentMethod = paymentMethodToSet;
 	}
 
 	public Map<Product, Double> getShoppingCart() {

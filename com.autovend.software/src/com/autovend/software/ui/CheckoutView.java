@@ -2,6 +2,7 @@ package com.autovend.software.ui;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.border.LineBorder;
 
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
@@ -19,164 +20,185 @@ import java.util.Map;
 
 public class CheckoutView extends JPanel {
 
-	private List<UIEventListener> observers;
+    private List<UIEventListener> observers;
 
-	// Declare the shopping cart table and its model
-	private JTable shoppingCartTable;
-	private JButton startPaymentButton;
-	private DefaultTableModel shoppingCartTableModel;
+    // Declare the shopping cart table and its model
+    private JTable shoppingCartTable;
+    private JButton startPaymentButton;
+    private DefaultTableModel shoppingCartTableModel;
 
-	private JPanel waitPanel;
-	private JPanel mainPanel;
-	private JTextArea cartDis;
+    public CheckoutView() {
+        observers = new ArrayList<>();
+        setLayout(null);
+        setForeground(new Color(65, 73, 96));
+        setBackground(new Color(65, 73, 96));
+        setMinimumSize(new Dimension(1280, 720));
+        setMaximumSize(new Dimension(1280, 720));
+        setPreferredSize(new Dimension(1280, 720));
+        setSize(new Dimension(1280, 720));
 
-	public CheckoutView() {
+        // Labels
+        JLabel cartLabel = new JLabel("Current Items in Cart:");
+        cartLabel.setFont(new Font("Lucida Grande", Font.BOLD, 20));
+        cartLabel.setForeground(new Color(255, 255, 255));
+        cartLabel.setBounds(100, 20, 400, 30);
 
-		observers = new ArrayList<>();
+        JLabel totalLabel = new JLabel("Current Total: $0.00 CAD");
+        totalLabel.setFont(new Font("Lucida Grande", Font.BOLD, 20));
+        totalLabel.setForeground(new Color(255, 255, 255));
+        totalLabel.setBounds(100, 600, 400, 30);
 
-		CheckoutView customerView = this;
+        // Buttons
+        JButton searchPLUButton = new JButton("by PLU code");
+        searchPLUButton.setOpaque(true);
+        searchPLUButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        searchPLUButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        searchPLUButton.setBackground(new Color(255, 203, 107));
+        searchPLUButton.setBounds(800, 50, 280, 50);
+        searchPLUButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyAddItemByPLUButtonPressed();
+            }
+        });
+        add(searchPLUButton);
 
-		JPanel mainPanel = this;
+        JButton purchaseBagButton = new JButton("Purchase Bag");
+        purchaseBagButton.setOpaque(true);
+        purchaseBagButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        purchaseBagButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        purchaseBagButton.setBackground(new Color(255, 203, 107));
+        purchaseBagButton.setBounds(800, 150, 280, 50);
+        purchaseBagButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyPurchaseBagsButtonPressed();
+            }
+        });
+        add(purchaseBagButton);
 
-		JLabel cartLabel = new JLabel();
-		JLabel searchLabel = new JLabel();
-		JLabel totalLabel = new JLabel();
-		JPanel cartPanel = new JPanel();
-		JPanel waitPanel = new JPanel();
+        JButton addOwnBagsButton = new JButton("Add own Bags");
+        addOwnBagsButton.setOpaque(true);
+        addOwnBagsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        addOwnBagsButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        addOwnBagsButton.setBackground(new Color(255, 203, 107));
+        addOwnBagsButton.setBounds(800, 250, 280, 50);
+        addOwnBagsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyStartAddOwnBagsButtonPressed();
+            }
+        });
+        add(addOwnBagsButton);
 
-		JLabel waitLabel = new JLabel();
+        JButton doneAddOwnBagsButton = new JButton("Finished adding own bags");
+        doneAddOwnBagsButton.setOpaque(true);
+        doneAddOwnBagsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        doneAddOwnBagsButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        doneAddOwnBagsButton.setBackground(new Color(255, 203, 107));
+        doneAddOwnBagsButton.setBounds(800, 350, 280, 50);
+        doneAddOwnBagsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyStopAddOwnBagsButtonPressed();
+            }
+        });
+        add(doneAddOwnBagsButton);
 
-		waitLabel.setText("Please wait for an attendant to verify your station.");
+        JButton paymentButton = new JButton("Proceed to Payment");
+        paymentButton.setOpaque(true);
+        paymentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        paymentButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        paymentButton.setBackground(new Color(255, 203, 107));
+        paymentButton.setBounds(800, 450, 280, 50);
+        paymentButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyStartPayingButtonPressed();
+            }
+        });
+        add(paymentButton);
 
-		cartLabel.setText("Current Items in Cart: ");
-		searchLabel.setText("Search for item: ");
-		totalLabel.setText("Current Total: $0.00 CAD");
+        // Shopping cart table
+        shoppingCartTableModel = new DefaultTableModel(new Object[] { "Product", "Quantity", "Price" }, 0);
+        shoppingCartTable = new JTable(shoppingCartTableModel);
+        shoppingCartTable.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+        shoppingCartTable.setFillsViewportHeight(true);
+        shoppingCartTable.setBackground(Color.WHITE);
+        shoppingCartTable.setGridColor(Color.BLACK);
+        shoppingCartTable.setRowHeight(30);
+        shoppingCartTable.setSelectionBackground(new Color(230, 230, 230));
 
-		waitPanel.setLayout(new BoxLayout(waitPanel, BoxLayout.LINE_AXIS));
+        JScrollPane scrollBar = new JScrollPane(shoppingCartTable);
+        scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollBar.setBounds(100, 70, 600, 500);
+        add(scrollBar);
 
-		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.PAGE_AXIS));
+        // Add components to the panel
+        add(cartLabel);
+        add(totalLabel);
+    }
+    
+    public void register(UIEventListener listener) {
+        observers.add(listener);
+    }
 
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
+    private void notifyStartAddOwnBagsButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onStartAddingOwnBags();
+        }
+    }
 
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+    private void notifyStopAddOwnBagsButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onFinishAddingOwnBags();
+        }
+    }
 
-		JButton searchBrowseButton = new JButton("by Browsing");
-		JButton searchPLUButton = new JButton("by PLU code");
-		searchPLUButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				notifyAddItemByPLUButtonPressed();
-			}
-		});
-		JButton purchaseBagButton = new JButton("Purchase Bag");
-		purchaseBagButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				notifyPurchaseBagsButtonPressed();
-			}
-		});
+    public void notifyPurchaseBagsButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onPurchaseBags(1);
+        }
+    }
 
-		JButton addOwnBagsButton = new JButton("Add own Bags");
-		
-		JButton paymentButton = new JButton("Proceed to Payment");
-		paymentButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				notifyStartPayingButtonPressed();
-			}
-		});
+    public void notifyAddItemByPLUButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onSelectAddItemByPLU();
+        }
+    }
+    
+    public void notifyStartPayingButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onStartPaying();
+        }
+    }
 
-		shoppingCartTableModel = new DefaultTableModel(new Object[] { "Product", "Quantity", "Price" }, 0);
-		shoppingCartTable = new JTable(shoppingCartTableModel);
+    public void updateShoppingCart(CustomerSession session) {
+        // Clear the current shopping cart table
+        shoppingCartTableModel.setRowCount(0);
 
-		JScrollPane scrollBar = new JScrollPane(shoppingCartTable);
-		scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        // Add the updated shopping cart items to the table
+        for (Map.Entry<Product, Double> entry : session.getShoppingCart().entrySet()) {
+            Product product = entry.getKey();
+            Double quantity = entry.getValue();
+            BigDecimal price = product.getPrice().multiply(new BigDecimal(quantity));
+            String name;
+            if (product instanceof BarcodedProduct) {
+                name = ((BarcodedProduct) product).getDescription();
+            } else if (product instanceof PLUCodedProduct) {
+                name = ((PLUCodedProduct) product).getDescription();
+            } else if (product instanceof ReusableBagProduct) {
+                name = "Reusable Bag";
+            } else {
+                name = "Unknown";
+            }
 
-		waitPanel.add(waitLabel);
-
-		cartPanel.add(Box.createVerticalStrut(10));
-		cartPanel.add(cartLabel);
-		cartLabel.setAlignmentX(cartPanel.LEFT_ALIGNMENT);
-		cartPanel.add(Box.createVerticalStrut(10));
-		cartPanel.add(scrollBar);
-		cartPanel.add(Box.createVerticalStrut(10));
-		cartPanel.add(totalLabel);
-		cartPanel.add(Box.createVerticalStrut(10));
-
-		mainPanel.add(Box.createHorizontalStrut(10));
-		mainPanel.add(cartPanel);
-		mainPanel.add(Box.createHorizontalStrut(10));
-		mainPanel.add(buttonPanel);
-		mainPanel.add(Box.createHorizontalStrut(10));
-
-		searchLabel.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(searchLabel);
-		buttonPanel.add(Box.createVerticalStrut(10));
-		buttonPanel.add(searchBrowseButton);
-		searchBrowseButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(Box.createVerticalStrut(10));
-		buttonPanel.add(searchPLUButton);
-		searchPLUButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(Box.createVerticalStrut(90));
-		buttonPanel.add(purchaseBagButton);
-		purchaseBagButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(Box.createVerticalStrut(10));
-		buttonPanel.add(addOwnBagsButton);
-		addOwnBagsButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(Box.createVerticalStrut(90));
-		buttonPanel.add(paymentButton);
-		paymentButton.setAlignmentX(buttonPanel.CENTER_ALIGNMENT);
-		buttonPanel.add(Box.createVerticalStrut(10));
-		add(waitPanel);
-		waitPanel.setVisible(false);
-
-	}
-
-	public void register(UIEventListener listener) {
-
-		observers.add(listener);
-	}
-
-	public void notifyPurchaseBagsButtonPressed() {
-		for (UIEventListener listener : observers) {
-			listener.onPurchaseBags(1);
-		}
-	}
-
-	public void notifyAddItemByPLUButtonPressed() {
-		for (UIEventListener listener : observers) 
-			listener.onSelectAddItemByPLU();
-	}
-	
-	public void notifyStartPayingButtonPressed() {
-		for (UIEventListener listener : observers) {
-			listener.onStartPaying();
-		}
-	}
-
-	public void updateShoppingCart(CustomerSession session) {
-		// Clear the current shopping cart table
-		shoppingCartTableModel.setRowCount(0);
-
-		// Add the updated shopping cart items to the table
-		for (Map.Entry<Product, Double> entry : session.getShoppingCart().entrySet()) {
-			Product product = entry.getKey();
-			Double quantity = entry.getValue();
-			BigDecimal price = product.getPrice().multiply(new BigDecimal(quantity));
-			String name;
-			if (product instanceof BarcodedProduct) {
-				name = ((BarcodedProduct) product).getDescription();
-			} else if (product instanceof PLUCodedProduct) {
-				name = ((PLUCodedProduct) product).getDescription();
-			} else if (product instanceof ReusableBagProduct) {
-				name = "Reusable Bag";
-			} else {
-				name = "Unknown";
-			}
-
-			// Add a row to the table model for each item in the shopping cart
-			shoppingCartTableModel.addRow(new Object[] { name, quantity, price });
-		}
-	}
+            // Add a row to the table model for each item in the shopping cart
+            shoppingCartTableModel.addRow(new Object[] { name, quantity, price });
+        }
+    }
 }
+
+
+   
+

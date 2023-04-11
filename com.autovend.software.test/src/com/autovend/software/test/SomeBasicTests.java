@@ -39,7 +39,6 @@ import com.autovend.products.Product;
 import com.autovend.software.BankIO;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
-import com.autovend.software.attendant.AttendantView;
 import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.customer.CustomerController;
@@ -57,7 +56,7 @@ public class SomeBasicTests {
 	public CustomerSession currentSession;
 
 	public AttendantModel model;
-	public AttendantView view;
+//	public AttendantView view;
 	public List<CustomerStationLogic> customerStations;
 	public AttendantController attendantController;
 
@@ -137,7 +136,7 @@ public class SomeBasicTests {
 		currentSession = customerSessionController.getCurrentSession();
 
 		model = new AttendantModel();
-		view = new AttendantView();
+	//	view = new AttendantView();
 		customerStations = new ArrayList<>();
 	//	attendantController = new AttendantController(model, view, customerStations);
 		// Add 100 bills to each dispenser
@@ -275,7 +274,7 @@ public class SomeBasicTests {
 		Thread.sleep(5000);
 		customerSessionController.onStartAddingItems();
 
-		customerSessionController.getCurrentView().pluView.notifyItemAdded("1111", 2);	
+		customerSessionController.getCurrentView().pluView.notifyItemAdded("1111");	
 	}
 
 	@Test
