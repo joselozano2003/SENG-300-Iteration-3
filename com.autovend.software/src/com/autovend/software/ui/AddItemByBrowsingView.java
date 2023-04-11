@@ -96,15 +96,6 @@ public class AddItemByBrowsingView extends JPanel {
 	    	scrollBar = new JScrollPane(borderPanel);
 	    	//scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	    	
-	    	JButton button1 = new JButton();
-	    	JButton button2 = new JButton();
-	    	JButton button3 = new JButton();
-	    	JButton button4 = new JButton();
-	    	JButton button5 = new JButton();
-	    	JButton button6 = new JButton();
-	    	JButton button7 = new JButton();
-	    	JButton button8 = new JButton();
-	    	
 	    	browsingPanel.setLayout(new BoxLayout(browsingPanel,BoxLayout.PAGE_AXIS));
 	    	middlePanel.setLayout(new BoxLayout(middlePanel,BoxLayout.LINE_AXIS));
 	    	borderPanel.setLayout(new BorderLayout());
