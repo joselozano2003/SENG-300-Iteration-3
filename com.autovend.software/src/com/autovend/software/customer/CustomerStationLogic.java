@@ -6,14 +6,19 @@ import java.util.Currency;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.software.bagging.BaggingFacade;
+import com.autovend.software.item.ItemFacade;
+import com.autovend.software.membership.MembershipFacade;
+import com.autovend.software.payment.PaymentFacade;
+import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerView;
 
 public class CustomerStationLogic {
 
+	//CustomerModel model;
 	CustomerView view;
 	CustomerController controller;
-	SelfCheckoutStation station;
 
 	public static CustomerStationLogic installOn(SelfCheckoutStation station) {
 		return new CustomerStationLogic(station);
@@ -21,25 +26,19 @@ public class CustomerStationLogic {
 
 	private CustomerStationLogic(SelfCheckoutStation station) {
 		// Initiate facades.
-		this.station = station;
-		controller = new CustomerController(station, new ReusableBagDispenser(20));
-		//ItemFacade item = new ItemFacade(station, false);
-		//PaymentFacade payment = new PaymentFacade(station, false);
-		//ReceiptFacade receipt = new ReceiptFacade(station);
+	//	ItemFacade item = new ItemFacade(station, false);
+	//	PaymentFacade payment = new PaymentFacade(station, false);
+	//	ReceiptFacade receipt = new ReceiptFacade(station);
 	//	BaggingFacade bagging = new BaggingFacade(station);
-		//MembershipFacade membership = new MembershipFacade(station);
+	//	MembershipFacade membership = new MembershipFacade(station);
 		// Initiate station with MVC design.
+		//model = new CustomerModel(item, payment, receipt, bagging, membership);
 		view = new CustomerView();
-
+		//controller = new CustomerController(model, view);
 	}
-	public CustomerController getController() {
-		return this.controller;
-	}
-
-
 
 	public void turnOnDisplay() {
-		view.setVisible(true);
+//		view.setVisible(true);
 	}
 
 	/**

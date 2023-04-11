@@ -31,8 +31,15 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.autovend.Bill;
+import com.autovend.Coin;
 import com.autovend.ReusableBag;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
@@ -51,9 +58,13 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerView;
+import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.PaymentView;
+import com.autovend.software.ui.UIEventListener;
 
-public class CustomerController
-		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
+public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
+		ReceiptEventListener, MembershipListener, UIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -67,31 +78,31 @@ public class CustomerController
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
-	private int inkUsed, paperUsed;
-	public int inkAdded, paperAdded;
-	final int ALERT_THRESHOLD = 10;
 
-
+	private CustomerView customerView;
 
 	public enum State {
 
-		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
-		DISABLED,
+		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
+		PRINTING_RECEIPT, FINISHED, DISABLED
 
 	}
 
 	private State currentState;
 
-	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
+	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser,
+			CustomerView customerView) {
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
-		this.currentState = State.INITIAL;
-		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
-		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
-		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
-		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
+		this.customerView = customerView;
 
-		this.membershipFacade = new MembershipFacade(selfCheckoutStation);
+		this.currentState = State.INITIAL;
+		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
+		this.itemFacade = new ItemFacade(selfCheckoutStation, customerView, false);
+		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation, customerView);
+		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser, customerView);
+
+		this.membershipFacade = new MembershipFacade(selfCheckoutStation, customerView);
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -108,8 +119,15 @@ public class CustomerController
 		baggingFacade.register(this);
 		membershipFacade.register(this);
 
-		inkUsed = 0;
-		paperUsed = 0;
+		// Register the CustomerController to listen to views
+		customerView.startView.register(this);
+		customerView.checkoutView.register(this);
+		customerView.pluView.register(this);
+
+		// Make view visible
+		selfCheckoutStation.screen.setVisible(true);
+		selfCheckoutStation.screen.getFrame().add(customerView.startView);
+
 	}
 
 	public void setState(State newState) {
@@ -132,25 +150,11 @@ public class CustomerController
 			selfCheckoutStation.mainScanner.disable();
 
 			selfCheckoutStation.printer.disable();
-			checkLevels();
 			break;
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
 		case SCANNING_MEMBERSHIP:
-			selfCheckoutStation.baggingArea.disable();
-			selfCheckoutStation.scale.disable();
-			
-			selfCheckoutStation.billInput.disable();
-			selfCheckoutStation.billOutput.disable();
-			selfCheckoutStation.coinSlot.disable();
-			selfCheckoutStation.coinTray.disable();
-			
-			selfCheckoutStation.cardReader.enable();
-			selfCheckoutStation.handheldScanner.enable();
-			selfCheckoutStation.mainScanner.enable();
-			
-			selfCheckoutStation.printer.disable();	
 			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
@@ -159,8 +163,8 @@ public class CustomerController
 			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
-			selfCheckoutStation.handheldScanner.disable();
-			selfCheckoutStation.mainScanner.disable();
+			// selfCheckoutStation.handheldScanner.disable();
+			// selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
 			selfCheckoutStation.billInput.enable();
@@ -184,7 +188,7 @@ public class CustomerController
 			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
 			break;
 		case FINISHED:
-			startNewSession();
+			onTransactionFinished();
 			break;
 		case DISABLED:
 			selfCheckoutStation.baggingArea.disable();
@@ -201,6 +205,7 @@ public class CustomerController
 			selfCheckoutStation.handheldScanner.disable();
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
+
 			break;
 		default:
 			break;
@@ -208,60 +213,72 @@ public class CustomerController
 		}
 	}
 
-	// In reaction to UI
-	public void startNewSession() {
+	public void updateView(JPanel newView) {
+		JFrame frame = selfCheckoutStation.screen.getFrame();
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(newView);
+		frame.revalidate();
+		frame.repaint();
+
+	}
+
+	private void onTransactionFinished() {
+		updateView(customerView.startView);
+
+	}
+
+	@Override
+	public void onStartAddingItems() {
 		currentSession = new CustomerSession();
-		// set state to initial?
+		setState(State.ADDING_ITEMS);
+		updateView(customerView.checkoutView);
 	}
 
-	// In reaction to UI
-	public void startAddingOwnBags() {
+	@Override
+	public void goBackToCheckout() {
+		updateView(customerView.checkoutView);
+		customerView.checkoutView.updateShoppingCart(currentSession);
+	}
+
+	@Override
+	public void onStartPaying() {
+		setState(State.PAYING);
+		BigDecimal amountDue = currentSession.getTotalCost();
+		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+		updateView(customerView.paymentView);
+		customerView.paymentView.setAmountDueLabelText(amountDue.toString());
+	}
+
+	@Override
+	public void onStartAddingOwnBags() {
 		setState(State.ADDING_OWN_BAGS);
-		// Signal customer to add their own bags (e.g., via customerIO)
 	}
 
-	// In reaction to UI
-	public void finishAddingOwnBags() {
+	@Override
+	public void onFinishAddingOwnBags() {
 		setState(State.DISABLED);
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
 
-	// In reaction to UI
-	public void startAddingItems() {
-		setState(State.ADDING_ITEMS);
-	}
-
-	// In reaction to UI
-	public void addMoreItems() {
-		if (currentState == State.PAYING) {
-			setState(State.ADDING_ITEMS);
-		}
-	}
-
-	// In reaction to UI
-	public void startPaying() {
-		setState(State.PAYING);
-		BigDecimal amountDue = currentSession.getTotalCost();
-		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
-
-	}
-
-	// In reaction to UI
-	public void purchaseBags(int amount) {
+	@Override
+	public void onPurchaseBags(int amount) {
 		baggingFacade.dispenseBags(amount);
 	}
 
 	@Override
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
+
 		currentSession.addItemToCart(bagProduct, amount);
-		setState(State.CHECKING_WEIGHT);		
+		customerView.checkoutView.updateShoppingCart(currentSession);
+
+		setState(State.CHECKING_WEIGHT);
 	}
 
 	@Override
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -275,7 +292,6 @@ public class CustomerController
 	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
 		// comes from the attendant
 		// device.enable();
-
 	}
 
 	@Override
@@ -289,13 +305,18 @@ public class CustomerController
 	}
 
 	@Override
-	public void reactToHardwareFailure() {
-		// notify attendant
+	public void onSelectAddItemByPLU() {
+		updateView(customerView.pluView);
+
 	}
 
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
+
 		currentSession.addItemToCart(product, quantity);
+		System.out.println("hey");
+		customerView.checkoutView.updateShoppingCart(currentSession);
+
 		setState(State.CHECKING_WEIGHT);
 
 	}
@@ -307,36 +328,28 @@ public class CustomerController
 	}
 
 	@Override
-	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-		// Display try again? message in UI
-	}
-
-	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
 		boolean paymentComplete = currentSession.isPaymentComplete();
 		if (paymentComplete) {
 			setState(State.DISPENSING_CHANGE);
-
 		}
 	}
 
 	@Override
 	public void onPaymentFailure() {
-		// display a try again message in UI and maybe keep track of the number of
-		// successive failures in the session object
-		// if currentSession.numberOfFailedPayments > 5 {notify attendant}
+		currentSession.addFailedPayment();
+		if (currentSession.getNumberOfFailedPayments() > 5) {
+			// notify attendant
+		}
+
 	}
 
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 		setState(State.FINISHED);
-		inkUsed += getInkUsed(receiptText);
-		paperUsed += getPaperUsed(receiptText);
-
 		// To "see" the receipt, uncomment the line below
-		//System.out.println(receiptText.toString());
-
+		// System.out.println(receiptText.toString());
 	}
 
 	@Override
@@ -348,7 +361,6 @@ public class CustomerController
 	@Override
 	public void onReceiptPrinterFailed() {
 		setState(State.DISABLED);
-
 	}
 
 	@Override
@@ -387,61 +399,41 @@ public class CustomerController
 		return this.currentSession;
 	}
 
+	public CustomerView getCurrentView() {
+		return this.customerView;
+	}
+
 	public State getCurrentState() {
 		return this.currentState;
 	}
 
-
-
 	@Override
 	public void reactToValidMembershipEntered(String number) {
-		// TODO Auto-generated method stub
-		
+		currentSession.addMembershipNumber(number);
+
 	}
 
 	@Override
 	public void reactToInvalidMembershipEntered() {
-		System.out.println("Bad membership number detected\n. It is possible that you:"
-				+ "\n scanned an invalid membership card,"
-				+ "\n the card is not activated,\n "
-				+ "or there is a typo in the entered membership number\n");
-		setState(State.INITIAL);
+
 	}
 
-	public SelfCheckoutStation getStation() {
-		return this.selfCheckoutStation;
+	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// TODO Auto-generated method stub
+
 	}
 
+	@Override
+	public void onLowCoins(CoinDispenser dispenser, Coin coin) {
+		// TODO Auto-generated method stub
 
-	public int getInkUsed(StringBuilder sb){
-		int inkCount = 0;
-		for (int i = 0; i < sb.length(); i++) {
-			char c = sb.charAt(i);
-			if (!Character.isWhitespace(c)) {
-				inkCount++;
-			}
-		}
-		return inkCount;
 	}
 
-	public int getPaperUsed(StringBuilder sb){
-		int paperCount = 0;
-		for (int i = 0; i < sb.length(); i++) {
-			char c = sb.charAt(i);
-			if (c == '\n') {
-				paperCount++;
-			}
-		}
-		return paperCount;
+	@Override
+	public void onLowBills(BillDispenser dispenser, Bill bill) {
+		// TODO Auto-generated method stub
+
 	}
 
-	public void checkLevels(){
-		int inkLevel = inkAdded - inkUsed;
-		int paperLevel = paperAdded - paperUsed;
-
-		if (inkLevel < ALERT_THRESHOLD || paperLevel < ALERT_THRESHOLD){
-			setState(State.DISABLED);
-			// TODO: notify attendant & change state to disabled
-		}
-	}
 }

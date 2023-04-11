@@ -28,11 +28,22 @@
  */
 package com.autovend.software.payment;
 
+import static org.junit.Assert.fail;
+
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class PayWithCardTest {
 	private SelfCheckoutStation station;
@@ -42,12 +53,46 @@ public class PayWithCardTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		payWithCard = new PayWithCard(station);
+		payWithCard = new PayWithCard(station, new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new PayWithCard(null);
+	public void testContructorNullStation() {
+		new PayWithCard(null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new PayWithCard(station, null);
+	}
+	
+	/*--------------- STUBS ---------------*/
+	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
+	public class PaymentEventListenerStub implements PaymentEventListener {
+		@Override
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
+		@Override
+		public void reactToDisableStationRequest() {fail();}
+		@Override
+		public void reactToEnableStationRequest() {fail();}
+		@Override
+		public void onPaymentAddedEvent(BigDecimal amount) {fail();}
+		@Override
+		public void onPaymentFailure() {fail();}
+		@Override
+		public void onChangeDispensedEvent() {fail();}
+		@Override
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {fail();}
+		@Override
+		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		@Override
+		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
 	}
 
 }

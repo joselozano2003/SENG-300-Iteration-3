@@ -26,16 +26,26 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.customer;
+package com.autovend.software.ui;
+
+import javax.swing.JFrame;
 
 public class CustomerView {
-
-	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
-		
+	
+	public PLUView pluView;
+	public StartView startView;
+	public CheckoutView checkoutView;
+	public PaymentView paymentView;
+	public AddItemByBrowsingView browsingView;
+	
+	public CustomerView() {
+		this.pluView = new PLUView();
+		this.startView = new StartView();	
+		this.checkoutView = new CheckoutView();
+		this.paymentView = new PaymentView();
+		this.browsingView = new AddItemByBrowsingView();
 	}
 	
-	//view for customer
 	
 
 }

@@ -41,6 +41,7 @@ import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class BaggingFacadeTest {
 	private ReusableBagDispenser bagDispenser;
@@ -53,18 +54,18 @@ public class BaggingFacadeTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		bagDispenser = new ReusableBagDispenser(10);
-		baggingFacade = new BaggingFacade(station, bagDispenser);
+		baggingFacade = new BaggingFacade(station, bagDispenser, new CustomerView());
 		found = 0;
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
-		new BaggingFacade(null, new ReusableBagDispenser(10));
+		new BaggingFacade(null, new ReusableBagDispenser(10), new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullBagDispenser() {
-		new BaggingFacade(null, new ReusableBagDispenser(10));
+		new BaggingFacade(null, new ReusableBagDispenser(10), new CustomerView());
 	}
 	
 	/**
@@ -219,8 +220,6 @@ public class BaggingFacadeTest {
 	 * Override any event in this stub that you don't want to fail.
 	 */
 	class ListenerStub implements BaggingEventListener {
-		@Override
-		public void reactToHardwareFailure() {fail();}
 		@Override
 		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override

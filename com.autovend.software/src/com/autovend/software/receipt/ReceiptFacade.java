@@ -43,18 +43,16 @@ import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
+import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 
-	public ReceiptFacade(SelfCheckoutStation station) {
-		super(station);
-		try {
-			station.printer.register(new InnerListener());
-		} catch (Exception e) {
-			for (ReceiptEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+	public ReceiptFacade(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView);
+
+		station.printer.register(new InnerListener());
+
 	}
 
 	private class InnerListener implements ReceiptPrinterObserver {
@@ -68,10 +66,14 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 
 		@Override
 		public void reactToOutOfPaperEvent(ReceiptPrinter printer) {
+			for (ReceiptEventListener listener : listeners)
+				listener.onReceiptPrinterFailed();
 		}
 
 		@Override
 		public void reactToOutOfInkEvent(ReceiptPrinter printer) {
+			for (ReceiptEventListener listener : listeners)
+				listener.onReceiptPrinterFailed();
 		}
 
 		@Override
@@ -96,8 +98,7 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 				name = ((PLUCodedProduct) product).getDescription();
 			} else if (product instanceof ReusableBagProduct) {
 				name = "Reusable Bag";
-			}
-			else {
+			} else {
 				name = "Unknown";
 			}
 

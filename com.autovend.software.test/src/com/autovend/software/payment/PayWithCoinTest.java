@@ -29,6 +29,7 @@
 package com.autovend.software.payment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 
@@ -38,12 +39,15 @@ import org.junit.Test;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.payment.PayWithBillTest.PaymentEventListenerStub;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class PayWithCoinTest {
 	private SelfCheckoutStation station;
@@ -54,13 +58,18 @@ public class PayWithCoinTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		payWithCoin = new PayWithCoin(station);
+		payWithCoin = new PayWithCoin(station, new CustomerView());
 		paymentCounter = BigDecimal.valueOf(0);
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new PayWithCoin(null);
+	public void testContructorNullStation() {
+		new PayWithCoin(null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new PayWithCoin(station, null);
 	}
 	
 	/**
@@ -104,38 +113,34 @@ public class PayWithCoinTest {
 		assertEquals(BigDecimal.valueOf(0), paymentCounter);
 	}
 	
-	/*------------------------- Stubs ------------------------*/
-	// Stubs primarily to check if/how many times observer events occurred
+	/*--------------- STUBS ---------------*/
 	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
 	public class PaymentEventListenerStub implements PaymentEventListener {
 		@Override
-		public void reactToHardwareFailure() {}
-
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
+		public void reactToDisableStationRequest() {fail();}
 		@Override
-		public void reactToDisableStationRequest() {}
-
-		@Override
-		public void reactToEnableStationRequest() {}
-
+		public void reactToEnableStationRequest() {fail();}
 		@Override
 		public void onPaymentAddedEvent(BigDecimal amount) {
 			paymentCounter = paymentCounter.add(amount);
 		}
-
 		@Override
-		public void onPaymentFailure() {}
-
+		public void onPaymentFailure() {fail();}
 		@Override
-		public void onChangeDispensedEvent() {}
-
+		public void onChangeDispensedEvent() {fail();}
 		@Override
-		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {}
-	
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {fail();}
+		@Override
+		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		@Override
+		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
 	}
 }

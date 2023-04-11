@@ -26,12 +26,17 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.attendant;
+package com.autovend.software.ui;
 
-public class AttendantView {
+import javax.swing.JPanel;
 
-	public void setVisible(boolean b) {
-		
-	}
+public class AttendantView extends JPanel {
+
+	public StationTableView tableView;
+	public AddItemByTextSearchView textSearchView;
+	public RemoveItemView removeView;
+	
+	
+	
 
 }

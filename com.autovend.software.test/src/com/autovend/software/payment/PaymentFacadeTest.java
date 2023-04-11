@@ -30,11 +30,15 @@ package com.autovend.software.payment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -64,7 +68,7 @@ public class PaymentFacadeTest {
 	@Before
 	public void setup() throws Exception {
 		station = Setup.createSelfCheckoutStation();
-		paymentFacade = new PaymentFacade(station, false);
+		paymentFacade = new PaymentFacade(station, new CustomerView(), false);
 		
 		// Add 100 bills to each dispenser
 		Setup.fillBillDispensers(station, 100);
@@ -96,8 +100,13 @@ public class PaymentFacadeTest {
 	 * Test constructor with a null station input.
 	 */
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new PaymentFacade(null, false);
+	public void testContructorNullStation() {
+		new PaymentFacade(null, new CustomerView(), false);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new PaymentFacade(station, null, false);
 	}
 	
 	/**
@@ -252,41 +261,37 @@ public class PaymentFacadeTest {
 	
 	
 	/*------------------------- Stubs ------------------------*/
-	// Stubs primarily to check if/how many times observer events occurred
+/*--------------- STUBS ---------------*/
 	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
 	public class PaymentEventListenerStub implements PaymentEventListener {
-
 		@Override
-		public void reactToHardwareFailure() {}
-
+		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
+		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
+		public void reactToDisableStationRequest() {fail();}
 		@Override
-		public void reactToDisableStationRequest() {	}
-
+		public void reactToEnableStationRequest() {fail();}
 		@Override
-		public void reactToEnableStationRequest() {}
-
+		public void onPaymentAddedEvent(BigDecimal amount) {fail();}
 		@Override
-		public void onPaymentAddedEvent(BigDecimal amount) {}
-
-		@Override
-		public void onPaymentFailure() {}
-
+		public void onPaymentFailure() {fail();}
 		@Override
 		public void onChangeDispensedEvent() {
 			changeDispensedCounter++;
 		}
-
 		@Override
 		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
 			changeDispensedFailCounter++;
 		}
-		
+		@Override
+		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		@Override
+		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
 	}
 	
 	public class CoinDispenserObserverStub implements CoinDispenserObserver {

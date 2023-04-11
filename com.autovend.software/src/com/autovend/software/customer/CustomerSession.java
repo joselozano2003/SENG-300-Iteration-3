@@ -45,12 +45,16 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private String membershipNumber;
+	private int numberOfFailedPayments;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
+		membershipNumber = null;
+		numberOfFailedPayments = 0;
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
@@ -67,12 +71,18 @@ public class CustomerSession {
 			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
 			expectedWeight += barcodedProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+			System.out.println(product);
 		}
 		// Checks if product is PLU coded
 		else if (product instanceof PLUCodedProduct) {
 			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
 			expectedWeight += quantityToAdd; // Assuming quantityToAdd represents the weight for PLUCodedProduct
 			totalCost = totalCost.add(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
+
+			System.out.println(pluCodedProduct.getDescription());
+			System.out.println(pluCodedProduct.getPrice());
+			System.out.println(quantityToAdd);
+
 		}
 
 		// Checks if product is a bag product
@@ -80,12 +90,15 @@ public class CustomerSession {
 			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
 			expectedWeight += bagProduct.getExpectedWeight() * quantityToAdd;
 			totalCost = totalCost.add(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
-			
 		}
 	}
 
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
+	}
+
+	public void addMembershipNumber(String numberToAdd) {
+		this.membershipNumber = numberToAdd;
 	}
 
 	public Map<Product, Double> getShoppingCart() {
@@ -110,6 +123,14 @@ public class CustomerSession {
 
 	public BigDecimal getChangeDue() {
 		return totalPaid.subtract(totalCost);
+	}
+
+	public int getNumberOfFailedPayments() {
+		return numberOfFailedPayments;
+	}
+
+	public void addFailedPayment() {
+		numberOfFailedPayments++;
 	}
 
 	public boolean isPaymentComplete() {

@@ -32,11 +32,12 @@ import java.util.ArrayList;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
+import com.autovend.software.ui.CustomerView;
 
 public class ByTextSearch extends ItemFacade {
 
-	public ByTextSearch(SelfCheckoutStation station) {
-		super(station, true);
+	public ByTextSearch(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView, true);
 	}
 	
 	/**

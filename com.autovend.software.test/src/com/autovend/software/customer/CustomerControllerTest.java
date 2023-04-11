@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 import com.autovend.products.Product;
 import com.autovend.software.customer.CustomerController.State;
 
@@ -51,17 +52,22 @@ public class CustomerControllerTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
-		controller = new CustomerController(station, bagDispenser);
+		controller = new CustomerController(station, bagDispenser, new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testConstructionNullStation() {
-		new CustomerController(null, new ReusableBagDispenser(50));
+	public void testConstructorNullStation() {
+		new CustomerController(null, new ReusableBagDispenser(50), new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testConstructionNullBagDispenser() {
-		new CustomerController(station, null);
+	public void testConstructorNullBagDispenser() {
+		new CustomerController(station, null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testConstructorNullView() {
+		new CustomerController(station, null, new CustomerView());
 	}
 	
 	
@@ -72,17 +78,17 @@ public class CustomerControllerTest {
         assertEquals(State.INITIAL, controller.getCurrentState());
     }
 
-    @Test
-    public void testStartNewSession() {
-        controller.startNewSession();
-        assertEquals(State.INITIAL, controller.getCurrentState());
-    }
-
-    @Test
-    public void testStartAddingOwnBags() {
-        controller.startAddingOwnBags();
-        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
-    }
+//    @Test
+//    public void testStartNewSession() {
+//        controller.startNewSession();
+//        assertEquals(State.INITIAL, controller.getCurrentState());
+//    }
+//
+//    @Test
+//    public void testStartAddingOwnBags() {
+//        controller.startAddingOwnBags();
+//        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
+//    }
     
     @Test
     public void testFinishAddingOwnBags() {

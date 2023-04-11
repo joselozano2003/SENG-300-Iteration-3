@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class ItemFacadeTest {
 	private SelfCheckoutStation station;
@@ -42,12 +43,12 @@ public class ItemFacadeTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		itemFacade = new ItemFacade(station, false);
+		itemFacade = new ItemFacade(station, new CustomerView(), false);
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new ItemFacade(null, false);
+	public void testContructorNullStation() {
+		new ItemFacade(null, new CustomerView(), false);
 	}
 
 }

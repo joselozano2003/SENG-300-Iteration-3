@@ -54,6 +54,7 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class ReceiptFacadeTest {
 	private List<ReceiptEventListener> testListeners;
@@ -70,7 +71,7 @@ public class ReceiptFacadeTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		facade = new ReceiptFacade(station);
+		facade = new ReceiptFacade(station, new CustomerView());
 		testListeners = new ArrayList<>();
 		
 		bcProduct1 = Setup.createBarcodedProduct123(5.00, 69, false);
@@ -83,8 +84,13 @@ public class ReceiptFacadeTest {
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullConstruction() {
-		new ReceiptFacade(null);
+	public void testConstructorNullStation() {
+		new ReceiptFacade(null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testConstructorNullView() {
+		new ReceiptFacade(station, null);
 	}
 	
 	/*(@Test
@@ -230,8 +236,6 @@ public class ReceiptFacadeTest {
 	 * Override any event in this stub that you don't want to fail.
 	 */
 	public class ReceiptEventListenerStub implements ReceiptEventListener {
-		@Override
-		public void reactToHardwareFailure() {fail();}
 		@Override
 		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override

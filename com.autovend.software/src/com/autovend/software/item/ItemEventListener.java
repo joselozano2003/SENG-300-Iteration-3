@@ -41,5 +41,5 @@ public interface ItemEventListener extends AbstractEventListener {
 	
 	public void onItemNotFoundEvent();
 
-    void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
+    public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }

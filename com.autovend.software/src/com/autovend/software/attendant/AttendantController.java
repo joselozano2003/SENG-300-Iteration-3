@@ -30,11 +30,9 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
-import com.autovend.devices.OverloadException;
-import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SupervisionStation;
 import com.autovend.products.Product;
 import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
@@ -42,19 +40,14 @@ import auth.AuthFacade;
 
 public class AttendantController {
 
-	private static List<CustomerStationLogic> customerStations;
+	private List<CustomerController> customerControllers;
 	private AttendantModel model;
-	private AttendantView view;
+//	private AttendantView view;
 	private AuthFacade auth;
 	//testing
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
-			throw new NullPointerException("Null arguments given");
-		this.model = model;
-		this.view = view;
-		this.auth = new AuthFacade();
-		customerStations = list;
+	public AttendantController(SupervisionStation station ) {
+		
 	}
 
 	public void startupStation(/* station */) {
@@ -79,27 +72,5 @@ public class AttendantController {
 
 	public boolean startRemoveItem(ItemFacade item, Product product) {
 		return item.removeProduct(product);
-	}
-
-	// This is triggered from the INITIAL state
-	public void addInkToStation(int stationNumber, int inkLevel) {
-		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
-		try {
-			station.printer.addInk(inkLevel);
-			customerStations.get(stationNumber).getController().inkAdded += inkLevel;
-			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
-		} catch (OverloadException e) {
-			// TODO: Show attendant screen that too much ink was tried to be added
-		}
-	}
-	public void addPaperToStation(int stationNumber, int paperLevel) {
-		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
-		try {
-			station.printer.addPaper(paperLevel);
-			customerStations.get(stationNumber).getController().paperAdded += paperLevel;
-			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
-		} catch (OverloadException e) {
-			// TODO: Show attendant screen that too much paper was tried to be added
-		}
 	}
 }

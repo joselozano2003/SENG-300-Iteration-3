@@ -44,6 +44,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 /**
  * A test class that performs tests on the ByScanning class. 
@@ -63,7 +64,7 @@ public class ByScanningTest {
 		
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		byScanning = new ByScanning(station);
+		byScanning = new ByScanning(station, new CustomerView());
 	}
 	
 	/**
@@ -77,8 +78,13 @@ public class ByScanningTest {
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testNullContruction() {
-		new ByScanning(null);
+	public void testContructorNullStation() {
+		new ByScanning(null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new ByScanning(station, null);
 	}
 	
 	/**
@@ -196,24 +202,5 @@ public class ByScanningTest {
 		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
 		assertEquals(expected, found);
 	}
-	
-	// Not too sure how to test for hardware failure!
-	// This test fails bc of that
-	@Test
-	public void testEventHardwareFailure() {
-		int expected = 1;
-		byScanning.register(new ItemListenerStub() {
-			@Override
-			public void reactToHardwareFailure() {
-				found++;
-			}
-		});
-		
-		station.mainScanner.disable();
-		station.handheldScanner.disable();
-		
-		byScanning = new ByScanning(station);
-		
-		assertEquals(expected, found);
-	}
+
 }

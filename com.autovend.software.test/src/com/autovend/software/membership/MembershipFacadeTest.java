@@ -44,6 +44,7 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.membership.MembershipFacade.InnerListener;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 public class MembershipFacadeTest {
 	private SelfCheckoutStation station;
@@ -55,14 +56,19 @@ public class MembershipFacadeTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		membershipFacade = new MembershipFacade(station);
+		membershipFacade = new MembershipFacade(station, new CustomerView());
 		flag = false;
 		found = 0;
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
-		new MembershipFacade(null);
+		new MembershipFacade(null, new CustomerView());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new MembershipFacade(null, new CustomerView());
 	}
 	
 	/**
@@ -201,13 +207,13 @@ public class MembershipFacadeTest {
 		assertFalse(membershipFacade.membershipEntered());
 	}
 	
+	/*--------------- STUBS ---------------*/
+	
 	/**Stubs primarily check if/how many times observer events occurred.
 	 * Tests should fail if an unexpected event is reported.
 	 * Override any event in this stub that you don't want to fail.
 	 */
 	class ListenerStub implements MembershipListener {
-		@Override
-		public void reactToHardwareFailure() {fail();}
 		@Override
 		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
