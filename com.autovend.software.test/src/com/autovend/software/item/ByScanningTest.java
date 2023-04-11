@@ -80,13 +80,16 @@ public class ByScanningTest {
 	}
 	
 	/**
-	 * Test ByScanning constructor with null parameter.
+	 * Test ByScanning constructor with null station parameter.
 	 */
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
 		new ByScanning(null, new CustomerView());
 	}
 	
+	/**
+	 * Test ByScanning constructor with null customer view parameter.
+	 */
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullView() {
 		new ByScanning(station, null);
@@ -150,6 +153,37 @@ public class ByScanningTest {
 		assertEquals(expected, found);
 	}
 	
+	/**
+	 * Tests when a valid item is added and attempting to add a null item, right after. 
+	 */
+	@Test
+	public void testEventAddValidItemAndNullItem() {
+		int expected = 2;
+		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
+		BarcodedProduct barcodedProduct4 = null;
+		
+		instance.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				assertEquals(barcodedProduct3, product);
+				found++;
+			}
+			
+			@Override 
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				assertEquals(barcodedProduct4, barcodedProduct);
+				found++;
+		}});
+		
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct3.getBarcode());
+		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
+		assertEquals(expected, found);
+	}
+	
+	/*
+	 * The tests regarding enabled/disabled are here, they fail but we still get 100% coverage despite it?
+	 */
+	
 	// This test fails, code inside override doesn't get reached
 	// not sure if I did the stub right
 	@Test
@@ -187,32 +221,4 @@ public class ByScanningTest {
 		byScanning.reactToEnabledEvent(station.mainScanner);
 		assertEquals(expected, found);
 	}
-	
-	/**
-	 * Tests when a valid item is added and attempting to add a null item, right after. 
-	 */
-	@Test
-	public void testEventAddValidItemAndNullItem() {
-		int expected = 2;
-		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
-		BarcodedProduct barcodedProduct4 = null;
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				assertEquals(barcodedProduct3, product);
-				found++;
-			}
-			
-			@Override 
-			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-				assertEquals(barcodedProduct4, barcodedProduct);
-				found++;
-		}});
-		
-		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct3.getBarcode());
-		byScanning.reactToBarcodeScannedEvent(station.mainScanner, null);
-		assertEquals(expected, found);
-	}
-
 }
