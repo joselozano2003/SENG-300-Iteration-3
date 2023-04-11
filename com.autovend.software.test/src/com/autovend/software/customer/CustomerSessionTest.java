@@ -56,7 +56,7 @@ public class CustomerSessionTest {
 		barcodedProduct = Setup.createBarcodedProduct123(12, 5, true);
 	}
 
-	//TESTING PAYMENT-COMPLETION.
+//TESTING PAYMENT-COMPLETION.
 		//Customer pays the full amount for the one item.
 		@Test
 		public void isPaymentCompleteTestOneItem() {
@@ -121,7 +121,7 @@ public class CustomerSessionTest {
 			assertFalse(session.isPaymentComplete()); //So Payment isn't complete.
 			}
 		
-		//TESTING CUSTOMER PAYMENT (addPayment method)
+//TESTING CUSTOMER PAYMENT (addPayment method)
 		
 		//Making Payment on 1 item
 		@Test
@@ -180,7 +180,7 @@ public class CustomerSessionTest {
 			assertEquals(BigDecimal.valueOf(240), session.getTotalPaid());	
 			}
 		
-		//TESTING THAT THE CHANGE DUE CALCULATED IS CORRECT OR NOT
+//TESTING THAT THE CHANGE DUE CALCULATED IS CORRECT OR NOT
 		
 		/* Test Case: Paying 40 dollars for 36 dollar items and checking if changeDue is calculated correctly.
 		 * 
@@ -227,6 +227,37 @@ public class CustomerSessionTest {
 			session.addPayment(BigDecimal.valueOf(70));
 			assertEquals(expected, session.getChangeDue());
 		}
+		
+//TEST TO CHECK IF FAILED PAYMENTS ARE TRACKED PROPERLY
+		
+		@Test
+		public void OneFailedPaymentTest() {
+			session.addFailedPayment();
+			assertEquals(1, session.getNumberOfFailedPayments());		
+		}
+		
+		@Test
+		public void TwoFailedPaymentTest() {
+			session.addFailedPayment();
+			session.addFailedPayment();
+			assertEquals(2, session.getNumberOfFailedPayments());		
+		}
+		
+		@Test
+		public void OneHundredFailedPaymentTest() {
+			for(int i = 0; i < 100; i++) {
+				session.addFailedPayment();
+			}				
+			assertEquals(100, session.getNumberOfFailedPayments());		
+		}
+		@Test
+		public void OneThousandFailedPaymentTest() {
+			for(int i = 0; i < 1000; i++) {
+				session.addFailedPayment();
+			}				
+			assertEquals(1000, session.getNumberOfFailedPayments());		
+		}
+		
 		
 		
 		
