@@ -258,13 +258,82 @@ public class CustomerSessionTest {
 			assertEquals(1000, session.getNumberOfFailedPayments());		
 		}
 		
-		
-		
-		
+							
+//TEST TO CHECK IF ITEM HAS BEEN ADDED TO CART	
+	
 		@Test
-		public void addItemToCartTest() {
-			
+		public void addOneItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 1);			
+			assertEquals(1.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addTwoItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 2);			
+			assertEquals(2.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addTenItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 10);			
+			assertEquals(10.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addOneHundredItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 10);			
+			assertEquals(10.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addNinetyNineItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 99);			
+			assertEquals(99.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addOneHundredOneItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 101);			
+			assertEquals(101.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
 		}
 		
+		@Test
+		public void addOneItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 1);
+			assertEquals(6.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 6 items
+		}
+		@Test
+		public void addTwoItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 2);
+			assertEquals(7.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 7 items
+		}
+		@Test
+		public void addTenItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 10);
+			assertEquals(15.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 15 items
+		}
+		@Test
+		public void addOneHundredItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 100);
+			assertEquals(105.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 105 items
+		}
+		@Test
+		public void addNinetyNineItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 99);
+			assertEquals(104.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 104 items
+		}
+		@Test
+		public void addOneHundredOneItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 101);
+			assertEquals(106.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 106 items
+			}																								
+	
 
-	}
+}
