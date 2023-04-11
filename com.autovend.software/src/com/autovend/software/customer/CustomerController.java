@@ -121,6 +121,10 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 		// Register the CustomerController to listen to views
 		customerView.startView.register(this);
+		customerView.checkoutView.register(this);
+		customerView.pluView.register(this);
+
+		
 
 		// Make view visible
 		selfCheckoutStation.screen.setVisible(true);
@@ -203,6 +207,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.handheldScanner.disable();
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
+			
 			break;
 		default:
 			break;
@@ -229,6 +234,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		currentSession = new CustomerSession();
 		setState(State.ADDING_ITEMS);
 		updateView(customerView.checkoutView);
+	}
+	
+	@Override
+	public void goBackToCheckout() {
+		updateView(customerView.checkoutView);
+		customerView.checkoutView.updateShoppingCart(currentSession);
 	}
 
 	@Override
@@ -290,6 +301,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void reactToEnableStationRequest() {
 		// comes from the attendant
+	}
+	
+	@Override
+	public void onSelectAddItemByPLU() {
+		updateView(customerView.pluView);
+		
 	}
 
 	@Override
@@ -416,5 +433,9 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// TODO Auto-generated method stub
 
 	}
+
+	
+
+	
 
 }
