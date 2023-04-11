@@ -84,11 +84,11 @@ public class CustomerControllerTest {
 //        assertEquals(State.INITIAL, controller.getCurrentState());
 //    }
 //
-//    @Test
-//    public void testStartAddingOwnBags() {
-//        controller.startAddingOwnBags();
-//        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
-//    }
+    @Test
+    public void testStartAddingOwnBags() {
+    	controller.onStartAddingOwnBags();
+        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
+    }
     
     @Test
     public void testFinishAddingOwnBags() {
@@ -97,6 +97,8 @@ public class CustomerControllerTest {
     
     @Test
     public void testStartAddingItems() {
+		 controller.onStartAddingItems();
+		 assertEquals(State.ADDING_ITEMS, controller.getCurrentState());
     	
     }
     
@@ -107,6 +109,7 @@ public class CustomerControllerTest {
     
     @Test
     public void testStartPaying() {
+		 
     	
     }
     
