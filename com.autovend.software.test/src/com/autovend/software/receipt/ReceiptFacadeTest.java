@@ -36,34 +36,29 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.autovend.Barcode;
 import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
-import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
-import com.autovend.devices.observers.ReceiptPrinterObserver;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 
 public class ReceiptFacadeTest {
-	private List<ReceiptEventListener> testListeners;
 	private SelfCheckoutStation station;
 	private ReceiptFacade facade;
 	private BarcodedProduct bcProduct1;
 	private BarcodedProduct bcProduct2;
 	private PLUCodedProduct pluProduct1;
 	private PLUCodedProduct pluProduct2;
+	private ReusableBagProduct bag;
+	
 	
 	private boolean printSuccess;
 	
@@ -72,13 +67,14 @@ public class ReceiptFacadeTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		facade = new ReceiptFacade(station, new CustomerView());
-		testListeners = new ArrayList<>();
 		
 		bcProduct1 = Setup.createBarcodedProduct123(5.00, 69, false);
 		bcProduct2 = Setup.createBarcodedProduct456(4.20, 99, false);
 		
 		pluProduct1 = Setup.createPLUProduct1234(5.00, 69, false);
 		pluProduct2 = Setup.createPLUProduct56789(4.20, 99, false);
+		
+		bag = new ReusableBagProduct();
 		
 		printSuccess = false;
 	}
@@ -92,13 +88,6 @@ public class ReceiptFacadeTest {
 	public void testConstructorNullView() {
 		new ReceiptFacade(station, null);
 	}
-	
-	/*(@Test
-	public void testReactToHardwareFailure() {
-		new ReceiptFacade(null);
-		
-	}*/
-	
 	@Test
 	public void testDisabled() {
 		station.printer.disable();
@@ -146,6 +135,23 @@ public class ReceiptFacadeTest {
 		
 		facade.printReceipt(cart);
 		
+		assertTrue(printSuccess);
+	}
+	@Test 
+	public void testPrintReceiptBag() {
+		facade.register(new ReceiptEventListenerStub());
+		
+		try {
+			station.printer.addInk(100);
+		} catch (OverloadException e) {}
+		try {
+			station.printer.addPaper(100);
+		} catch (OverloadException e) {}	
+		
+		Map<Product, Double> cart = new HashMap<>();		
+		cart.put(bag, 3.00);
+		
+		facade.printReceipt(cart);
 		assertTrue(printSuccess);
 	}
 	@Test
