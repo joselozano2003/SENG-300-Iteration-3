@@ -422,6 +422,14 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		}
 
 	}
+	
+	//call this when item is too heavy for bagging, attendent IO will be called and approval will be needed before moving on
+	public void itemTooHeavyForBagging(double weightInGrams) {
+		//call attendentIO first for approval
+		
+		setState(State.ADDING_ITEMS);
+		currentSession.itemAddedToCartTooHeavyForScale(weightInGrams);
+	}
 
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;

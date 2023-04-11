@@ -118,7 +118,11 @@ public class CustomerSession {
 			totalCost = totalCost.add(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
 		}
 	}
-
+	
+	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
+		expectedWeight -= weightInGrams;
+	}
+	
 	public void addPayment(BigDecimal amount) {
 		totalPaid = totalPaid.add(amount);
 	}
