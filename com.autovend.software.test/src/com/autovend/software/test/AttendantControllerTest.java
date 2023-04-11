@@ -7,6 +7,9 @@ import java.util.Currency;
 import java.util.List;
 
 import com.autovend.*;
+import com.autovend.products.Product;
+import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.item.TextSearchProduct;
 import org.junit.After;
 import org.junit.Before;
 
@@ -281,4 +284,26 @@ public class AttendantControllerTest {
         attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
         assertEquals(1, customerController.getSession().getTotalCost().intValue());
         }
+
+    @Test
+    public void addItemWithTextSearch(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        attendantController.addPaperToStation(0, 10);
+        attendantController.addInkToStation(0, 10);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+
+        CustomerController customerController = station.getController();
+        customerController.startNewSession();
+        customerController.startAddingItems();
+
+        TextSearchProduct textSearchProduct = new TextSearchProduct("Banana", "banana", new BigDecimal("1"), 10);
+        ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Banana", textSearchProduct);
+        attendantController.addItemToStationByTextSearch(0, "Banana", 1);
+        assertEquals(1, customerController.getSession().getTotalCost().intValue());
+
+    }
     }
