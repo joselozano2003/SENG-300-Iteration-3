@@ -39,6 +39,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
@@ -52,7 +53,7 @@ import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
 
-public class CustomerController
+public class CustomerController extends AbstractFacade<CustomerControllerListener>
 		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
@@ -76,13 +77,14 @@ public class CustomerController
 	public enum State {
 
 		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
-		DISABLED,
+		DISABLED, STARTUP, SHUTDOWN
 
 	}
 
 	private State currentState;
 
 	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
+		super(selfCheckoutStation);
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.currentState = State.INITIAL;
@@ -107,7 +109,6 @@ public class CustomerController
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
-
 		inkUsed = 0;
 		paperUsed = 0;
 	}
@@ -202,6 +203,42 @@ public class CustomerController
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
 			break;
+		case SHUTDOWN:
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.screen.disable();
+			selfCheckoutStation.printer.disable();
+			selfCheckoutStation.cardReader.disable();
+			selfCheckoutStation.mainScanner.disable();
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+			selfCheckoutStation.billStorage.disable();
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+			selfCheckoutStation.coinStorage.disable();
+			selfCheckoutStation.coinValidator.disable();
+			break;
+		case STARTUP:
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.scale.enable();
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.printer.enable();
+			selfCheckoutStation.cardReader.enable();
+			selfCheckoutStation.mainScanner.enable();
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.billInput.enable();
+			selfCheckoutStation.billOutput.enable();
+			selfCheckoutStation.billStorage.enable();
+			selfCheckoutStation.coinSlot.enable();
+			selfCheckoutStation.coinTray.enable();
+			selfCheckoutStation.coinStorage.enable();
+			selfCheckoutStation.coinValidator.enable();
+			selfCheckoutStation.screen.disable();
+			// everything is on but screen is off, so it cannot be interacted with
+			break;
+
 		default:
 			break;
 
@@ -211,6 +248,7 @@ public class CustomerController
 	// In reaction to UI
 	public void startNewSession() {
 		currentSession = new CustomerSession();
+		setState(State.INITIAL);
 		// set state to initial?
 	}
 
@@ -244,7 +282,14 @@ public class CustomerController
 		setState(State.PAYING);
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+	}
 
+	public State getState(){
+		return currentState;
+	}
+
+	public CustomerSession getSession(){
+		return currentSession;
 	}
 
 	// In reaction to UI
@@ -280,11 +325,6 @@ public class CustomerController
 
 	@Override
 	public void reactToDisableStationRequest() {
-		// comes from the attendant
-	}
-
-	@Override
-	public void reactToEnableStationRequest() {
 		// comes from the attendant
 	}
 
@@ -439,9 +479,18 @@ public class CustomerController
 		int inkLevel = inkAdded - inkUsed;
 		int paperLevel = paperAdded - paperUsed;
 
-		if (inkLevel < ALERT_THRESHOLD || paperLevel < ALERT_THRESHOLD){
+		if (inkLevel < ALERT_THRESHOLD) {
 			setState(State.DISABLED);
-			// TODO: notify attendant & change state to disabled
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowInkAlert();
+			}
+		}
+
+		if (paperLevel < ALERT_THRESHOLD){
+			setState(State.DISABLED);
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowPaperAlert();
+			}
 		}
 	}
 }

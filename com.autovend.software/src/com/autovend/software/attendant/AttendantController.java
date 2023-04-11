@@ -28,37 +28,35 @@
  */
 package com.autovend.software.attendant;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.Product;
-import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.customer.*;
 import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
 
-public class AttendantController {
+public class AttendantController implements CustomerStationListener {
 
-	private static List<CustomerStationLogic> customerStations;
+	private static ArrayList<CustomerStationLogic> customerStations;
 	private AttendantModel model;
 	private AttendantView view;
 	private AuthFacade auth;
 	//testing
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
+	public AttendantController(AttendantModel model, AttendantView view) {
+		if (model == null || view == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;
 		this.view = view;
 		this.auth = new AuthFacade();
-		customerStations = list;
-	}
-
-	public void startupStation(/* station */) {
-
+		customerStations = new ArrayList<CustomerStationLogic>();
 	}
 
 	public boolean startLogIn(AttendantAccount attendantAccount) {
@@ -77,8 +75,9 @@ public class AttendantController {
 		return auth.deleteAccount(attendantAccount, removeAccount);
 	}
 
-	public boolean startRemoveItem(ItemFacade item, Product product) {
-		return item.removeProduct(product);
+	public void startRemoveItem(Product product, double quantity,int stationNumber) {
+		CustomerSession session=  customerStations.get(stationNumber).getController().getSession();
+
 	}
 
 	// This is triggered from the INITIAL state
@@ -101,5 +100,73 @@ public class AttendantController {
 		} catch (OverloadException e) {
 			// TODO: Show attendant screen that too much paper was tried to be added
 		}
+	}
+
+	public void removeItemfromStation(int stationNumber, Product product, double quantity) {
+		CustomerStationLogic station = customerStations.get(stationNumber);
+		station.getController().getCurrentSession().removeItemFromCart(product, quantity);
+	}
+
+	public void addCustomerStation(CustomerStationLogic station) {
+		customerStations.add(station);
+	}
+
+	public List<CustomerStationLogic> getCustomerStations() {
+		return customerStations;
+	}
+
+	public void shutDownStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
+	}
+
+	public void startUpStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.STARTUP);
+	}
+
+	public void permitStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+	}
+
+	public void denyStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
+	}
+
+	@Override
+	public void reactToHardwareFailure() {
+
+	}
+
+	@Override
+	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToDisableStationRequest() {
+		// TODO Send message to attendant view
+	}
+
+	@Override
+	public void reactToRemoveItemRequest(Product product, double quantity, CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		String productName = "Request to remove " + quantity + " of " + product.toString() + " from station " + stationNumber;
+		// TODO: Show this message in attendant view
+	}
+
+	@Override
+	public void lowInkAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		// TODO: Show to attendant view the station number that needs ink
+	}
+
+	@Override
+	public void lowPaperAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		// TODO: Show to attendant view the station number that needs paper
 	}
 }

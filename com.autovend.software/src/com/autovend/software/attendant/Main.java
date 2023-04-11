@@ -14,7 +14,7 @@ public class Main {
 		
 		AttendantModel model = new AttendantModel();
 		AttendantView view = new AttendantView();
-		AttendantController controller = new AttendantController(model, view, setupCustomerStations(2));
+		AttendantController controller = new AttendantController(model, view);
 		view.setVisible(true);
 	}
 	

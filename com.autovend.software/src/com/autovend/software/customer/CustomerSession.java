@@ -53,6 +53,35 @@ public class CustomerSession {
 		totalPaid = BigDecimal.ZERO;
 	}
 
+	public void removeItemFromCart(Product product, double quantityToRemove) {
+		// Checks if item has been previously added to cart
+		if (shoppingCart.containsKey(product)) {
+			double updatedQuantity = shoppingCart.get(product) - quantityToRemove;
+			shoppingCart.put(product, updatedQuantity);
+		} else {
+			shoppingCart.put(product, quantityToRemove);
+		}
+
+		// Checks if product is barcoded
+		if (product instanceof BarcodedProduct) {
+			BarcodedProduct barcodedProduct = (BarcodedProduct) product;
+			expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
+			totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+		}
+		// Checks if product is PLU coded
+		else if (product instanceof PLUCodedProduct) {
+			PLUCodedProduct pluCodedProduct = (PLUCodedProduct) product;
+			expectedWeight -= quantityToRemove;
+			totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+		}
+		else if (product instanceof ReusableBagProduct) {
+			ReusableBagProduct bagProduct = (ReusableBagProduct) product;
+			expectedWeight -= bagProduct.getExpectedWeight() * quantityToRemove;
+			totalCost = totalCost.subtract(bagProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+
+		}
+	}
+
 	public void addItemToCart(Product product, double quantityToAdd) {
 		// Checks if item has been previously added to cart
 		if (shoppingCart.containsKey(product)) {
