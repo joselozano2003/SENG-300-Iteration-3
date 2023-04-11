@@ -282,7 +282,10 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		setState(State.PAYING);
 		BigDecimal amountDue = currentSession.getTotalCost();
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+	}
 
+	public State getState(){
+		return currentState;
 	}
 
 	public CustomerSession getSession(){
@@ -322,11 +325,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void reactToDisableStationRequest() {
-		// comes from the attendant
-	}
-
-	@Override
-	public void reactToEnableStationRequest() {
 		// comes from the attendant
 	}
 

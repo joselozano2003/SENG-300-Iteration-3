@@ -25,7 +25,7 @@ public class AttendantAuthTest {
 	private AttendantModel model = new AttendantModel();
 	private AttendantView view = new AttendantView();
 
-	public AttendantController attendantController = new AttendantController(model, view, customerStations);
+	public AttendantController attendantController = new AttendantController(model, view);
 
 	@Before
 	public void setUp() throws Exception {

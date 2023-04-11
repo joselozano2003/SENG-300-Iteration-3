@@ -28,6 +28,7 @@
  */
 package com.autovend.software.attendant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.autovend.devices.AbstractDevice;
@@ -43,23 +44,19 @@ import auth.AuthFacade;
 
 public class AttendantController implements CustomerStationListener {
 
-	private static List<CustomerStationLogic> customerStations;
+	private static ArrayList<CustomerStationLogic> customerStations;
 	private AttendantModel model;
 	private AttendantView view;
 	private AuthFacade auth;
 	//testing
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStationLogic> list) {
-		if (model == null || view == null || list == null)
+	public AttendantController(AttendantModel model, AttendantView view) {
+		if (model == null || view == null)
 			throw new NullPointerException("Null arguments given");
 		this.model = model;
 		this.view = view;
 		this.auth = new AuthFacade();
-		customerStations = list;
-	}
-
-	public void startupStation(/* station */) {
-
+		customerStations = new ArrayList<CustomerStationLogic>();
 	}
 
 	public boolean startLogIn(AttendantAccount attendantAccount) {
@@ -105,6 +102,19 @@ public class AttendantController implements CustomerStationListener {
 		}
 	}
 
+	public void removeItemfromStation(int stationNumber, Product product, double quantity) {
+		CustomerStationLogic station = customerStations.get(stationNumber);
+		station.getController().getCurrentSession().removeItemFromCart(product, quantity);
+	}
+
+	public void addCustomerStation(CustomerStationLogic station) {
+		customerStations.add(station);
+	}
+
+	public List<CustomerStationLogic> getCustomerStations() {
+		return customerStations;
+	}
+
 	public void shutDownStation(int stationNumber) {
 		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
 	}
@@ -138,12 +148,7 @@ public class AttendantController implements CustomerStationListener {
 
 	@Override
 	public void reactToDisableStationRequest() {
-
-	}
-
-	@Override
-	public void reactToEnableStationRequest() {
-
+		// TODO Send message to attendant view
 	}
 
 	@Override

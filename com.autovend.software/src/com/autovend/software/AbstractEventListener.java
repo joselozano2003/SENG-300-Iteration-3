@@ -61,8 +61,6 @@ public interface AbstractEventListener {
 	 * Announces that the entire station should be disabled.
 	 */
 	public void reactToDisableStationRequest();
-	/**
-	 * Announces that the entire station should be enabled.
-	 */
-	public void reactToEnableStationRequest();
+
+
 }

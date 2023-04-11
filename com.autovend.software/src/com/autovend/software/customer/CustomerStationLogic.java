@@ -24,7 +24,7 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		return new CustomerStationLogic(station);
 	}
 
-	private CustomerStationLogic(SelfCheckoutStation station) {
+	public CustomerStationLogic(SelfCheckoutStation station) {
 		super(station);
 		// Initiate facades.
 		this.station = station;
@@ -93,11 +93,6 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 
 	@Override
 	public void reactToDisableStationRequest() {
-
-	}
-
-	@Override
-	public void reactToEnableStationRequest() {
 
 	}
 
