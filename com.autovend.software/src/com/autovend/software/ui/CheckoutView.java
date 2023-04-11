@@ -17,6 +17,7 @@ public class CheckoutView extends JPanel {
 
     // Declare the shopping cart table and its model
     private JTable shoppingCartTable;
+    private JButton startPaymentButton;
     private DefaultTableModel shoppingCartTableModel;
 
     public CheckoutView() {

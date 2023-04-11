@@ -35,12 +35,14 @@ public class CustomerView {
 	public PLUView pluView;
 	public StartView startView;
 	public CheckoutView checkoutView;
+	public PaymentView paymentView;
 	public AddItemByBrowsingView browsingView;
 	
 	public CustomerView() {
 		this.pluView = new PLUView();
 		this.startView = new StartView();	
 		this.checkoutView = new CheckoutView();
+		this.paymentView = new PaymentView();
 		this.browsingView = new AddItemByBrowsingView();
 	}
 	
