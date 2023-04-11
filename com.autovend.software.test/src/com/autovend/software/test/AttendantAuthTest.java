@@ -19,6 +19,10 @@ import com.autovend.software.customer.CustomerStationLogic;
 import auth.AttendantAccount;
 import auth.AttendantAccountDatabases;
 
+/**
+ * JUNIT test for AttendantAuth
+ *
+ */
 public class AttendantAuthTest {
 
 	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
@@ -35,6 +39,9 @@ public class AttendantAuthTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * Test for comparing attendant accounts
+	 */
 	@Test
 	public void AttendantEqualTest() {
 		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
@@ -42,12 +49,18 @@ public class AttendantAuthTest {
 		assertFalse(demoAttendant.equals(new String("demoAttendant")));
 	}
 
+	/**
+	 * Test for printing attendant account info
+	 */
 	@Test
 	public void AttendantPrintTest() {
 		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
 		assertTrue(demoAttendant.toString().equals(new String("attendant userName: " + demoAttendant.getUserName())));
 	}
 
+	/**
+	 * Test for creating attendant account with null user name.
+	 */
 	@Test
 	public void NullUsernameTest() {
 		AttendantAccount testAttendantAccount = null;
@@ -58,6 +71,9 @@ public class AttendantAuthTest {
 		}
 	}
 
+	/**
+	 * Test for creating attendant account with null password.
+	 */
 	@Test
 	public void NullPasswordTest() {
 		AttendantAccount testAttendantAccount = null;
@@ -68,30 +84,45 @@ public class AttendantAuthTest {
 		}
 	}
 
+	/**
+	 * Test for logging in successfully.
+	 */
 	@Test
 	public void SuccesfulLogInTest() {
 		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
 		assertTrue(attendantController.startLogIn(demoAttendant));
 	}
 
+	/**
+	 * Test for logging out successfully.
+	 */
 	@Test
 	public void SuccesfulLogOutTest() {
 		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
 		assertTrue(attendantController.startLogOut(demoAttendant));
 	}
 
+	/**
+	 * Test for logging in unsuccessfully.
+	 */
 	@Test
 	public void UnsuccesfulLogInTest() {
 		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
 		assertFalse(attendantController.startLogIn(fakeAttendant));
 	}
 
+	/**
+	 * Test for logging out unsuccessfully.
+	 */
 	@Test
 	public void UnsuccesfulLogOutTest() {
 		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
 		assertFalse(attendantController.startLogOut(fakeAttendant));
 	}
 
+	/**
+	 * Test for adding/deleting account successfully.
+	 */
 	@Test
 	public void SuccesfulAddingAndDeletingAccountTest() {
 		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
@@ -99,6 +130,9 @@ public class AttendantAuthTest {
 		assertTrue(attendantController.startDeleteAccount(AttendantAccountDatabases.godAccount(), addedAccount));
 	}
 
+	/**
+	 * Test for adding/deleting account unsuccessfully.
+	 */
 	@Test
 	public void UnsuccesfulAddingAndDeletingAccountTest() {
 		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
