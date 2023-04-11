@@ -49,5 +49,7 @@ public interface PaymentEventListener extends AbstractEventListener {
 	
 	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
 	
-	
+	public void cardInserted();
+
+	public void cardRemoved();
 }

@@ -62,10 +62,16 @@ class PayWithCard extends PaymentFacade implements CardReaderObserver {
 
 	@Override
 	public void reactToCardInsertedEvent(CardReader reader) {
+		for (PaymentEventListener listener : listeners) {
+			listener.cardInserted();
+		}
 	}
 
 	@Override
 	public void reactToCardRemovedEvent(CardReader reader) {
+		for (PaymentEventListener listener : listeners) {
+			listener.cardRemoved();
+		}
 	}
 
 	@Override
