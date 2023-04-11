@@ -33,7 +33,7 @@ public class PaymentView<object> extends JPanel{
     private JButton doneButton;
     private com.autovend.devices.SelfCheckoutStation SelfCheckoutStation;
     private String num;
-    JPanel jPanel = new JPanel();
+    JPanel jPanel = this;
     private ArrayList<Coin> coins = new ArrayList<Coin>();
     private ArrayList<Bill> bills = new ArrayList<Bill>();
     private Object value;
@@ -78,8 +78,6 @@ public class PaymentView<object> extends JPanel{
         infoText.setBackground(new Color(15, 17, 26));
         jPanel.add(infoText);
 
-        update();
-
         JButton doneButton = new JButton("Done");
 
         doneButton.setOpaque(true);
@@ -105,12 +103,12 @@ public class PaymentView<object> extends JPanel{
 
         JButton creditCard = new JButton("Pay with Credit Card");
 
-                creditCard.setOpaque(true);
-                creditCard.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                creditCard.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
-                creditCard.setBackground(new Color(255, 203, 107));
-                creditCard.setBounds(980, 400 , 280, 55);
-                jPanel.add(creditCard);
+        creditCard.setOpaque(true);
+        creditCard.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        creditCard.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        creditCard.setBackground(new Color(255, 203, 107));
+        creditCard.setBounds(980, 400 , 280, 55);
+        jPanel.add(creditCard);
 
 
 
@@ -162,45 +160,24 @@ public class PaymentView<object> extends JPanel{
         title.setForeground(new Color(255, 255, 255));
         title.setBounds(570, 20, 656, 72);
         jPanel.add(title);
-
-
-
-
-
-
+        
 
 
     }
-    private void update(){
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                infoText.setText("" + getInfoText());
-                boolean paid = false;
-                if(amountEntered.compareTo(session.getTotalCost()) >= 0){
-                    paid = true;
-                    try {
-                    // generate receipt from the session
-                    }catch (Exception error){
-                        JOptionPane.showMessageDialog(new JPanel(),"Failed to generate receipt!", "Error!", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-                if(paid){
-                    returnAddItems.setVisible(false);
-                    doneButton.setVisible(true);
-                }
 
-            }
-        });
-    }
-
-
-    private String getInfoText(){
-        return "\n Total: " + session.getTotalCost().toString() + "\n Entered: " + amountEntered.doubleValue() + "\n Changes Due: " + amountEntered.subtract(session.getTotalCost());
-    }
     
     public void setAmountDueLabelText(String amountDueText) {
         return;
+    }
+    
+    public static void main(String[] args) {
+    	JFrame frame = new JFrame();
+    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setUndecorated(true);
+		frame.setVisible(true);
+		frame.add(new PaymentView());
+		frame.validate();
     }
 
 }
