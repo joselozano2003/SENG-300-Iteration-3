@@ -76,6 +76,9 @@ public class ByScanningTest {
 		found = 0;
 	}
 	
+	/**
+	 * Test ByScanning constructor with null parameter.
+	 */
 	@Test (expected = NullPointerException.class)
 	public void testNullContruction() {
 		new ByScanning(null);
@@ -104,6 +107,7 @@ public class ByScanningTest {
 		assertEquals(2, found);
 	}
 	
+	// This test fails currently
 	@Test
 	public void testEventItemNotFound() {
 		int expected = 1;
@@ -119,6 +123,9 @@ public class ByScanningTest {
 		assertEquals(expected, found);
 	}
 	
+	/**
+	 * Tests an attempt to add a null item.
+	 */
 	@Test
 	public void testEventAttemptingToAddNullItem() {
 		int expected = 1;
@@ -173,6 +180,9 @@ public class ByScanningTest {
 		assertEquals(expected, found);
 	}
 	
+	/**
+	 * Tests when a valid item is added and attempting to add a null item, right after. 
+	 */
 	@Test
 	public void testEventAddValidItemAndNullItem() {
 		int expected = 2;
