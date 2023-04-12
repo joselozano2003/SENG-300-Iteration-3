@@ -261,7 +261,6 @@ public class PaymentFacadeTest {
 	
 	
 	/*------------------------- Stubs ------------------------*/
-/*--------------- STUBS ---------------*/
 	
 	/**Stubs primarily check if/how many times observer events occurred.
 	 * Tests should fail if an unexpected event is reported.

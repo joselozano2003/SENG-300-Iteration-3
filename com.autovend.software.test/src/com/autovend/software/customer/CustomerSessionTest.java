@@ -41,6 +41,7 @@ import com.autovend.ReusableBag;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.test.Setup;
 
@@ -48,6 +49,8 @@ public class CustomerSessionTest {
 	
 	private CustomerSession session;
 	private BarcodedProduct barcodedProduct;
+	private PLUCodedProduct pluCodedProduct;
+	private ReusableBagProduct reusableBagProduct;
 	
 	
 	@Before
@@ -258,13 +261,200 @@ public class CustomerSessionTest {
 			assertEquals(1000, session.getNumberOfFailedPayments());		
 		}
 		
-		
-		
-		
+							
+//TEST TO CHECK IF ITEM HAS BEEN ADDED TO CART	
+	
 		@Test
-		public void addItemToCartTest() {
-			
+		public void addOneItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 1);			
+			assertEquals(1.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addTwoItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 2);			
+			assertEquals(2.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addTenItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 10);			
+			assertEquals(10.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addOneHundredItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 10);			
+			assertEquals(10.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addNinetyNineItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 99);			
+			assertEquals(99.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
+		}
+		@Test
+		public void addOneHundredOneItemToEmptyCartTest() {
+			session.addItemToCart(barcodedProduct, 101);			
+			assertEquals(101.00, session.getShoppingCart().get(barcodedProduct), 0.1);			
 		}
 		
+		@Test
+		public void addOneItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 1);
+			assertEquals(6.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 6 items
+		}
+		@Test
+		public void addTwoItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 2);
+			assertEquals(7.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 7 items
+		}
+		@Test
+		public void addTenItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 10);
+			assertEquals(15.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 15 items
+		}
+		@Test
+		public void addOneHundredItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 100);
+			assertEquals(105.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 105 items
+		}
+		@Test
+		public void addNinetyNineItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 99);
+			assertEquals(104.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 104 items
+		}
+		@Test
+		public void addOneHundredOneItemToNonEmptyCartTest() {
+			//Cart already has 5 items
+			session.addItemToCart(barcodedProduct, 5);	
+			session.addItemToCart(barcodedProduct, 101);
+			assertEquals(106.00, session.getShoppingCart().get(barcodedProduct), 0.1); //Cart should now have 106 items
+		}	
+		
+//TEST TO CHECK IF getAmountLeft() IS CALCULATING PROPERLY
+		
+		@Test
+		public void amountLeftOneTest() {
+			session.addItemToCart(barcodedProduct, 2); //Each product 12 dollars worth		
+			session.addPayment(BigDecimal.valueOf(23)); //Paid 1 dollars less
+			
+			BigDecimal expected = new BigDecimal("1.00");
+			assertEquals(expected, session.getAmountLeft());			
+		}
+		@Test
+		public void amountLeftSixTest() {
+			session.addItemToCart(barcodedProduct, 3); //Each product 12 dollars worth		
+			session.addPayment(BigDecimal.valueOf(30)); //Paid 6 dollars less
+			
+			BigDecimal expected = new BigDecimal("6.00");
+			assertEquals(expected, session.getAmountLeft());			
+		}
+		@Test
+		public void amountLeftTenTest() {
+			session.addItemToCart(barcodedProduct, 5); //Each product 12 dollars worth		
+			session.addPayment(BigDecimal.valueOf(50)); //Paid 10 dollars less
+			
+			BigDecimal expected = new BigDecimal("10.00");
+			assertEquals(expected, session.getAmountLeft());			
+		}
+		@Test
+		public void amountLeftOneHundredTest() {
+			session.addItemToCart(barcodedProduct, 10); //Each product 12 dollars worth		
+			session.addPayment(BigDecimal.valueOf(20)); //Paid 100 dollars less
+			
+			BigDecimal expected = new BigDecimal("100.00");
+			assertEquals(expected, session.getAmountLeft());			
+		}
+		
+//TEST TO CHECK IF TOTAL COST IS CALCULATED CORRECTLY
+		//
+		@Test
+		public void totalCostBeforeAnyPaymentTestOneProduct() {
+			session.addItemToCart(barcodedProduct, 1);
+			BigDecimal expected = new BigDecimal("12.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		@Test
+		public void totalCostBeforeAnyPaymentTestTwoProducts() {
+			session.addItemToCart(barcodedProduct, 2);
+			BigDecimal expected = new BigDecimal("24.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		@Test
+		public void totalCostBeforeAnyPaymentTestTenProducts() {
+			session.addItemToCart(barcodedProduct, 10);
+			BigDecimal expected = new BigDecimal("120.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		@Test
+		public void totalCostBeforeAnyPaymentTestNinetyNineProducts() {
+			session.addItemToCart(barcodedProduct, 99);
+			BigDecimal expected = new BigDecimal("1188.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		@Test
+		public void totalCostBeforeAnyPaymentTestOneHundredProducts() {
+			session.addItemToCart(barcodedProduct, 100);
+			BigDecimal expected = new BigDecimal("1200.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		@Test
+		public void totalCostBeforeAnyPaymentTestOneHundredOneProducts() {
+			session.addItemToCart(barcodedProduct, 101);
+			BigDecimal expected = new BigDecimal("1212.00");
+			
+			assertEquals(expected, session.getTotalCost());			
+		}
+		
+		@Test
+		public void totalCostAfterAnyPaymentTestTwoProduct() {
+			session.addItemToCart(barcodedProduct, 2);
+			BigDecimal expected = new BigDecimal("24.00");
+			
+			session.addPayment(BigDecimal.valueOf(5)); //Paid some amount (not full)
+			assertEquals(expected, session.getTotalCost()); //Total cost shouldn't be updated	
+		}
+		@Test
+		public void totalCostAfterAnyPaymentTestTenProduct() {
+			session.addItemToCart(barcodedProduct, 10);
+			BigDecimal expected = new BigDecimal("120.00");
+			
+			session.addPayment(BigDecimal.valueOf(5)); //Paid some amount (not full)
+			assertEquals(expected, session.getTotalCost()); //Total cost shouldn't be updated	
+		}
+		@Test
+		public void totalCostAfterAnyPaymentTestOneHundredProduct() {
+			session.addItemToCart(barcodedProduct, 100);
+			BigDecimal expected = new BigDecimal("1200.00");
+			
+			session.addPayment(BigDecimal.valueOf(100)); //Paid some amount (not full)
+			assertEquals(expected, session.getTotalCost()); //Total cost shouldn't be updated	
+		}
+		@Test
+		public void totalCostAfterAnyPaymentTestOneHundredOneProduct() {
+			session.addItemToCart(barcodedProduct, 101);
+			BigDecimal expected = new BigDecimal("1212.00");
+			
+			session.addPayment(BigDecimal.valueOf(1000)); //Paid some amount (not full)
+			assertEquals(expected, session.getTotalCost()); //Total cost shouldn't be updated	
+		}			
+		
+//TEST TO
+		
+		
 
-	}
+	
+
+}
