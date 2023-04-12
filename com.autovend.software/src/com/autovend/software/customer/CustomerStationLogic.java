@@ -44,6 +44,10 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 //		view.setVisible(true);
 	}
 
+	public CustomerController getController() {
+		return this.controller;
+	}
+
 	/**
 	 * Run independently from the attendant station.
 	 * 

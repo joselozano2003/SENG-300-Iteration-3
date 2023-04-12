@@ -58,15 +58,6 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 
 	}
 
-	/**
-	 * Method called when customer indicates the number of reusable bags they want
-	 * to purchase
-	 * 
-	 * @param numberOfBags: number of reusable bags customer wants to purchase
-	 * @throws EmptyException: if bag dispenser is out of bags, empty exception is
-	 *                         thrown
-	 */
-
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
 

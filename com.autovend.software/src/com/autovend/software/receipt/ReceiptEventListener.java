@@ -36,14 +36,14 @@ public interface ReceiptEventListener extends AbstractEventListener {
 	 * @param receiptText 
 	 * @param receipt The receipt that was printed.
 	 */
-	public void onReceiptPrintedEvent(StringBuilder receiptText);
+	void onReceiptPrintedEvent(StringBuilder receiptText);
 	/**
 	 * Signals an event in which a receipt failed to finish printing.
 	 */
-	public void onReceiptPrinterFailed();
+	void onReceiptPrinterFailed();
 	
 	/*
 	 * Signals an event in which an attendant has refilled the receipt printer.
 	 */
-	public void onReceiptPrinterFixed();
+	void onReceiptPrinterFixed();
 }
