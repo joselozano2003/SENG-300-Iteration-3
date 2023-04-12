@@ -37,6 +37,7 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		// Initiate station with MVC design.
 		view = new CustomerView();
 
+		controller.register(this);
 	}
 	public CustomerController getController() {
 		return this.controller;
@@ -75,7 +76,10 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		}
 	}
 	
-	public void itemTooHeavyRequest(Product product) {
+	// TODO: Connect to event from GUI
+	// React when the customer requests to remove an item.
+	// Sends request to the attendant
+	public void itemTooHeavyForBaggingAreaRequest(Product product) {
 		for (CustomerStationListener listener : listeners) {
 			listener.reactToItemTooHeavyRequest(product, this);
 		}

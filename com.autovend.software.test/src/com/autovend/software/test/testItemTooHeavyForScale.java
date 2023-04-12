@@ -145,7 +145,6 @@ public class testItemTooHeavyForScale {
 
 		currentSession = customerSessionController.getCurrentSession();
 
-
 		// Add 100 bills to each dispenser
 		for (int i = 0; i < billDenominations.length; i++) {
 			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
@@ -412,7 +411,6 @@ public class testItemTooHeavyForScale {
 
 		
 		attendantController.reactToItemTooHeavyRequest(barcodeProduct, station);
-
 		
 		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
@@ -538,8 +536,6 @@ public class testItemTooHeavyForScale {
 		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
 		assertEquals(0, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 		assertEquals(0, (double) currentSession.getShoppingCart().get(barcodeProduct2), 0.01);
-
-
 	}
 
 }
