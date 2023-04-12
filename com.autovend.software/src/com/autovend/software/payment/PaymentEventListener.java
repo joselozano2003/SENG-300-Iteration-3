@@ -39,26 +39,25 @@ import com.autovend.software.AbstractEventListener;
 public interface PaymentEventListener extends AbstractEventListener {
 	/**
 	 * Signals an event in which valid payment has been entered.
+	 * 
 	 * @param amount The amount added for payment.
 	 */
 	public void onPaymentAddedEvent(BigDecimal amount);
-	
+
 	/**
 	 * Signals an event in which invalid payment has been entered.
-	 * @param 
-	 */	
+	 * 
+	 * @param
+	 */
+
 	public void onPaymentFailure();
-	
+
 	public void onChangeDispensedEvent(BigDecimal amount);
-	
+
 	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
 
 	public void onLowCoins(CoinDispenser dispenser);
-	
+
 	public void onLowBills(BillDispenser dispenser);
 
-	
-	
-	
-	
 }

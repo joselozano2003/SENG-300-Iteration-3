@@ -64,6 +64,8 @@ import com.autovend.software.ui.PLUView;
 import com.autovend.software.ui.PaymentView;
 import com.autovend.software.ui.UIEventListener;
 
+import auth.AttendantAccount;
+
 public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
 		ReceiptEventListener, MembershipListener, UIEventListener {
 
@@ -81,12 +83,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	List<ItemFacade> itemAdditionMethods;
 
 	private CustomerView customerView;
+	
+//  private AttendantController attendantListener;  //
 
 	public enum State {
-
-		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
+		INITIAL, ENTER_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
 		PRINTING_RECEIPT, FINISHED, DISABLED
-
 	}
 
 	private State currentState;
@@ -123,6 +125,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// Register the CustomerController to listen to views
 		customerView.startView.register(this);
 		customerView.checkoutView.register(this);
+		customerView.membershipView.register(this);
 		customerView.paymentView.register(this);
 		customerView.pluView.register(this);
 		customerView.browsingView.register(this);
@@ -132,6 +135,15 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		selfCheckoutStation.screen.getFrame().add(customerView.startView);
 
 	}
+	
+	/*  public void register(AttendantController attendantListener){
+	 * 	  this.attendantListener = attendantListener();
+	 *  }
+	 * 
+	 *  public void register(AttendantController attendantListener){
+	 *    this.attendantListener = null;
+	 *   }
+	 */
 
 	public void setState(State newState) {
 		this.currentState = newState;
@@ -157,7 +169,9 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
-		case SCANNING_MEMBERSHIP:
+		case ENTER_MEMBERSHIP:
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.mainScanner.enable();
 			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
@@ -166,8 +180,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
-			// selfCheckoutStation.handheldScanner.disable();
-			// selfCheckoutStation.mainScanner.disable();
+
 			break;
 		case PAYING:
 			break;
@@ -188,7 +201,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 			break;
 		case FINISHED:
-			// onTransactionFinished();
+			onTransactionFinished();
 			break;
 		case DISABLED:
 			selfCheckoutStation.baggingArea.disable();
@@ -226,10 +239,10 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		try {
 			Thread.sleep(6000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 
 		}
-		updateView(customerView.startView);
+
+		// updateView(customerView.startView);
 
 	}
 
@@ -264,19 +277,21 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.billInput.enable();
 			selfCheckoutStation.coinSlot.enable();
 		}
-
 		currentSession.setPaymentMethod(payment);
-
 	}
 
 	@Override
 	public void onStartAddingOwnBags() {
 		setState(State.ADDING_OWN_BAGS);
+
 	}
 
 	@Override
 	public void onFinishAddingOwnBags() {
 		setState(State.DISABLED);
+		
+		// attendantListener.notifyFinishAddingOwnBagsRequest();
+		
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
@@ -297,23 +312,10 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amountDispensed, int amountLeft) {
-		// notify attendant
-
+		// attendantListener.notifyBagsDispensedFailure();
 	}
 
-	@Override
-	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// comes from the attendant
-		// device.disable();
-
-	}
-
-	@Override
-	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// comes from the attendant
-		// device.enable();
-	}
-
+	
 	@Override
 	public void reactToDisableStationRequest() {
 		// comes from the attendant
@@ -335,17 +337,20 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
-	public void onItemAddedEvent(Product product, double quantity) {
+	public void onAddMembershipNumber() {
+		updateView(customerView.membershipView);
+	}
 
+	@Override
+	public void onItemAddedEvent(Product product, double quantity) {
 		currentSession.addItemToCart(product, quantity);
 		customerView.checkoutView.updateShoppingCart(currentSession);
 		setState(State.CHECKING_WEIGHT);
-
 	}
 
 	@Override
 	public void onItemNotFoundEvent() {
-		// notify attendant
+		// attendantListener.notifyItemNotFound();
 
 	}
 
@@ -358,8 +363,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			customerView.paymentView.updateChangeDue(currentSession.getChangeDue().toString());
 
 			setState(State.DISPENSING_CHANGE);
-		}
-		else {
+		} else {
 			customerView.paymentView.updateAmountDue(currentSession.getAmountLeft().toString());
 
 		}
@@ -369,10 +373,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public void onPaymentFailure() {
 		currentSession.addFailedPayment();
 		if (currentSession.getNumberOfFailedPayments() > 5) {
-			// attendantSupervisor.notifyPaymentFailureEvent(this.controller[station,
-			// currentsession])
+			// attendantListener.notifyMaxPaymentFailuresReached();
 		}
-
 	}
 
 	@Override
@@ -391,21 +393,21 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void onReceiptPrinterFailed() {
+		// attendantListener.notifyReceiptFailure();
+
 		setState(State.DISABLED);
 	}
 
 	@Override
 	public void onChangeDispensedEvent(BigDecimal amount) {
-		
+
 		setState(State.PRINTING_RECEIPT);
 	}
 
 	@Override
-	public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
-		// eventually method to dispense change left (not dispensed) should be called
-		// here, or just tell
-		// the attendant this value
-		// paymentFacade.dispenseChange(totalChangeLeft);
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {		
+		// attendantListener.notifyRemainingChangeLeft(totalChangeLeft);
+
 	}
 
 	@Override
@@ -419,15 +421,72 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 				setState(State.ADDING_ITEMS);
 			} else {
 				setState(State.DISABLED);
-				// notify attendant
+				// attendantListener.notifyWeightDiscrepancy();
 			}
 
 		}
 
 	}
 
+
+
+	@Override
+	public void reactToValidMembershipEntered(String number) {
+		currentSession.addMembershipNumber(number);
+	}
+
+	@Override
+	public void reactToInvalidMembershipEntered() {
+		// attendantListener.notifyInvalidMembershipNumberEntered();
+	}
+
+	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// 
+
+	}
+
+	@Override
+	public void onLowCoins(CoinDispenser dispenser) {
+		// attendantListener.notifyAdjustCoinsForChange(this.customerController, dispenser);
+
+	}
+
+	@Override
+	public void onLowBills(BillDispenser dispenser) {
+		// attendantListener.notifyAdjustCoinsForChange(this.selfCheckoutStation, dispenser);
+	}
+
+	@Override
+	public void onOverride(int stationNumber) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onBagApproval(int stationNumber) {
+		// setState(STATE.ADDING_ITEMS);
+
+	}
+
+	@Override
+	public void onBagRefusal(int stationNumber) {
+		// setState(STATE.DISABLED); <- Should already be disabled (See: Adding Own Bags Use Case)
+
+
+	}
+
+	@Override
+	public void onAttendantLoginAttempt(AttendantAccount account) {
+		// how does this fit??
+	}
+	
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;
+	}
+	
+	public SelfCheckoutStation getStation() {
+		return this.selfCheckoutStation;
 	}
 
 	public CustomerView getCurrentView() {
@@ -436,35 +495,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	public State getCurrentState() {
 		return this.currentState;
-	}
-
-	@Override
-	public void reactToValidMembershipEntered(String number) {
-		currentSession.addMembershipNumber(number);
-
-	}
-
-	@Override
-	public void reactToInvalidMembershipEntered() {
-
-	}
-
-	@Override
-	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onLowCoins(CoinDispenser dispenser) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onLowBills(BillDispenser dispenser) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

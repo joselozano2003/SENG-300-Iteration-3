@@ -40,6 +40,12 @@ public class PaymentView extends JPanel {
 		receipt.setBounds(20, 20, 600, 600);
 		receipt.setBackground(new Color(142, 185, 151));
 		add(receipt);
+		
+		paymentMethodLabel = new JLabel("Payment Method:");
+		paymentMethodLabel.setForeground(new Color(137, 221, 255));
+		paymentMethodLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		paymentMethodLabel.setBounds(20, 700, 400, 400);
+		add(paymentMethodLabel);
 
 		JLabel amountDueLabel = new JLabel("Amount Due: ");
 		amountDueLabel.setForeground(new Color(137, 221, 255));
@@ -177,6 +183,7 @@ public class PaymentView extends JPanel {
 
 	public void notifyPaymentMethod(String paymentMethod) {
 		for (UIEventListener listener : observers) {
+			paymentMethodLabel.setText("Method Chosen: " + paymentMethod );
 			listener.onSelectPaymentMethod(paymentMethod);
 		}
 

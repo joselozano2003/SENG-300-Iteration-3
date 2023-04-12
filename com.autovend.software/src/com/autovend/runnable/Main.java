@@ -36,14 +36,14 @@ public class Main {
 		// Create 1 product
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
 		Barcode barcode = new Barcode(code1);
-		BarcodedProduct barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
+		BarcodedProduct barcodeProduct = new BarcodedProduct(barcode, "batteries", new BigDecimal("1.00"), 10);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
 		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
 
 		// Create another product
 		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
 		Barcode barcode2 = new Barcode(code2);
-		BarcodedProduct barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
+		BarcodedProduct barcodeProduct2 = new BarcodedProduct(barcode2, "gum", new BigDecimal("2.50"), 15);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
 		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
 
@@ -66,11 +66,26 @@ public class Main {
 		PriceLookUpCode pluCode4 = new PriceLookUpCode(code6);
 		PLUCodedProduct pluProduct4 = new PLUCodedProduct(pluCode4, "kiwis", new BigDecimal("3.00"));
 		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode4, pluProduct4);
+		
+		Numeral[] code7 = { Numeral.four, Numeral.four, Numeral.four, Numeral.four };
+		PriceLookUpCode pluCode5 = new PriceLookUpCode(code7);
+		PLUCodedProduct pluProduct5 = new PLUCodedProduct(pluCode5, "pears", new BigDecimal("1.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode5, pluProduct5);
+		
+		Numeral[] code8 = { Numeral.five, Numeral.five, Numeral.five, Numeral.five};
+		PriceLookUpCode pluCode6 = new PriceLookUpCode(code8);
+		PLUCodedProduct pluProduct6 = new PLUCodedProduct(pluCode6, "oranges", new BigDecimal("1.25"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode6, pluProduct6);
+		
 
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct2);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct3);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct4);
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct5);
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct6);
+
+		
 
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
 		BigDecimal[] coinDenoms = { new BigDecimal("0.05"), new BigDecimal("0.10"), new BigDecimal("0.25"),
@@ -117,21 +132,46 @@ public class Main {
 		CustomerView customerView = new CustomerView();
 
 		CustomerController customerController = new CustomerController(station, dispenser, customerView);
+		Thread.sleep(3000);
 
+		customerView.startView.notifyAddMembershipButtonPressed();
+
+		Thread.sleep(3000);
+		customerView.membershipView.getInputField().setText("101010101");
+		customerView.membershipView.notifyMembershipNumberEntered("101010101");
+		customerView.membershipView.notifyGoBackToCheckout();
+
+		
+		
 		Thread.sleep(4000);
 		customerView.startView.notifyStartButtonPressed();
-		;
+		Thread.sleep(4000);
+
+		
 		Thread.sleep(6000);
-		station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean scan1 = false;
+		while(!scan1) {
+			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		Thread.sleep(2000);
 
-		station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		scan1 = false;  
+		while(scan1 == false) {
+		scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
+		
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		
+		
 		Thread.sleep(2000);
 
-		station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		scan1 = false;
+		while(scan1 == false) {
+			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		}
+		
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		Thread.sleep(4000);
@@ -161,6 +201,7 @@ public class Main {
 
 		PriceLookUpCodedUnit pluUnit2 = new PriceLookUpCodedUnit(pluCode4, 10);
 		station.scale.add(pluUnit2);
+		//
 		Thread.sleep(2000);
 		station.scale.remove(pluUnit2);
 		Thread.sleep(3000);

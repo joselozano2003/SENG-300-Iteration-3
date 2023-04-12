@@ -43,6 +43,8 @@ public class CustomerView {
 	public CheckoutView checkoutView;
 	public PaymentView paymentView;
 	public AddItemByBrowsingView browsingView;
+	public MembershipView membershipView;
+
 	
 	public CustomerView() {
 		this.pluView = new PLUView();
@@ -50,6 +52,8 @@ public class CustomerView {
 		this.checkoutView = new CheckoutView();
 		this.paymentView = new PaymentView();
 		this.browsingView = new AddItemByBrowsingView();
+		this.membershipView = new MembershipView();
+		
 	}
 	
 	

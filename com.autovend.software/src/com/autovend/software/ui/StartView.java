@@ -10,6 +10,7 @@ import java.util.List;
 
 public class StartView extends JPanel {
     private JButton startButton;
+    private JButton addMembershipNumberButton;
     private List<UIEventListener> observers;
     
     /**
@@ -39,12 +40,28 @@ public class StartView extends JPanel {
             }
         });
         add(startButton);
+        
+        addMembershipNumberButton = new JButton("Add Membership Number");
+        addMembershipNumberButton.setOpaque(true);
+        addMembershipNumberButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        addMembershipNumberButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        addMembershipNumberButton.setBackground(new Color(255, 203, 107));
+        addMembershipNumberButton.setBounds(500, 425, 280, 70);
+        addMembershipNumberButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notifyAddMembershipButtonPressed();
+            }
+        });
+        add(addMembershipNumberButton);
 
         JLabel title = new JLabel("Welcome");
         title.setFont(new Font("Lucida Grande", Font.BOLD, 60));
         title.setForeground(new Color(255, 255, 255));
         title.setBounds(570, 20, 656, 72);
         add(title);
+        
+        
     }
 
     /**
@@ -65,6 +82,12 @@ public class StartView extends JPanel {
     public void notifyStartButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onStartAddingItems();
+        }
+    }
+    
+    public void notifyAddMembershipButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onAddMembershipNumber();
         }
     }
 }

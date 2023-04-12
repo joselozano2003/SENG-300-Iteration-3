@@ -43,7 +43,7 @@ import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUViewObserver;
 
 @SuppressWarnings("serial")
-public class ByBrowsing extends ItemFacade implements BrowsingViewObserver, ElectronicScaleObserver  {
+public class ByBrowsing extends ItemFacade implements BrowsingViewObserver, ElectronicScaleObserver {
 	private Product currentSelectedProduct;
 
 	protected ByBrowsing(SelfCheckoutStation station, CustomerView customerView) {
@@ -51,52 +51,51 @@ public class ByBrowsing extends ItemFacade implements BrowsingViewObserver, Elec
 		station.scale.register(this);
 		customerView.browsingView.addObserver(this);
 	}
-	
+
 	/**
-	 * Method is called when the customer gui detects a customer selecting an item from the visual catalogue
+	 * Method is called when the customer gui detects a customer selecting an item
+	 * from the visual catalogue
 	 * 
-	 * @param product: product the customer selected from the visual catalogue 
+	 * @param product: product the customer selected from the visual catalogue
 	 */
-	
+
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
-		if (weightInGrams > 0 && currentSelectedProduct!= null)
+		if (weightInGrams > 0 && currentSelectedProduct != null)
 			for (ItemEventListener listener : listeners)
 				listener.onItemAddedEvent(currentSelectedProduct, weightInGrams);
-				this.currentSelectedProduct = null;
-		
+		this.currentSelectedProduct = null;
+
 	}
 
 	@Override
 	public void reactToOverloadEvent(ElectronicScale scale) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void reactToProductSelected(Product product) {
 		this.currentSelectedProduct = product;
-		
+
 	}
-	
-	
+
 }

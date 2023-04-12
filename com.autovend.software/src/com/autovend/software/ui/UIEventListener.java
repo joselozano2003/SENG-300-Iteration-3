@@ -23,6 +23,8 @@ public interface UIEventListener {
 	
 	public void onFinishAddingOwnBags();
 	
+	public void onAddMembershipNumber();
+
 	public void onPurchaseBags(int amount);
 
 	public void goBackToCheckout();

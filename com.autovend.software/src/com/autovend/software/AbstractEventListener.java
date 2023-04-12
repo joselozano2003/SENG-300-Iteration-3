@@ -40,23 +40,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
  */
 public interface AbstractEventListener {
 	/**
-	 * Announces that the indicated software failed to complete due to a hardware failure.
-	 */
-	/**
-	 * Announces that a device should be disabled.
-	 * 
-	 * @param device
-	 *            The device to disable.
-	 */
-	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device);
-	/**
-	 * Announces that a device should be enabled.
-	 * 
-	 * @param device
-	 *            The device to enable.
-	 */
-	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device);
-	/**
+	 *
 	 * Announces that the entire station should be disabled.
 	 */
 	public void reactToDisableStationRequest();
