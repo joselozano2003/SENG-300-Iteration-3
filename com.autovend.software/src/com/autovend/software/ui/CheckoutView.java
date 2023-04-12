@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class CheckoutView extends JPanel {
 
-	private List<UIEventListener> observers;
+	private List<CustomerUIEventListener> observers;
 
 	// Declare the shopping cart table and its model
 	private JTable shoppingCartTable;
@@ -163,7 +163,7 @@ public class CheckoutView extends JPanel {
      * @param listener the UIEventListener to be added to the list of observers
      */
     
-    public void register(UIEventListener listener) {
+    public void register(CustomerUIEventListener listener) {
         observers.add(listener);
     }
 
@@ -173,7 +173,7 @@ public class CheckoutView extends JPanel {
      */
     
     private void notifyStartAddOwnBagsButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onStartAddingOwnBags();
         }
     }
@@ -184,7 +184,7 @@ public class CheckoutView extends JPanel {
      */
     
     private void notifyStopAddOwnBagsButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onFinishAddingOwnBags();
         }
     }
@@ -196,7 +196,7 @@ public class CheckoutView extends JPanel {
      */
 
     public void notifyPurchaseBagsButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onPurchaseBags(1);
         }
     }
@@ -207,7 +207,7 @@ public class CheckoutView extends JPanel {
      */
 
     public void notifyAddItemByPLUButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onSelectAddItemByPLU();
         }
     }
@@ -218,7 +218,7 @@ public class CheckoutView extends JPanel {
      */
     
     public void notifyAddItemByBrowsingButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onSelectAddItemByBrowsing();
         }
     }
@@ -229,7 +229,7 @@ public class CheckoutView extends JPanel {
      */
     
     public void notifyStartPayingButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onStartPaying();
         }
     }

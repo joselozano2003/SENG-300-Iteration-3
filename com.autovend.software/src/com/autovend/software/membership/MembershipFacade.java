@@ -54,7 +54,7 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		
 	}
 	
-	private class InnerListener implements BarcodeScannerObserver, CardReaderObserver {
+	protected class InnerListener implements BarcodeScannerObserver, CardReaderObserver {
 		@Override
 		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 		@Override
