@@ -29,6 +29,7 @@
 package com.autovend.software.payment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
@@ -44,6 +45,7 @@ import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.payment.PayWithBillTest.PaymentEventListenerStub;
 import com.autovend.software.test.Setup;
@@ -53,13 +55,18 @@ public class PayWithCoinTest {
 	private SelfCheckoutStation station;
 	private PayWithCoin payWithCoin;
 	private BigDecimal paymentCounter = BigDecimal.valueOf(0);
+	private boolean lowCoins;
+	private CustomerView cview;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		payWithCoin = new PayWithCoin(station, new CustomerView());
+		cview = new CustomerView();
+		PaymentFacade facade = new PaymentFacade(station, false, cview);
+		payWithCoin = (PayWithCoin) facade.getChildren().get(0); // Coin child always added 2nd
 		paymentCounter = BigDecimal.valueOf(0);
+		lowCoins = false;
 	}
 	
 	@Test (expected = NullPointerException.class)
@@ -71,14 +78,6 @@ public class PayWithCoinTest {
 	public void testContructorNullView() {
 		new PayWithCoin(station, null);
 	}
-	
-	/**
-	 * Things To Test
-	 * 	- CoinValidator reactions
-	 * 		- reactToEnabled/DisabledEvents (expect nothing)
-	 * 		- reactToValidCoinDetectedEvent (expect an onPaymentAddedEvent)
-	 * 		- reactToInvalidCoinDetectedEvent (expect no listener event)
-	 */
 
 	/**
 	 * Pass in a valid coin expecting payment equal to the coin's value to be added.
@@ -113,6 +112,52 @@ public class PayWithCoinTest {
 		assertEquals(BigDecimal.valueOf(0), paymentCounter);
 	}
 	
+	/**
+	 * Test that a low coins event is triggered when the number of coins in the dispenser is low enough.
+	 */
+	@Test
+	public void testLowCoins() {
+		payWithCoin.register(new PaymentEventListenerStub());
+		payWithCoin.addAmountDue(BigDecimal.valueOf(500));
+		// add specifically 10 $1 coins for testing
+		CoinDispenser dispenser = station.coinDispensers.get(station.coinDenominations.get(3));
+		for (int j = 0; j < 10; j++) {
+			try {
+				Coin coin = new Coin(station.coinDenominations.get(3), Setup.getCurrency());
+				dispenser.load(coin);
+			} catch (SimulationException | OverloadException e) {
+			}
+		}
+		payWithCoin.dispenseChange(BigDecimal.valueOf(10));
+		assertTrue(lowCoins);
+	}
+	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvent() {
+		Coin testCoin = new Coin(BigDecimal.valueOf(0.05), Setup.getCurrency());
+		payWithCoin.register(new PaymentEventListenerStub());
+		//Will fail if any listener event is entered.
+		payWithCoin.reactToEnabledEvent(station.coinValidator);
+		payWithCoin.reactToDisabledEvent(station.coinValidator);
+		payWithCoin.reactToInvalidCoinDetectedEvent(station.coinValidator);
+		for (BigDecimal key : station.coinDispensers.keySet()) {
+			payWithCoin.reactToCoinsFullEvent(station.coinDispensers.get(key));
+			payWithCoin.reactToCoinsEmptyEvent(station.coinDispensers.get(key));
+			payWithCoin.reactToCoinAddedEvent(station.coinDispensers.get(key), testCoin);
+			payWithCoin.reactToCoinsLoadedEvent(station.coinDispensers.get(key), testCoin);
+			payWithCoin.reactToCoinsUnloadedEvent(station.coinDispensers.get(key), testCoin);
+			payWithCoin.reactToCoinRemovedEvent(station.coinDispensers.get(key), testCoin);
+		}
+		payWithCoin.reactToCoinsFullEvent(station.coinStorage);
+		payWithCoin.reactToCoinsLoadedEvent(station.coinStorage);
+		payWithCoin.reactToCoinsUnloadedEvent(station.coinStorage);
+		payWithCoin.reactToCoinAddedEvent(station.coinStorage);
+		
+	}
+	
 	/*--------------- STUBS ---------------*/
 	
 	/**Stubs primarily check if/how many times observer events occurred.
@@ -131,11 +176,13 @@ public class PayWithCoinTest {
 		@Override
 		public void onPaymentFailure() {fail();}
 		@Override
-		public void onChangeDispensedEvent(BigDecimal amount) {fail();}
+		public void onChangeDispensedEvent(BigDecimal amount) {}
 		@Override
-		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {fail();}
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {}
 		@Override
-		public void onLowCoins(CoinDispenser dispenser) {fail();}
+		public void onLowCoins(CoinDispenser dispenser) {
+			lowCoins = true;
+		}
 		@Override
 		public void onLowBills(BillDispenser dispenser) {fail();}
 		@Override

@@ -84,18 +84,7 @@ public class PaymentFacadeTest {
 		changeDispensedCounter = false;
 	}
 	
-	/**
-	 * Things to Test:
-	 * TODO ? - Constructor when it is/isn't a child
-	 * 		- Try making children for a facade, and getting instance/child
-	 * X - Make use of amountDue methods, getters
-	 * - Dispense change
-	 * 		X - Try dispensing 0 change/negative change
-	 * 		X - Try dispensing a large amount of change (requiring a mix of bills and coins)
-	 * 		- Try when device(s) disabled/enabled (make use of enum/states)
-	 * 		TODO ? - Edge case -> Change due is less than smallest coin denomination
-	 * 			X - Register a PaymentEventListener observer stub
-	 */
+
 	
 	/**
 	 * Test constructor with a null station input.
