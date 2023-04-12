@@ -93,6 +93,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	
 	private static int NUMBER_OF_STATIONS = 0;
 	private int customerStationNumber;
+	private State stateSave;
 	
 //  private AttendantController attendantListener;  //
 
@@ -351,7 +352,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onFinishAddingOwnBags() {
-		setState(State.DISABLED);
+		onStationLock(customerStationNumber);
 		
 		// attendantListener.notifyFinishAddingOwnBagsRequest();
 		
@@ -458,7 +459,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	public void onReceiptPrinterFailed() {
 		// attendantListener.notifyReceiptFailure();
 
-		setState(State.DISABLED);
+		onStationLock(customerStationNumber);
 	}
 
 	@Override
@@ -483,7 +484,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			if (expectedWeightEqualsActual) {
 				setState(State.ADDING_ITEMS);
 			} else {
-				setState(State.DISABLED);
+				onStationLock(customerStationNumber);
 				// attendantListener.notifyWeightDiscrepancy();
 			}
 
@@ -532,8 +533,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onOverride(int stationNumber) {
-		// TODO Auto-generated method stub
-
+		setState(stateSave);
 	}
 
 	@Override
@@ -558,12 +558,20 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onStationLock(int value) {
-		// how does this fit??
+		if (customerStationNumber == getCustomerStationNumber()) {
+			stateSave = getCurrentState();
+			setState(State.DISABLED);
+		}
 	}
 
 	@Override
 	public void onStationUnlock(int value) {
-		// how does this fit??
+		if (customerStationNumber == getCustomerStationNumber()) {
+			if (getCurrentState() == State.DISABLED) {
+				setState(stateSave);
+			}
+
+		}
 	}
 
 	@Override
@@ -629,14 +637,14 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		int paperLevel = paperAdded - paperUsed;
 
 		if (inkLevel < ALERT_THRESHOLD) {
-			setState(State.DISABLED);
+			onStationLock(customerStationNumber);
 			for (CustomerControllerListener listener : listeners) {
 				listener.reactToLowInkAlert();
 			}
 		}
 
 		if (paperLevel < ALERT_THRESHOLD){
-			setState(State.DISABLED);
+			onStationLock(customerStationNumber);
 			for (CustomerControllerListener listener : listeners) {
 				listener.reactToLowPaperAlert();
 			}
