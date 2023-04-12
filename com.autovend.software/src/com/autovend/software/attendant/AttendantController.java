@@ -44,9 +44,6 @@ import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
 
-public class AttendantController {
-import auth.AttendantAccount;
-import auth.AuthFacade;
 import com.autovend.software.item.ProductsDatabase2;
 
 public class AttendantController implements CustomerStationListener {

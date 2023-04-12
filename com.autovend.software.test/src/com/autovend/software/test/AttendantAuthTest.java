@@ -18,8 +18,6 @@ import com.autovend.software.attendant.auth.AttendantAccount;
 import com.autovend.software.attendant.auth.AttendantAccountDatabases;
 import com.autovend.software.customer.CustomerStationLogic;
 
-import auth.AttendantAccount;
-import auth.AttendantAccountDatabases;
 
 /**
  * JUNIT test for AttendantAuth
