@@ -75,7 +75,7 @@ public class StationStatusView extends JPanel {
 			// When button is pressed, override weight discrepancy and continue checkout.
 			
 			// REACT TO OVERRIDE EVENT
-			//for (UIEventListener listener : listeners) listener.reactToOverrideEvent();
+			for (UIEventListener listener : listeners) listener.onOverride(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
@@ -98,7 +98,7 @@ public class StationStatusView extends JPanel {
 			// Approve bags...
 			
 			// REACT TO BAG APPROVAL EVENT
-			//for (UIEventListener listener : listeners) listener.reactToBagApprovalEvent();
+			for (UIEventListener listener : listeners) listener.onBagApproval(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
@@ -121,7 +121,7 @@ public class StationStatusView extends JPanel {
 			// Approve bags...
 			
 			// REACT TO BAG REFUSAL EVENT
-			// for (UIEventListener listener : listeners) listener.reactToBagRefusalEvent()
+			for (UIEventListener listener : listeners) listener.onBagRefusal(station_number);
 			
 			// Set back to normal on interface.
 			deregisterButtonListeners(station_number);
