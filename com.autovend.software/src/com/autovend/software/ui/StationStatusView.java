@@ -5,11 +5,30 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 
 import javax.swing.*;
 
+import com.autovend.Barcode;
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
+import com.autovend.ReusableBag;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
+import com.autovend.devices.OverloadException;
+import com.autovend.devices.ReusableBagDispenser;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.item.ProductsDatabase2;
 
 import auth.AttendantAccount;
 
@@ -35,11 +54,11 @@ public class StationStatusView extends JPanel {
 	JButton logOutButton;
 	GridLayout gLayout;
 
-	private List<UIEventListener> observers;
+	private List<AttendantUIEventListener> observers;
 
-	List<UIEventListener> listeners;
+	List<AttendantUIEventListener> listeners;
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws OverloadException {
 		JFrame testFrame = new JFrame();
 		StationStatusView ssv = new StationStatusView(10);
 		testFrame.add(ssv);
@@ -51,7 +70,7 @@ public class StationStatusView extends JPanel {
 
 	// Display attendant interface.
 	// Number of stations is preset when AttendantView is constructed. Should incorporate option to change language.
-	public StationStatusView(int num_stations) {
+	public StationStatusView(int num_stations) throws OverloadException {
 		this.num_stations = num_stations;
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		attendantPanel = new JPanel();
@@ -141,7 +160,10 @@ public class StationStatusView extends JPanel {
 			attendantPanel.add(shutdownStationButtons[i]);
 			mainPanel.add(logOutButton);
 
+			
 
+			
+			
 		}
 
 
@@ -152,55 +174,55 @@ public class StationStatusView extends JPanel {
 	//////////////////////
 
 
-	public void register(UIEventListener listener) {
+	public void register(AttendantUIEventListener listener) {
 		observers.add(listener);
 	}
 
 	public void notifyRemoveItemButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationRemoveItemPressed(stationNum);
 		}
 	}
 
 	public void notifyOverrideButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onOverride(stationNum);
 		}
 	}
 
 	public void notifyItemByTextButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationAddByTextPressed(stationNum);
 		}
 	}
 
 	public void notifyShutdownButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationShutdown(stationNum);
 		}
 	}
 
 	public void notifyStationTurnonButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationTurnon(stationNum);
 		}
 	}
 
 	public void notifyLockButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationLock(stationNum);
 		}
 	}
 
 	public void notifyEnableButtonPressed(int stationNum) {
 		if (observers == null) return;
-		for (UIEventListener listener : observers) {
+		for (AttendantUIEventListener listener : observers) {
 			listener.onStationUnlock(stationNum);
 		}
 	}

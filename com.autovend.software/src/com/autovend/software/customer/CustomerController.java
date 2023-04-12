@@ -60,15 +60,15 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerUIEventListener;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
 import com.autovend.software.ui.PaymentView;
-import com.autovend.software.ui.UIEventListener;
 
 import auth.AttendantAccount;
 
 public class CustomerController extends AbstractFacade<CustomerControllerListener> implements BaggingEventListener, ItemEventListener, PaymentEventListener,
-		ReceiptEventListener, MembershipListener, UIEventListener {
+		ReceiptEventListener, MembershipListener, CustomerUIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -90,10 +90,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	final int ALERT_THRESHOLD = 10;
 
 	private CustomerView customerView;
-	
-	private static int NUMBER_OF_STATIONS = 0;
-	private int customerStationNumber;
-	private State stateSave;
+	public State stateSave;
 	
 //  private AttendantController attendantListener;  //
 
@@ -110,9 +107,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
-		this.setCustomerStationNumber(NUMBER_OF_STATIONS);
-		
-		NUMBER_OF_STATIONS++;
 		
 		this.currentSession = new CustomerSession();
 
@@ -171,6 +165,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	 */
 
 	public void setState(State newState) {
+		this.stateSave = currentState;
 		this.currentState = newState;
 
 		switch (newState) {
@@ -352,7 +347,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onFinishAddingOwnBags() {
-		onStationLock(customerStationNumber);
+		setState(State.DISABLED);
 		
 		// attendantListener.notifyFinishAddingOwnBagsRequest();
 		
@@ -459,7 +454,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	public void onReceiptPrinterFailed() {
 		// attendantListener.notifyReceiptFailure();
 
-		onStationLock(customerStationNumber);
+		setState(State.DISABLED);
 	}
 
 	@Override
@@ -484,7 +479,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			if (expectedWeightEqualsActual) {
 				setState(State.ADDING_ITEMS);
 			} else {
-				onStationLock(customerStationNumber);
+				setState(State.DISABLED);
 				// attendantListener.notifyWeightDiscrepancy();
 			}
 
@@ -532,11 +527,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	@Override
-	public void onOverride(int stationNumber) {
-		setState(stateSave);
-	}
-
-	@Override
 	public void onBagApproval(int stationNumber) {
 		// setState(STATE.ADDING_ITEMS);
 	}
@@ -544,54 +534,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	@Override
 	public void onBagRefusal(int stationNumber) {
 		// setState(STATE.DISABLED); <- Should already be disabled (See: Adding Own Bags Use Case)
-	}
-
-	@Override
-	public void onAttendantLoginAttempt(AttendantAccount account) {
-		// how does this fit??
-	}
-
-	@Override
-	public void onStationLogout() {
-		// how does this fit??
-	}
-
-	@Override
-	public void onStationLock(int value) {
-		if (customerStationNumber == getCustomerStationNumber()) {
-			stateSave = getCurrentState();
-			setState(State.DISABLED);
-		}
-	}
-
-	@Override
-	public void onStationUnlock(int value) {
-		if (customerStationNumber == getCustomerStationNumber()) {
-			if (getCurrentState() == State.DISABLED) {
-				setState(stateSave);
-			}
-
-		}
-	}
-
-	@Override
-	public void onStationShutdown(int value) {
-		// how does this fit??
-	}
-
-	@Override
-	public void onStationTurnon(int value) {
-		// how does this fit??
-	}
-
-	@Override
-	public void onStationAddByTextPressed(int value) {
-		// how does this fit??
-	}
-
-	@Override
-	public void onStationRemoveItemPressed(int value) {
-		// how does this fit??
 	}
 	
 	public CustomerSession getCurrentSession() {
@@ -637,26 +579,18 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		int paperLevel = paperAdded - paperUsed;
 
 		if (inkLevel < ALERT_THRESHOLD) {
-			onStationLock(customerStationNumber);
+			setState(State.DISABLED);
 			for (CustomerControllerListener listener : listeners) {
 				listener.reactToLowInkAlert();
 			}
 		}
 
 		if (paperLevel < ALERT_THRESHOLD){
-			onStationLock(customerStationNumber);
+			setState(State.DISABLED);
 			for (CustomerControllerListener listener : listeners) {
 				listener.reactToLowPaperAlert();
 			}
 		}
-	}
-
-	public int getCustomerStationNumber() {
-		return customerStationNumber;
-	}
-
-	public void setCustomerStationNumber(int customerStationNumber) {
-		this.customerStationNumber = customerStationNumber;
 	}
 
 }

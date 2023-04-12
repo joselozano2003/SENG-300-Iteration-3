@@ -18,7 +18,7 @@ public class MembershipView extends JPanel {
 	private JButton backButton;
 
 	private List<MembershipViewObserver> observers;
-	private List<UIEventListener> listeners;
+	private List<CustomerUIEventListener> listeners;
 
 	public MembershipView() {
 		observers = new ArrayList<>();
@@ -77,7 +77,7 @@ public class MembershipView extends JPanel {
 	}
 
 	public void notifyGoBackToCheckout() {
-		for (UIEventListener listener : listeners) {
+		for (CustomerUIEventListener listener : listeners) {
 			listener.goBackToCheckout();
 		}
 	}
@@ -102,7 +102,7 @@ public class MembershipView extends JPanel {
 		return this.backButton;
 	}
 
-	public void register(UIEventListener listener) {
+	public void register(CustomerUIEventListener listener) {
 		listeners.add(listener);
 	}
 

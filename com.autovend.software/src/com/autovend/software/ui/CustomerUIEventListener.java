@@ -8,7 +8,7 @@ import auth.AttendantAccount;
  * should provide an implementation for each of the defined methods.
  */
 
-public interface UIEventListener {
+public interface CustomerUIEventListener {
 
 	
 	public void onStartAddingItems();
@@ -30,27 +30,9 @@ public interface UIEventListener {
 	public void goBackToCheckout();
 
 	public void onSelectPaymentMethod(String payment);
-
-	public void onOverride(int stationNumber);
 	
 	public void onBagApproval(int stationNumber);
 
 	public void onBagRefusal(int stationNumber);
-	
-	public void onAttendantLoginAttempt(AttendantAccount account);
-	
-	public void onStationShutdown(int stationNumber);
-	
-	public void onStationTurnon(int stationNumber);
-	
-	public void onStationLock(int stationNumber);
-	
-	public void onStationUnlock(int stationNumber);
-	
-	public void onStationLogout();
-	
-	public void onStationAddByTextPressed(int stationNumber);
-	
-	public void onStationRemoveItemPressed(int stationNumber);
 
 }

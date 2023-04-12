@@ -42,20 +42,22 @@ import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationListener;
 import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.item.ItemFacade;
 
 import auth.AttendantAccount;
 import auth.AuthFacade;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.ui.AttendantUIEventListener;
 
-public class AttendantController implements CustomerStationListener{
+public class AttendantController implements CustomerStationListener, AttendantUIEventListener{
 
 	private static ArrayList<CustomerStationLogic> customerStations;
 	private AttendantModel model;
 	private AuthFacade auth;
 	private ArrayList<HashMap<Product, Double>> removedProductsRequest;
 
-	public AttendantController(SupervisionStation supervisionStation ) {
+	public AttendantController(SupervisionStation supervisionStation) {
 		this.auth = new AuthFacade();
 		customerStations = new ArrayList<CustomerStationLogic>();
 		removedProductsRequest = new ArrayList<HashMap<Product, Double>>();
@@ -133,26 +135,6 @@ public class AttendantController implements CustomerStationListener{
 		return customerStations;
 	}
 
-	public void shutDownStation(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
-	}
-
-	public void startUpStation(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.STARTUP);
-	}
-
-	public void permitStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
-	}
-
-	public void denyStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
-	}
-
-	public void reEnableStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.ADDING_ITEMS);
-	}
-
 	public void adjustBills(int stationNumber, int bills, int amountToAdd) throws OverloadException {
 		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
 		BillDispenser dispenser = station.billDispensers.get(bills);
@@ -199,5 +181,61 @@ public class AttendantController implements CustomerStationListener{
 	public void lowPaperAlert(CustomerStationLogic stationLogic) {
 		int stationNumber = customerStations.indexOf(stationLogic);
 		//TODO: Show to attendant view the station number that needs paper
+	}
+
+	@Override
+	public void onOverride(int stationNumber) {
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(customerController.stateSave);
+	}
+
+	@Override
+	public void onStationShutdown(int stationNumber) {
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(State.SHUTDOWN);
+		
+	}
+
+	@Override
+	public void onStationTurnon(int stationNumber) {
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(State.STARTUP);
+		
+	}
+
+	@Override
+	public void onStationLock(int stationNumber) {
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(State.DISABLED);
+	}
+
+	@Override
+	public void onStationUnlock(int stationNumber) {
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		
+		if (customerController.getCurrentState() == State.DISABLED) {
+			customerController.setState(customerController.stateSave);
+		}
+	}
+
+	@Override
+	public void onAttendantLoginAttempt(AttendantAccount account) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStationLogout() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onStationAddByTextPressed(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationRemoveItemPressed(int value) {
+		// how does this fit??
 	}
 }

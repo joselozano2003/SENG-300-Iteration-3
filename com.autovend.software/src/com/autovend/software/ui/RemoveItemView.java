@@ -34,7 +34,7 @@ import com.autovend.products.Product;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.customer.CustomerSession;
-import com.autovend.software.ui.UIEventListener;
+import com.autovend.software.ui.CustomerUIEventListener;
 import com.autovend.software.ui.BrowsingViewObserver;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.attendant.AttendantController;
@@ -49,7 +49,7 @@ public class RemoveItemView extends JPanel {
     static int MAX_ITEMS = 20;
 
     private List<BrowsingViewObserver> observers;
-    private List<UIEventListener> listeners;
+    private List<CustomerUIEventListener> listeners;
 
     private AttendantController attendController;
 
