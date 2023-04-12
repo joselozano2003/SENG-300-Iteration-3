@@ -256,10 +256,6 @@ public class MembershipFacadeTest {
 	 */
 	class ListenerStub implements MembershipListener {
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
 		public void reactToEnableStationRequest() {fail();}

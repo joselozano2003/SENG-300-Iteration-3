@@ -76,9 +76,9 @@ public class BaggingFacadeTest {
 	public void testDispenseBagsNegative() {
 		baggingFacade.register(new ListenerStub() {
 			@Override
-			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
+			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount, int amountDispensed) {
 				found++;
-				assertEquals(0, amount);
+				assertEquals(0, amountDispensed);
 			}
 		});
 		baggingFacade.dispenseBags(-1);
@@ -93,9 +93,9 @@ public class BaggingFacadeTest {
 	public void testEventDispenseZeroBagsFail() {
 		baggingFacade.register(new ListenerStub() {
 			@Override
-			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
+			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount, int amountDispensed) {
 				found++;
-				assertEquals(0, amount);
+				assertEquals(0, amountDispensed);
 			}
 		});
 		baggingFacade.dispenseBags(1);
@@ -150,9 +150,9 @@ public class BaggingFacadeTest {
 		loadBags(amountToDispense - 1);
 		baggingFacade.register(new ListenerStub() {
 			@Override
-			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
+			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount, int amountDispensed) {
 				found++;
-				assertEquals(amountToDispense-1, amount);
+				assertEquals(amountToDispense-1, amountDispensed);
 			}
 		});
 		baggingFacade.dispenseBags(amountToDispense);
@@ -203,6 +203,17 @@ public class BaggingFacadeTest {
 	}
 	
 	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvents() {
+		baggingFacade.register(new ListenerStub());
+		baggingFacade.reactToDisabledEvent(bagDispenser);
+		baggingFacade.reactToEnabledEvent(bagDispenser);
+		baggingFacade.reactToOutOfOverloadEvent(station.baggingArea);
+	}
+	
+	/**
 	 * Load bags into the bagDispenser.
 	 * @param amount The amount of bags to load.
 	 */
@@ -221,10 +232,6 @@ public class BaggingFacadeTest {
 	 */
 	class ListenerStub implements BaggingEventListener {
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
 		public void reactToEnableStationRequest() {fail();}
@@ -233,7 +240,7 @@ public class BaggingFacadeTest {
 		@Override
 		public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {fail();}
 		@Override
-		public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {fail();}
+		public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount, int amountDispensed) {fail();}
 	}
 
 }
