@@ -72,35 +72,66 @@ public class CustomerControllerTest {
 	
 	
 	//Adding empty test methods.
-	
-	@Test
-    public void testInitialState() {
-        assertEquals(State.INITIAL, controller.getCurrentState());
-    }
-
+		
 //    @Test
 //    public void testStartNewSession() {
 //        controller.startNewSession();
 //        assertEquals(State.INITIAL, controller.getCurrentState());
 //    }
 //
-    @Test
-    public void testStartAddingOwnBags() {
-    	controller.onStartAddingOwnBags();
-        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
-    }
     
     @Test
     public void testFinishAddingOwnBags() {
     	
     }
     
+
+/////////////////////// Test for setting inital state
     @Test
-    public void testStartAddingItems() {
-		 controller.onStartAddingItems();
-		 assertEquals(State.ADDING_ITEMS, controller.getCurrentState());
-    	
+    public void setStateInitialTest() {
+    	controller.setState(State.INITIAL);
+    	assertEquals(State.INITIAL, controller.getCurrentState());
     }
+    @Test
+    public void testStartAddingOwnBags() {
+    	controller.startAddingOwnBags();
+        assertEquals(State.ADDING_OWN_BAGS, controller.getCurrentState());
+    }       
+    @Test
+    public void startPayingTest() {
+    	controller.startPaying();
+    	assertEquals(State.PAYING, controller.getCurrentState());
+    }
+    @Test
+    public void startAddingItemsTest() {
+    	controller.startAddingItems();
+    	assertEquals(State.ADDING_ITEMS, controller.getCurrentState());
+    }
+    
+    
+    @Test
+    public void setStatePrintingReceiptTest() {
+    	controller.setState(State.PRINTING_RECEIPT);
+    	assertEquals(State.PRINTING_RECEIPT, controller.getCurrentState());
+    }
+    
+    @Test
+    public void stateTransactionFinishedTest() {
+    	controller.setState(State.FINISHED);
+    	assertEquals(State.FINISHED, controller.getCurrentState());
+    }
+    @Test
+    public void setStateDisabledTest() {
+    	controller.setState(State.DISABLED);
+    	assertEquals(State.DISABLED, controller.getCurrentState());
+    }
+    
+    @Test
+   public void setStateDispenseChangeTest() {
+    	controller.setState(State.DISPENSING_CHANGE);
+    	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
+  }
+    
     
     @Test
     public void testAddMoreItems() {
@@ -202,4 +233,5 @@ public class CustomerControllerTest {
     public void testOnWeightChanged() {
     	
     }
+   
 }
