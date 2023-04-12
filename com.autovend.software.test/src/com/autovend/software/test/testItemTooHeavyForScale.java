@@ -1,5 +1,4 @@
 package com.autovend.software.test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -47,7 +46,8 @@ import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 
-public class SomeBasicTests {
+
+public class testItemTooHeavyForScale {
 
 	public SelfCheckoutStation selfCheckoutStation;
 	public ReusableBagDispenser bagDispenser;
@@ -168,96 +168,24 @@ public class SomeBasicTests {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
-	public void payWithValidCoin() throws DisabledException, OverloadException {
-
-		customerSessionController.startAddingItems();
-
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
-		customerSessionController.startPaying();
-
-		Coin coin = new Coin(BigDecimal.valueOf(0.05), currency);
-		selfCheckoutStation.coinSlot.accept(coin);
-
-		assertEquals(coin.getValue(), currentSession.getTotalPaid());
-
-	}
-
-	@Test
-	public void payWithValidBill() throws DisabledException, OverloadException {
-
-		customerSessionController.startAddingItems();
-		boolean flag = false;
-		while (!flag){
-			flag = selfCheckoutStation.mainScanner
-					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-		}
-		customerSessionController.startPaying();
-
-		Bill bill = new Bill(10, currency);
-		selfCheckoutStation.billInput.accept(bill);
-		assertEquals(currentSession.getTotalPaid(), BigDecimal.valueOf(bill.getValue()));
-
-	}
-
-	@Test
-	public void payWithCardTap() throws IOException {
-		customerSessionController.startAddingItems();
-
-		boolean flag = false;
-		while (!flag){
-			flag = selfCheckoutStation.mainScanner
-					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-		}
-
-		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
-		flag = false;
-		while (!flag) {
-			flag = selfCheckoutStation.mainScanner
-					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-		}
-
-		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
-		flag = false;
-		while (!flag) {
-			flag = selfCheckoutStation.mainScanner
-					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-		}
-
-		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-
-		customerSessionController.startPaying();
-
-		selfCheckoutStation.cardReader.tap(creditCard);
-
-		assertEquals(currentSession.getTotalCost(), currentSession.getTotalPaid());
-
-	}
-
+	
 	@Test
 	public void addItemByScanning() {
 		customerSessionController.startAddingItems();
 
 		boolean flag = false;
-		while (!flag){
+		while (!flag) {
 			flag = selfCheckoutStation.mainScanner
 					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
-
+		
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 		flag = false;
-		while (!flag){
+		while (!flag) {
 			flag = selfCheckoutStation.mainScanner
 					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
@@ -265,14 +193,13 @@ public class SomeBasicTests {
 		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 	}
-
+	
 	@Test
-	public void changeDispenserTest() {
-
+	public void addItem1HeavyItem() throws OverloadException {
 		customerSessionController.startAddingItems();
 
 		boolean flag = false;
-		while (!flag){
+		while (!flag) {
 			flag = selfCheckoutStation.mainScanner
 					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
@@ -280,8 +207,24 @@ public class SomeBasicTests {
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+
 		flag = false;
-		while (!flag){
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+		flag = false;
+		while (!flag) {
 			flag = selfCheckoutStation.mainScanner
 					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
@@ -289,125 +232,167 @@ public class SomeBasicTests {
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		flag = false;
-		while (!flag){
+		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(3, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+	}
+	
+	@Test
+	public void addItem1HeavyItemsOnly() throws OverloadException {
+		customerSessionController.startAddingItems();
+
+		boolean flag = false;
+		while (!flag) {
 			flag = selfCheckoutStation.mainScanner
-					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-		}
-		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-
-		customerSessionController.startPaying();
-
-		Bill tenDollarBill = new Bill(10, currency);
-		try {
-			selfCheckoutStation.billInput.accept(tenDollarBill);
-		} catch (DisabledException | OverloadException e) {
-
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
 
-		// Dispense 1 $5 bill and 2 $0.25 coins
-		assertEquals(selfCheckoutStation.billDispensers.get(5).size(), 99);
-		assertEquals(selfCheckoutStation.coinDispensers.get(BigDecimal.valueOf(0.25)).size(), 98);
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+
+		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 	}
-
-	// @Test
-	/*
-	 * public void removeItem() { Barcode barcode = new Barcode(Numeral.eight,
-	 * Numeral.one, Numeral.two, Numeral.three); BarcodedProduct product1 = new
-	 * BarcodedProduct(barcode, "bar", new BigDecimal("10"), 1); PriceLookUpCode
-	 * PLUCode = new PriceLookUpCode(Numeral.one, Numeral.two, Numeral.three,
-	 * Numeral.four); PLUCodedProduct product2 = new PLUCodedProduct(PLUCode, "plu",
-	 * new BigDecimal("20"));
-	 * 
-	 * customerSessionController.getItemFacade().addProduct(product1); Product
-	 * addedPrdocut1 =
-	 * customerSessionController.getItemFacade().getItemList().get(0);
-	 * assertFalse(addedPrdocut1 == null);
-	 * assertFalse(attendantController.startRemoveItem(customerSessionController.
-	 * getItemFacade(), product2));
-	 * assertTrue(attendantController.startRemoveItem(customerSessionController.
-	 * getItemFacade(), product1)); assertEquals(0,
-	 * customerSessionController.getItemFacade().getItemList().size());
-	 * 
-	 * customerSessionController.getItemFacade().addProduct(product2); Product
-	 * addedPrdocut2 =
-	 * customerSessionController.getItemFacade().getItemList().get(0);
-	 * assertFalse(addedPrdocut2 == null);
-	 * assertFalse(attendantController.startRemoveItem(customerSessionController.
-	 * getItemFacade(), product1));
-	 * assertTrue(attendantController.startRemoveItem(customerSessionController.
-	 * getItemFacade(), product2)); assertEquals(0,
-	 * customerSessionController.getItemFacade().getItemList().size()); }
-	 */
-
+	
 	@Test
-	public void weightChangedBaggingArea() {
+	public void addItem2HeavyItems() throws OverloadException {
 		customerSessionController.startAddingItems();
 
-		// Scan first unit, and add to bagging
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		try {
-			assertEquals(barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(), 0.1);
-		} catch (OverloadException e) {
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
+
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
-		assertEquals(State.ADDING_ITEMS, customerSessionController.getCurrentState());
 
-		// Scan second unit, and also add to bagging
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		try {
-			assertEquals(2 * barcodeProduct.getExpectedWeight(), selfCheckoutStation.baggingArea.getCurrentWeight(),
-					0.1);
-		} catch (OverloadException e) {
-
+		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(3, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+		
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
 
-	}
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(4, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
+
+	}
+	
 	@Test
-	public void weightDiscrepancyBaggingArea() {
+	public void addMultipleHeavyItems() throws OverloadException {
 		customerSessionController.startAddingItems();
 
-		// Scan first unit, and add to bagging
-		selfCheckoutStation.mainScanner
-				.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		boolean flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+
+		assertEquals(0, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
 
 		selfCheckoutStation.baggingArea
-				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight() * 2));
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		assertEquals(State.DISABLED, customerSessionController.getCurrentState());
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(2, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+
+		assertEquals(10, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(3, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		selfCheckoutStation.baggingArea
+				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(4, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+		
+		flag = false;
+		while (!flag) {
+			flag = selfCheckoutStation.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		}
+
+		
+		customerSessionController.itemTooHeavyForBagging(barcodeProduct.getExpectedWeight());
+		assertEquals(20, (double) currentSession.getExpectedWeight(), 0.01);
+		assertEquals(5, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+
 
 	}
+	
+	
+	//all remove products require attendent IO so need to implement these afterwards
+	@Test
+	public void addHeavyItemThenRemove() throws OverloadException {}
+	
+	@Test
+	public void addNormalItemThenRemove() throws OverloadException {}
+
+	
+	@Test
+	public void addHeavyItemWithNormalItemsThenRemoveHeavyItem() throws OverloadException {}
 
 	@Test
-	public void dispenseBagsTest() throws InterruptedException {
-		customerSessionController.purchaseBags(2);
-		Thread.sleep(3000);
+	public void addHeavyItemWithNormalItemsThenRemoveNormalItem() throws OverloadException {}
 
-		selfCheckoutStation.baggingArea.add(new ReusableBag());
-		selfCheckoutStation.baggingArea.add(new ReusableBag());
-
-		assertEquals(1, currentSession.getShoppingCart().size());
-
-		Thread.sleep(5000);
-
-		customerSessionController.startPaying();
-
-		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
-		selfCheckoutStation.coinSlot.accept(coin);
-
-	}
+	@Test
+	public void addHeavyItemsWithNormalItemThenRemoveBothKindsOfItems() throws OverloadException {}
 
 }
