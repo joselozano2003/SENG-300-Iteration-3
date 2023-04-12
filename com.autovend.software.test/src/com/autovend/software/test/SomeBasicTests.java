@@ -1,3 +1,31 @@
+/* P3-4 Group Members
+ *
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
 package com.autovend.software.test;
 
 import static org.junit.Assert.assertEquals;
@@ -49,10 +77,10 @@ import com.autovend.software.customer.CustomerStationLogic;
 
 public class SomeBasicTests {
 
-	public SelfCheckoutStation selfCheckoutStation;
-	public ReusableBagDispenser bagDispenser;
-	public CustomerController customerSessionController;
-	public CustomerSession currentSession;
+	private SelfCheckoutStation selfCheckoutStation;
+	private ReusableBagDispenser bagDispenser;
+	private CustomerController customerSessionController;
+	private CustomerSession currentSession;
 
 	public AttendantModel model;
 	public AttendantView view;
@@ -90,8 +118,7 @@ public class SomeBasicTests {
 		scaleMaximumWeight = 20;
 		scaleSensitivity = 1;
 
-		selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
-				scaleMaximumWeight, scaleSensitivity);
+		selfCheckoutStation = Setup.createSelfCheckoutStation();
 
 		bagDispenser = new ReusableBagDispenser(100);
 		int n = 0;
@@ -128,29 +155,9 @@ public class SomeBasicTests {
 		customerStations = new ArrayList<>();
 		attendantController = new AttendantController(model, view);
 		// Add 100 bills to each dispenser
-		for (int i = 0; i < billDenominations.length; i++) {
-			BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Bill bill = new Bill(billDenominations[i], currency);
-				try {
-					dispenser.load(bill);
-				} catch (SimulationException | OverloadException e) {
-				}
-			}
-		}
+		Setup.fillBillDispensers(selfCheckoutStation, 100);
 		// Add 100 coins to each dispenser
-
-		for (int i = 0; i < coinDenominations.length; i++) {
-			CoinDispenser dispenser = selfCheckoutStation.coinDispensers.get(coinDenominations[i]);
-			for (int j = 0; j < 100; j++) {
-				Coin coin = new Coin(coinDenominations[i], currency);
-				try {
-					dispenser.load(coin);
-				} catch (SimulationException | OverloadException e) {
-
-				}
-			}
-		}
+		Setup.fillCoinDispensers(selfCheckoutStation, 100);
 
 		// Load printer with ink and paper
 		ReceiptPrinter printer = selfCheckoutStation.printer;
@@ -178,7 +185,7 @@ public class SomeBasicTests {
 
 		customerSessionController.startPaying();
 
-		Coin coin = new Coin(BigDecimal.valueOf(0.05), currency);
+		Coin coin = new Coin(BigDecimal.valueOf(0.05), Setup.getCurrency());
 		selfCheckoutStation.coinSlot.accept(coin);
 
 		assertEquals(coin.getValue(), currentSession.getTotalPaid());
@@ -196,7 +203,7 @@ public class SomeBasicTests {
 		}
 		customerSessionController.startPaying();
 
-		Bill bill = new Bill(10, currency);
+		Bill bill = new Bill(10, Setup.getCurrency());
 		selfCheckoutStation.billInput.accept(bill);
 		assertEquals(currentSession.getTotalPaid(), BigDecimal.valueOf(bill.getValue()));
 
@@ -254,7 +261,7 @@ public class SomeBasicTests {
 		selfCheckoutStation.baggingArea
 				.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		assertEquals(1, (double) currentSession.getShoppingCart().get(barcodeProduct), 0.01);
+		assertEquals(1, currentSession.getShoppingCart().get(barcodeProduct), 0.01);
 
 		flag = false;
 		while (!flag){
@@ -299,7 +306,7 @@ public class SomeBasicTests {
 
 		customerSessionController.startPaying();
 
-		Bill tenDollarBill = new Bill(10, currency);
+		Bill tenDollarBill = new Bill(10, Setup.getCurrency());
 		try {
 			selfCheckoutStation.billInput.accept(tenDollarBill);
 		} catch (DisabledException | OverloadException e) {
@@ -394,18 +401,15 @@ public class SomeBasicTests {
 	@Test
 	public void dispenseBagsTest() throws InterruptedException {
 		customerSessionController.purchaseBags(2);
-		Thread.sleep(3000);
 
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 		selfCheckoutStation.baggingArea.add(new ReusableBag());
 
 		assertEquals(1, currentSession.getShoppingCart().size());
 
-		Thread.sleep(5000);
-
 		customerSessionController.startPaying();
 
-		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
+		Coin coin = new Coin(BigDecimal.valueOf(1), Setup.getCurrency());
 		selfCheckoutStation.coinSlot.accept(coin);
 
 	}

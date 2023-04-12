@@ -51,16 +51,11 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 
 	public PayWithCoin(SelfCheckoutStation station) {
 		super(station, true);
-		try {
-			station.coinDispensers.forEach((k, v) -> v.register(this));
-			station.coinSlot.register(this);
-			station.coinStorage.register(this);
-			station.coinTray.register(this);
-			station.coinValidator.register(this);
-		} catch (Exception e) {
-			for (PaymentEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.coinDispensers.forEach((k, v) -> v.register(this));
+		station.coinSlot.register(this);
+		station.coinStorage.register(this);
+		station.coinTray.register(this);
+		station.coinValidator.register(this);
 	}
 
 	@Override
@@ -73,9 +68,8 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 
 	@Override
 	public void reactToValidCoinDetectedEvent(CoinValidator validator, BigDecimal value) {
-		for (PaymentEventListener listener : listeners)
+		for (PaymentEventListener listener : getListeners())
 			listener.onPaymentAddedEvent(value);
-
 	}
 
 	@Override

@@ -99,15 +99,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
-		paymentMethods = paymentFacade.getChildren();
-		for (PaymentFacade child : paymentMethods) {
-			child.register(this);
-		}
 		itemFacade.register(this);
-		itemAdditionMethods = itemFacade.getChildren();
-		for (ItemFacade child : itemAdditionMethods) {
-			child.register(this);
-		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);

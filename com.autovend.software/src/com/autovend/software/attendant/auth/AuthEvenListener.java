@@ -1,4 +1,4 @@
-package auth;
+package com.autovend.software.attendant.auth;
 
 /**
  * This class deals with listeners for authorization events

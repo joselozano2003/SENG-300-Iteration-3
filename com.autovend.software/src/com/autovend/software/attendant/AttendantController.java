@@ -38,8 +38,13 @@ import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.Product;
 import com.autovend.software.customer.*;
+import com.autovend.software.attendant.auth.AttendantAccount;
+import com.autovend.software.attendant.auth.AuthFacade;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ItemFacade;
 
+public class AttendantController {
 import auth.AttendantAccount;
 import auth.AuthFacade;
 import com.autovend.software.item.ProductsDatabase2;

@@ -42,13 +42,8 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
 
     public ByScanning(SelfCheckoutStation station) {
 		super(station, true);
-		try {
-			station.mainScanner.register(this);
-			station.handheldScanner.register(this);
-		} catch (Exception e) {
-			for (ItemEventListener listener : listeners)
-				listener.reactToHardwareFailure();
-		}
+		station.mainScanner.register(this);
+		station.handheldScanner.register(this);
 	}
 
 	@Override
@@ -61,11 +56,11 @@ public class ByScanning extends ItemFacade implements BarcodeScannerObserver {
     public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
         BarcodedProduct barcodedProduct = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
         if(barcodedProduct != null) {
-        	for (ItemEventListener listener : listeners)
+        	for (ItemEventListener listener : getListeners())
 				listener.onItemAddedEvent(barcodedProduct, 1);;
         }
 		else {
-			for (ItemEventListener listener : listeners)
+			for (ItemEventListener listener : getListeners())
 				listener.reactToInvalidBarcode(barcodedProduct, 1);
 		}
     }

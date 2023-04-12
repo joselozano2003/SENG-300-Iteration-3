@@ -42,14 +42,13 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-	private SelfCheckoutStation selfCheckoutStation;
 
 	public ItemFacade(SelfCheckoutStation station, boolean isChild) {
 		super(station);
-		this.selfCheckoutStation = station;
 		// Initialize this instance and children once.
 
-		if (!isChild) {
+		if (!isChild || instance == null) {
+			instance = this;
 			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
 			children.add(new ByScanning(station));
@@ -65,17 +64,10 @@ public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	}
 
 	/**
-	 * @return List of active subclasses.
+	 * @return The listeners relative to the parent instance.
 	 */
-	public List<ItemFacade> getChildren() {
-		return children;
-	}
-
-	/**
-	 * @return This current active instance of this class. Could be null.
-	 */
-	public static ItemFacade getInstance() {
-		return instance;
+	protected ArrayList<ItemEventListener> getListeners() {
+		return instance.listeners;
 	}
 
 }

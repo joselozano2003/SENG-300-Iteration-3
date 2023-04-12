@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
 
+@SuppressWarnings("serial")
 public class ByTextSearch extends ItemFacade {
 
 	public ByTextSearch(SelfCheckoutStation station) {
@@ -45,7 +46,7 @@ public class ByTextSearch extends ItemFacade {
 	 * @param attendantInputString: string that the attendant types in, and searches for any products that match the input. 
 	 * @return: an arraylist of products that are a match, which the attendant station displays as the search result 
 	 */
-	public ArrayList getProductsCorrespondingToTextSearch(String attendantInputString) {
+	public ArrayList<Product> getProductsCorrespondingToTextSearch(String attendantInputString) {
 		ArrayList<Product> productsToShow = new ArrayList<Product>();
 		String[] InputStringWords = attendantInputString.split(" ");
 		
@@ -67,7 +68,7 @@ public class ByTextSearch extends ItemFacade {
 	 */
 	public void productFromTextSearchSelected(Product product) {
 		if(product != null) {
-        	for (ItemEventListener listener : listeners)
+        	for (ItemEventListener listener : getListeners())
 				listener.onItemAddedEvent(product, 1);;
 		}
 	}
