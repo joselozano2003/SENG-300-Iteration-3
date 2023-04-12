@@ -85,6 +85,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	private int inkUsed, paperUsed;
 	public int inkAdded, paperAdded;
 	boolean cardInserted;
+	private boolean isMembership;
 
 	final int ALERT_THRESHOLD = 10;
 
