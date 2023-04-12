@@ -95,14 +95,13 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 	    for (Map.Entry<Product, Double> entry : shoppingCart.entrySet()) {
 	        Product product = entry.getKey();
 	        String name;
+			name = "";
 	        if (product instanceof BarcodedProduct) {
 	            name = ((BarcodedProduct) product).getDescription();
 	        } else if (product instanceof PLUCodedProduct) {
 	            name = ((PLUCodedProduct) product).getDescription();
 	        } else if (product instanceof ReusableBagProduct) {
 	            name = "Reusable Bag";
-	        } else {
-	            name = "Unknown";
 	        }
 
 	        double quantity = entry.getValue();
