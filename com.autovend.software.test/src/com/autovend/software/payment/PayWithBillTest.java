@@ -112,6 +112,36 @@ public class PayWithBillTest {
 		assertEquals(BigDecimal.valueOf(0), paymentCounter);
 	}
 	
+	/**
+	 * Test that a low bills event is triggered when the number of bills in the dispenser is low enough.
+	 */
+	@Test
+	public void testLowBills() {
+		Setup.fillBillDispensers(station, 10);
+		payWithBill.addAmountDue(BigDecimal.valueOf(1100));
+		payWithBill.dispenseChange(paymentCounter);
+	}
+	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvent() {
+		Bill testBill = new Bill(5, Setup.getCurrency());
+		payWithBill.register(new PaymentEventListenerStub());
+		//Will fail if any listener event is entered.
+		payWithBill.reactToEnabledEvent(station.billValidator);
+		payWithBill.reactToDisabledEvent(station.billValidator);
+		payWithBill.reactToInvalidBillDetectedEvent(station.billValidator);
+		for (int key : station.billDispensers.keySet()) {
+			payWithBill.reactToBillsFullEvent(station.billDispensers.get(key));
+			payWithBill.reactToBillsEmptyEvent(station.billDispensers.get(key));
+			payWithBill.reactToBillAddedEvent(station.billDispensers.get(key), testBill);
+			payWithBill.reactToBillsLoadedEvent(station.billDispensers.get(key), testBill);
+			payWithBill.reactToBillsUnloadedEvent(station.billDispensers.get(key), testBill);
+		}
+	}
+	
 	/*--------------- STUBS ---------------*/
 	
 	/**Stubs primarily check if/how many times observer events occurred.
