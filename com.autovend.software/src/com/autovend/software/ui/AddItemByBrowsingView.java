@@ -33,6 +33,9 @@ import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.customer.CustomerSession;
+import com.autovend.software.ui.UIEventListener;
+import com.autovend.software.ui.BrowsingViewObserver;
 
 public class AddItemByBrowsingView extends JPanel {
 
