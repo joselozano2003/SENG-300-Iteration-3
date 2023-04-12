@@ -29,14 +29,18 @@
 package com.autovend.software.attendant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.test.Setup;
+
+import auth.AttendantAccount;
 
 public class AttendantControllerTest {
 	private AttendantController controller;
@@ -71,5 +75,46 @@ public class AttendantControllerTest {
 	    controller.addCustomerStation(stationLogic);
 	    assertEquals(initialSize + 1, controller.getCustomerStations().size());
 	}
+	
+	@Test
+	public void testShutDownAndStartUpStation() {
+		CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
+		controller.addCustomerStation(stationLogic);
+		controller.shutDownStation(0);
+		assertEquals(CustomerController.State.SHUTDOWN, stationLogic.getController().getState());
+		
+		controller.startUpStation(0);
+		assertEquals(CustomerController.State.STARTUP, stationLogic.getController().getState());
+	}
+	
+	@Test
+	public void testPermitStationUse() {
+	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
+	    controller.addCustomerStation(stationLogic);
+
+	    // Initially, the station should be in DISABLED state
+	    assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getState());
+
+	    // Permit station use and check if the state changes to INITIAL
+	    controller.permitStationUse(0);
+	    assertEquals(CustomerController.State.INITIAL, stationLogic.getController().getState());
+	}
+
+	
+	@Test
+	public void testDenyStationUse() {
+	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
+	    controller.addCustomerStation(stationLogic);
+
+	    // Permit station use to set the state to INITIAL
+	    controller.permitStationUse(0);
+	    assertEquals(CustomerController.State.INITIAL, stationLogic.getController().getState());
+
+	    // Deny station use and check if the state changes back to DISABLED
+	    controller.denyStationUse(0);
+	    assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getState());
+	}
+	
+
 
 }
