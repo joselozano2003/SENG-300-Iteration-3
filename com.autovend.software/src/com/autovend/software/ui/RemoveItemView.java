@@ -144,7 +144,7 @@ public class RemoveItemView extends JPanel {
         browsingPanel.add(Box.createGlue());
         browsingPanel.setVisible(true);
 
-        cusCart = attendController.getSession.getShoppingCart();
+        //cusCart = attendController.getSession.getShoppingCart();
 
         Product[] prodArray = cusCart.keySet().toArray(new Product[cusCart.keySet().size()]);
 
@@ -163,7 +163,7 @@ public class RemoveItemView extends JPanel {
             currentButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    removeProductButtonPressed(productGot);
+                   // removeProductButtonPressed(productGot);
                     currentButton.setBackground(Color.GREEN);
                 }
             });
