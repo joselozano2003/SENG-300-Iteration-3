@@ -79,14 +79,6 @@ public class PayWithBillTest {
 	}
 	
 	/**
-	 * Things To Test
-	 * 	- BillValidator reactions
-	 * 		- reactToEnabled/DisabledEvents (expect nothing)
-	 * 		- reactToValidBillDetectedEvent (expect an onPaymentAddedEvent)
-	 * 		- reactToInvalidBillDetectedEvent (expect no listener event)
-	 */
-
-	/**
 	 * Pass in a valid bill expecting payment equal to the bill's value to be added.
 	 */
 	@Test

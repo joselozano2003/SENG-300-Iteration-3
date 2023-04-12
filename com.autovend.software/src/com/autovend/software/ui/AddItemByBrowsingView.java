@@ -34,7 +34,7 @@ import com.autovend.products.Product;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.customer.CustomerSession;
-import com.autovend.software.ui.UIEventListener;
+import com.autovend.software.ui.CustomerUIEventListener;
 import com.autovend.software.ui.BrowsingViewObserver;
 
 public class AddItemByBrowsingView extends JPanel {
@@ -47,7 +47,7 @@ public class AddItemByBrowsingView extends JPanel {
 	static int MAX_ITEMS = 20;
 
 	private List<BrowsingViewObserver> observers;
-	private List<UIEventListener> listeners;
+	private List<CustomerUIEventListener> listeners;
 
 	JButton backButton;
 	JLabel messageLabel;
@@ -207,7 +207,7 @@ public class AddItemByBrowsingView extends JPanel {
 	 * @param listener the UIEventListener to be added to the list of listeners
 	 */
 	
-	public void register(UIEventListener listener) {
+	public void register(CustomerUIEventListener listener) {
 		listeners.add(listener);
 	}
 
@@ -227,7 +227,7 @@ public class AddItemByBrowsingView extends JPanel {
 	 * This method iterates through the list of listeners and calls the goBackToCheckout() method on each of them.
 	 */
 	public void notifyGoBackToCheckout() {
-		for (UIEventListener listener : listeners) {
+		for (CustomerUIEventListener listener : listeners) {
 			listener.goBackToCheckout();
 		}
 	}
