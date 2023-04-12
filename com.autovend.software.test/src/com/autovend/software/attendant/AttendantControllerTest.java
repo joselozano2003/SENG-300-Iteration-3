@@ -142,16 +142,16 @@ public class AttendantControllerTest {
 	
     @Test
     public void testShutDownAndStartUpStation() {
-        CustomerStationLogic stationLogic2 = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic2);
+        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
+        controller.addCustomerStation(stationLogic);
         
         controller.shutDownStation(0);
-        assertEquals(CustomerController.State.SHUTDOWN, stationLogic2.getController().getCurrentState());
+        assertEquals(CustomerController.State.SHUTDOWN, stationLogic.getController().getCurrentState());
 
         controller.startUpStation(0);
-        assertEquals(CustomerController.State.STARTUP, stationLogic2.getController().getCurrentState());
+        assertEquals(CustomerController.State.STARTUP, stationLogic.getController().getCurrentState());
     }
-	
+	 
     @Test
     public void testPermitStationUse() {
         CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
