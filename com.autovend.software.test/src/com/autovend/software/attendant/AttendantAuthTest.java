@@ -11,24 +11,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.SupervisionStation;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
-import com.autovend.software.attendant.AttendantView;
+//import com.autovend.software.attendant.AttendantView;
 import com.autovend.software.customer.CustomerStationLogic;
 
 
 import auth.AttendantAccount;
 import auth.AttendantAccountDatabases;
 
-//pinikpinik
 
 public class AttendantAuthTest {
 
 	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
 	private AttendantModel model = new AttendantModel();
-	private AttendantView view = new AttendantView();
+	//private AttendantView view = new AttendantView();
+	private SupervisionStation station = new SupervisionStation();
 
-	public AttendantController attendantController = new AttendantController(model, view, customerStations);
+	public AttendantController attendantController = new AttendantController(station);
 
 	@Before
 	public void setUp() throws Exception {

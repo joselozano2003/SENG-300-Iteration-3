@@ -33,38 +33,41 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.SupervisionStation;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.test.Setup;
 
 public class AttendantControllerTest {
 	private AttendantController controller;
 	private AttendantModel model;
-	private AttendantView view;
+	//private AttendantView view;
 	private ArrayList<CustomerStationLogic> customerStationList;
+	private SupervisionStation station;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		model = new AttendantModel();
-		view = new AttendantView();
+		//view = new AttendantView();
+		station = new SupervisionStation();
 		customerStationList = new ArrayList<CustomerStationLogic>();
 		customerStationList.add(CustomerStationLogic.installOn(Setup.createSelfCheckoutStation()));
-		controller = new AttendantController(model, view, customerStationList);
+		controller = new AttendantController(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullStation() {
-		new AttendantController(null, view, customerStationList);
+		new AttendantController(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullView() {
-		new AttendantController(model, null, customerStationList);
+		new AttendantController(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullList() {
-		new AttendantController(model, view, null);
+		new AttendantController(station);
 	}
 
 }

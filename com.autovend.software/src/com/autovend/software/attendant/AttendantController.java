@@ -47,7 +47,7 @@ public class AttendantController {
 	//testing
 
 	public AttendantController(SupervisionStation station ) {
-		
+		auth = new AuthFacade();
 	}
 
 	public void startupStation(/* station */) {
