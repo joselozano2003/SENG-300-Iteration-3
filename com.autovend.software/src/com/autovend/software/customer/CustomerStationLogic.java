@@ -26,7 +26,7 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		return new CustomerStationLogic(station);
 	}
 
-	private CustomerStationLogic(SelfCheckoutStation station) {
+	public CustomerStationLogic(SelfCheckoutStation station) {
 		super(station, new CustomerView());
 		view = new CustomerView();
 	}
