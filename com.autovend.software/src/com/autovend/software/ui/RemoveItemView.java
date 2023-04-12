@@ -38,6 +38,8 @@ import com.autovend.software.ui.UIEventListener;
 import com.autovend.software.ui.BrowsingViewObserver;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerSession;
 
 public class RemoveItemView extends JPanel {
 
@@ -67,6 +69,10 @@ public class RemoveItemView extends JPanel {
 
     Map<Product,Double> cusCart;
 
+    ArrayList<CustomerStationLogic> stationArray;
+
+    CustomerController currentCon;
+
 
 
     JLabel searchLabel;
@@ -90,7 +96,7 @@ public class RemoveItemView extends JPanel {
 
 
 
-    public RemoveItemView() {
+    public RemoveItemView(int stationNum) {
         // swing compounents needed for the GUI
 
         observers = new ArrayList<>();
@@ -144,7 +150,9 @@ public class RemoveItemView extends JPanel {
         browsingPanel.add(Box.createGlue());
         browsingPanel.setVisible(true);
 
-        cusCart = attendController.getSession.getShoppingCart();
+        stationArray = attendController.getCustomerStationsManaged();
+        currentCon = stationArray.get(stationNum).getController();
+        cusCart = currentCon.getCurrentSession().getShoppingCart();
 
         Product[] prodArray = cusCart.keySet().toArray(new Product[cusCart.keySet().size()]);
 
@@ -154,16 +162,17 @@ public class RemoveItemView extends JPanel {
             JButton currentButton = new JButton();
             cataloguePanel.add(currentButton);
             currentButton.setPreferredSize(new Dimension(400, 200));
+            PLUCodedProduct pluProduct;
 
             if (currentProduct instanceof PLUCodedProduct) {
-                PLUCodedProduct pluProduct = (PLUCodedProduct) currentProduct;
+                pluProduct = (PLUCodedProduct) currentProduct;
                 currentButton.setText(pluProduct.getDescription());
+            } else return;
 
-            }
             currentButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    removeProductButtonPressed(productGot);
+                    removeProductButtonPressed(pluProduct);
                     currentButton.setBackground(Color.GREEN);
                 }
             });
@@ -174,7 +183,7 @@ public class RemoveItemView extends JPanel {
     public static void main(String[] args) {
         JFrame testFrame = new JFrame();
         testFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        JPanel testPanel = new RemoveItemView();
+        JPanel testPanel = new RemoveItemView(1);
         testFrame.setVisible(true);
         testFrame.add(testPanel);
         testFrame.validate();

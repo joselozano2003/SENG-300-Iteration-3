@@ -64,6 +64,7 @@ import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.PLUView;
 import com.autovend.software.ui.PaymentView;
 import com.autovend.software.ui.UIEventListener;
+import com.autovend.software.customer.CustomerSession;
 
 import auth.AttendantAccount;
 
