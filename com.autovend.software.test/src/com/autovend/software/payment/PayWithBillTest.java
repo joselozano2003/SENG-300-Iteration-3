@@ -42,6 +42,7 @@ import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.DisabledException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.SimulationException;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
@@ -50,15 +51,21 @@ import com.autovend.Coin;
 
 public class PayWithBillTest {
 	private SelfCheckoutStation station;
+	CustomerView cview;
+	private PaymentFacade facade;
 	private PayWithBill payWithBill;
 	private BigDecimal paymentCounter = BigDecimal.valueOf(0);
+	private int lowBillsCounter;
 	
 	@Before
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		payWithBill = new PayWithBill(station, new CustomerView());
+		cview = new CustomerView();
+		PaymentFacade facade = new PaymentFacade(station, false, cview);
+		payWithBill = (PayWithBill) facade.getChildren().get(1); // Bill child always added 2nd
 		paymentCounter = BigDecimal.valueOf(0);
+		lowBillsCounter = 0;
 	}
 	
 	@Test (expected = NullPointerException.class)
@@ -117,9 +124,19 @@ public class PayWithBillTest {
 	 */
 	@Test
 	public void testLowBills() {
-		Setup.fillBillDispensers(station, 10);
-		payWithBill.addAmountDue(BigDecimal.valueOf(1100));
-		payWithBill.dispenseChange(paymentCounter);
+		payWithBill.register(new PaymentEventListenerStub());
+		payWithBill.addAmountDue(BigDecimal.valueOf(500));
+		// add specifically 10 $10 bills for testing
+		BillDispenser dispenser = station.billDispensers.get(station.billDenominations[2]);
+		for (int j = 0; j < 10; j++) {
+			try {
+				Bill bill = new Bill(station.billDenominations[2], Setup.getCurrency());
+				dispenser.load(bill);
+			} catch (SimulationException | OverloadException e) {
+			}
+		}
+		payWithBill.dispenseChange(BigDecimal.valueOf(100));
+		assertEquals(1, lowBillsCounter);
 	}
 	
 	/**
@@ -140,6 +157,10 @@ public class PayWithBillTest {
 			payWithBill.reactToBillsLoadedEvent(station.billDispensers.get(key), testBill);
 			payWithBill.reactToBillsUnloadedEvent(station.billDispensers.get(key), testBill);
 		}
+		payWithBill.reactToBillsFullEvent(station.billStorage);
+		payWithBill.reactToBillsLoadedEvent(station.billStorage);
+		payWithBill.reactToBillsUnloadedEvent(station.billStorage);
+		payWithBill.reactToBillRemovedEvent(station.billInput);
 	}
 	
 	/*--------------- STUBS ---------------*/
@@ -149,10 +170,6 @@ public class PayWithBillTest {
 	 * Override any event in this stub that you don't want to fail.
 	 */
 	public class PaymentEventListenerStub implements PaymentEventListener {
-		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
 		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
@@ -164,13 +181,19 @@ public class PayWithBillTest {
 		@Override
 		public void onPaymentFailure() {fail();}
 		@Override
-		public void onChangeDispensedEvent() {fail();}
+		public void onChangeDispensedEvent(BigDecimal amount) {}
 		@Override
-		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {fail();}
+		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {}
 		@Override
-		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		public void onLowCoins(CoinDispenser dispenser) {fail();}
 		@Override
-		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
+		public void onLowBills(BillDispenser dispenser) {
+			lowBillsCounter++;
+		}
+		@Override
+		public void cardInserted() {fail();}
+		@Override
+		public void cardRemoved() {fail();}
 	}
 	
 }
