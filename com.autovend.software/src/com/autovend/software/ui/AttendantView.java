@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,24 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.ui;
 
-import com.autovend.software.AbstractEventListener;
+import javax.swing.JPanel;
 
-public interface MembershipListener extends AbstractEventListener {
-	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
-	 */
-	public void reactToValidMembershipEntered(String number);
+/**
+ * AttendantView is a JPanel that serves as a container for various sub-views related to
+ * managing items at a station. It contains three sub-views: StationTableView, AddItemByTextSearchView,
+ * and RemoveItemView.
+ */
+
+public class AttendantView extends JPanel {
+
+	public AddItemByTextSearchView textSearchView;
+	public RemoveItemView removeView;
+
+	public StationStatusView stationView;
 	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
-	 */
-	public void reactToInvalidMembershipEntered();
+	
+	
+
 }

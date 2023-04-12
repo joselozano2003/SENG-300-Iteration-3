@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,38 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.payment;
 
+import java.math.BigDecimal;
+
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractEventListener {
+public interface PaymentEventListener extends AbstractEventListener {
 	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
+	 * Signals an event in which valid payment has been entered.
+	 * 
+	 * @param amount The amount added for payment.
 	 */
-	public void reactToValidMembershipEntered(String number);
-	
+	public void onPaymentAddedEvent(BigDecimal amount);
+
 	/**
-	 * Announces that an invalid membership number has been entered by the user.
+	 * Signals an event in which invalid payment has been entered.
+	 * 
+	 * @param
 	 */
-	public void reactToInvalidMembershipEntered();
+
+	public void onPaymentFailure();
+
+	public void onChangeDispensedEvent(BigDecimal amount);
+
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
+
+	public void onLowCoins(CoinDispenser dispenser);
+
+	public void onLowBills(BillDispenser dispenser);
+
 }

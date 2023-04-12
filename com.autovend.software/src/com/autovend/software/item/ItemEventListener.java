@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,20 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.item;
 
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.Product;
 import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractEventListener {
+public interface ItemEventListener extends AbstractEventListener {
 	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
+	 * Signals an event in which a product was successfully added.
+	 * @param product
 	 */
-	public void reactToValidMembershipEntered(String number);
+	public void onItemAddedEvent(Product product, double quantity);
 	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
-	 */
-	public void reactToInvalidMembershipEntered();
+	public void onItemNotFoundEvent();
+
+    public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }

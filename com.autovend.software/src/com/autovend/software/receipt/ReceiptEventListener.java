@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,24 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.receipt;
 
 import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractEventListener {
+public interface ReceiptEventListener extends AbstractEventListener {
 	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
+	 * Signals an event in which a full receipt has been printed.
+	 * @param receiptText 
+	 * @param receipt The receipt that was printed.
 	 */
-	public void reactToValidMembershipEntered(String number);
+	public void onReceiptPrintedEvent(StringBuilder receiptText);
+	/**
+	 * Signals an event in which a receipt failed to finish printing.
+	 */
+	public void onReceiptPrinterFailed();
 	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
+	/*
+	 * Signals an event in which an attendant has refilled the receipt printer.
 	 */
-	public void reactToInvalidMembershipEntered();
+	public void onReceiptPrinterFixed();
 }
