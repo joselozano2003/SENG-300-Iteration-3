@@ -49,22 +49,22 @@ public class AttendantControllerTest {
 		view = new AttendantView();
 		customerStationList = new ArrayList<CustomerStationLogic>();
 		customerStationList.add(CustomerStationLogic.installOn(Setup.createSelfCheckoutStation()));
-		controller = new AttendantController(model, view, customerStationList);
+		controller = new AttendantController(model, view);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullStation() {
-		new AttendantController(null, view, customerStationList);
+		new AttendantController(null, view);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullView() {
-		new AttendantController(model, null, customerStationList);
+		new AttendantController(model, null);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullList() {
-		new AttendantController(model, view, null);
+		new AttendantController(model, view);
 	}
 
 }

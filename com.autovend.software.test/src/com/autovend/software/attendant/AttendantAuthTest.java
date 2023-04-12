@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.SupervisionStation;
 import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 import com.autovend.software.attendant.AttendantView;
@@ -26,9 +27,10 @@ public class AttendantAuthTest {
 
 	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
 	private AttendantModel model = new AttendantModel();
+	private SupervisionStation station = new SupervisionStation();
 	private AttendantView view = new AttendantView();
 
-	public AttendantController attendantController = new AttendantController(model, view, customerStations);
+	public AttendantController attendantController = new AttendantController(model, view);
 
 	@Before
 	public void setUp() throws Exception {

@@ -31,15 +31,21 @@ package com.autovend.software.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.autovend.Bill;
+import com.autovend.Coin;
 import com.autovend.ReusableBag;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
+import com.autovend.devices.CoinDispenser;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
-import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
@@ -52,9 +58,13 @@ import com.autovend.software.payment.PaymentEventListener;
 import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptEventListener;
 import com.autovend.software.receipt.ReceiptFacade;
+import com.autovend.software.ui.CustomerView;
+import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.PaymentView;
+import com.autovend.software.ui.UIEventListener;
 
-public class CustomerController extends AbstractFacade<CustomerControllerListener>
-		implements BaggingEventListener, ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener {
+public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
+		ReceiptEventListener, MembershipListener, UIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -68,34 +78,31 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
-	private int inkUsed, paperUsed;
-	public int inkAdded, paperAdded;
-	final int ALERT_THRESHOLD = 10;
-	private boolean cardInserted;
 
-
+	private CustomerView customerView; 
 
 	public enum State {
 
-		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE, PRINTING_RECEIPT, FINISHED,
-		DISABLED, STARTUP, SHUTDOWN
+		INITIAL, SCANNING_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
+		PRINTING_RECEIPT, FINISHED, DISABLED
 
 	}
 
 	private State currentState;
 
-	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser) {
-		super(selfCheckoutStation);
+	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser,
+			CustomerView customerView) {
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
-		this.currentState = State.INITIAL;
-		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false);
-		this.itemFacade = new ItemFacade(selfCheckoutStation, false);
-		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation);
-		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser);
+		this.customerView = customerView;
 
-		this.membershipFacade = new MembershipFacade(selfCheckoutStation);
-		cardInserted = false;
+		this.currentState = State.INITIAL;
+		this.paymentFacade = new PaymentFacade(selfCheckoutStation, customerView, false);
+		this.itemFacade = new ItemFacade(selfCheckoutStation, customerView, false);
+		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation, customerView);
+		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser, customerView);
+
+		this.membershipFacade = new MembershipFacade(selfCheckoutStation, customerView);
 
 		// Register the CustomerController as a listener for the facades
 		paymentFacade.register(this);
@@ -104,15 +111,19 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			child.register(this);
 		}
 		itemFacade.register(this);
-		itemAdditionMethods = itemFacade.getChildren();
-		for (ItemFacade child : itemAdditionMethods) {
-			child.register(this);
-		}
 		receiptPrinterFacade.register(this);
 		baggingFacade.register(this);
 		membershipFacade.register(this);
-		inkUsed = 0;
-		paperUsed = 0;
+
+		// Register the CustomerController to listen to views
+		customerView.startView.register(this);
+		customerView.checkoutView.register(this);
+		customerView.pluView.register(this);
+
+		// Make view visible
+		selfCheckoutStation.screen.setVisible(true);
+		selfCheckoutStation.screen.getFrame().add(customerView.startView);
+
 	}
 
 	public void setState(State newState) {
@@ -135,25 +146,11 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			selfCheckoutStation.mainScanner.disable();
 
 			selfCheckoutStation.printer.disable();
-			checkLevels();
 			break;
 		case ADDING_OWN_BAGS:
 			selfCheckoutStation.baggingArea.enable();
 			selfCheckoutStation.scale.enable();
 		case SCANNING_MEMBERSHIP:
-			selfCheckoutStation.baggingArea.disable();
-			selfCheckoutStation.scale.disable();
-			
-			selfCheckoutStation.billInput.disable();
-			selfCheckoutStation.billOutput.disable();
-			selfCheckoutStation.coinSlot.disable();
-			selfCheckoutStation.coinTray.disable();
-			
-			selfCheckoutStation.cardReader.enable();
-			selfCheckoutStation.handheldScanner.enable();
-			selfCheckoutStation.mainScanner.enable();
-			
-			selfCheckoutStation.printer.disable();	
 			break;
 		case ADDING_ITEMS:
 			selfCheckoutStation.baggingArea.enable();
@@ -162,8 +159,8 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			selfCheckoutStation.mainScanner.enable();
 			break;
 		case CHECKING_WEIGHT:
-			selfCheckoutStation.handheldScanner.disable();
-			selfCheckoutStation.mainScanner.disable();
+			// selfCheckoutStation.handheldScanner.disable();
+			// selfCheckoutStation.mainScanner.disable();
 			break;
 		case PAYING:
 			selfCheckoutStation.billInput.enable();
@@ -183,14 +180,11 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			break;
 		case PRINTING_RECEIPT:
 			selfCheckoutStation.printer.enable();
+
 			receiptPrinterFacade.printReceipt(currentSession.getShoppingCart());
-			if (cardInserted){
-				selfCheckoutStation.cardReader.remove();
-			}
 			break;
 		case FINISHED:
-
-			startNewSession();
+			onTransactionFinished();
 			break;
 		case DISABLED:
 			selfCheckoutStation.baggingArea.disable();
@@ -207,111 +201,80 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			selfCheckoutStation.handheldScanner.disable();
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
-			break;
-		case SHUTDOWN:
-			selfCheckoutStation.baggingArea.disable();
-			selfCheckoutStation.scale.disable();
-			selfCheckoutStation.baggingArea.disable();
-			selfCheckoutStation.screen.disable();
-			selfCheckoutStation.printer.disable();
-			selfCheckoutStation.cardReader.disable();
-			selfCheckoutStation.mainScanner.disable();
-			selfCheckoutStation.handheldScanner.disable();
-			selfCheckoutStation.billInput.disable();
-			selfCheckoutStation.billOutput.disable();
-			selfCheckoutStation.billStorage.disable();
-			selfCheckoutStation.coinSlot.disable();
-			selfCheckoutStation.coinTray.disable();
-			selfCheckoutStation.coinStorage.disable();
-			selfCheckoutStation.coinValidator.disable();
-			break;
-		case STARTUP:
-			selfCheckoutStation.baggingArea.enable();
-			selfCheckoutStation.scale.enable();
-			selfCheckoutStation.baggingArea.enable();
-			selfCheckoutStation.printer.enable();
-			selfCheckoutStation.cardReader.enable();
-			selfCheckoutStation.mainScanner.enable();
-			selfCheckoutStation.handheldScanner.enable();
-			selfCheckoutStation.billInput.enable();
-			selfCheckoutStation.billOutput.enable();
-			selfCheckoutStation.billStorage.enable();
-			selfCheckoutStation.coinSlot.enable();
-			selfCheckoutStation.coinTray.enable();
-			selfCheckoutStation.coinStorage.enable();
-			selfCheckoutStation.coinValidator.enable();
-			selfCheckoutStation.screen.disable();
-			// everything is on but screen is off, so it cannot be interacted with
-			break;
 
+			break;
 		default:
 			break;
 
 		}
 	}
 
-	// In reaction to UI
-	public void startNewSession() {
+	public void updateView(JPanel newView) {
+		JFrame frame = selfCheckoutStation.screen.getFrame();
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(newView);
+		frame.revalidate();
+		frame.repaint();
+
+	}
+
+	private void onTransactionFinished() {
+		updateView(customerView.startView);
+
+	}
+
+	@Override
+	public void onStartAddingItems() {
 		currentSession = new CustomerSession();
-		setState(State.INITIAL);
-		// set state to initial?
+		setState(State.ADDING_ITEMS);
+		updateView(customerView.checkoutView);
 	}
 
-	// In reaction to UI
-	public void startAddingOwnBags() {
+	@Override
+	public void goBackToCheckout() {
+		updateView(customerView.checkoutView);
+		customerView.checkoutView.updateShoppingCart(currentSession);
+	}
+
+	@Override
+	public void onStartPaying() {
+		setState(State.PAYING);
+		BigDecimal amountDue = currentSession.getTotalCost();
+		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
+		updateView(customerView.paymentView);
+		customerView.paymentView.setAmountDueLabelText(amountDue.toString());
+	}
+
+	@Override
+	public void onStartAddingOwnBags() {
 		setState(State.ADDING_OWN_BAGS);
-		// Signal customer to add their own bags (e.g., via customerIO)
 	}
 
-	// In reaction to UI
-	public void finishAddingOwnBags() {
+	@Override
+	public void onFinishAddingOwnBags() {
 		setState(State.DISABLED);
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
 
-	// In reaction to UI
-	public void startAddingItems() {
-		setState(State.ADDING_ITEMS);
-	}
-
-	// In reaction to UI
-	public void addMoreItems() {
-		if (currentState == State.PAYING) {
-			setState(State.ADDING_ITEMS);
-		}
-	}
-
-	// In reaction to UI
-	public void startPaying() {
-		setState(State.PAYING);
-		BigDecimal amountDue = currentSession.getTotalCost();
-		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
-	}
-
-	public State getState(){
-		return currentState;
-	}
-
-	public CustomerSession getSession(){
-		return currentSession;
-	}
-
-	// In reaction to UI
-	public void purchaseBags(int amount) {
+	@Override
+	public void onPurchaseBags(int amount) {
 		baggingFacade.dispenseBags(amount);
 	}
 
 	@Override
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount) {
+
 		currentSession.addItemToCart(bagProduct, amount);
-		setState(State.CHECKING_WEIGHT);		
+		customerView.checkoutView.updateShoppingCart(currentSession);
+
+		setState(State.CHECKING_WEIGHT);
 	}
 
 	@Override
 	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -325,7 +288,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
 		// comes from the attendant
 		// device.enable();
-
 	}
 
 	@Override
@@ -334,13 +296,23 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	@Override
-	public void reactToHardwareFailure() {
-		// notify attendant
+	public void reactToEnableStationRequest() {
+		// comes from the attendant
+	}
+
+	@Override
+	public void onSelectAddItemByPLU() {
+		updateView(customerView.pluView);
+
 	}
 
 	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
+
 		currentSession.addItemToCart(product, quantity);
+		System.out.println("hey");
+		customerView.checkoutView.updateShoppingCart(currentSession);
+
 		setState(State.CHECKING_WEIGHT);
 
 	}
@@ -352,36 +324,28 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	@Override
-	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-		// Display try again? message in UI
-	}
-
-	@Override
 	public void onPaymentAddedEvent(BigDecimal amount) {
 		currentSession.addPayment(amount);
 		boolean paymentComplete = currentSession.isPaymentComplete();
 		if (paymentComplete) {
 			setState(State.DISPENSING_CHANGE);
-
 		}
 	}
 
 	@Override
 	public void onPaymentFailure() {
-		// display a try again message in UI and maybe keep track of the number of
-		// successive failures in the session object
-		// if currentSession.numberOfFailedPayments > 5 {notify attendant}
+		currentSession.addFailedPayment();
+		if (currentSession.getNumberOfFailedPayments() > 5) {
+			// notify attendant
+		}
+
 	}
 
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 		setState(State.FINISHED);
-		inkUsed += getInkUsed(receiptText);
-		paperUsed += getPaperUsed(receiptText);
-
 		// To "see" the receipt, uncomment the line below
-		//System.out.println(receiptText.toString());
-
+		// System.out.println(receiptText.toString());
 	}
 
 	@Override
@@ -393,7 +357,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	@Override
 	public void onReceiptPrinterFailed() {
 		setState(State.DISABLED);
-
 	}
 
 	@Override
@@ -407,16 +370,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		// here, or just tell
 		// the attendant this value
 		// paymentFacade.dispenseChange(totalChangeLeft);
-	}
-
-	@Override
-	public void cardInserted() {
-		cardInserted = true;
-	}
-
-	@Override
-	public void cardRemoved() {
-		cardInserted = false;
 	}
 
 	@Override
@@ -437,83 +390,46 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		}
 
 	}
-	
-	//call this when item is too heavy for bagging, attendent IO will be called and approval will be needed before moving on
-	public void itemTooHeavyForBagging(double weightInGrams) {
-		//call attendentIO first for approval
-		
-		setState(State.ADDING_ITEMS);
-		currentSession.itemAddedToCartTooHeavyForScale(weightInGrams);
-	}
 
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;
+	}
+
+	public CustomerView getCurrentView() {
+		return this.customerView;
 	}
 
 	public State getCurrentState() {
 		return this.currentState;
 	}
 
-
-
 	@Override
 	public void reactToValidMembershipEntered(String number) {
-		// TODO Auto-generated method stub
-		
+		currentSession.addMembershipNumber(number);
+
 	}
 
 	@Override
 	public void reactToInvalidMembershipEntered() {
-		System.out.println("Bad membership number detected\n. It is possible that you:"
-				+ "\n scanned an invalid membership card,"
-				+ "\n the card is not activated,\n "
-				+ "or there is a typo in the entered membership number\n");
-		setState(State.INITIAL);
+
 	}
 
-	public SelfCheckoutStation getStation() {
-		return this.selfCheckoutStation;
+	@Override
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+		// TODO Auto-generated method stub
+
 	}
 
+	@Override
+	public void onLowCoins(CoinDispenser dispenser, Coin coin) {
+		// TODO Auto-generated method stub
 
-	public int getInkUsed(StringBuilder sb){
-		int inkCount = 0;
-		for (int i = 0; i < sb.length(); i++) {
-			char c = sb.charAt(i);
-			if (!Character.isWhitespace(c)) {
-				inkCount++;
-			}
-		}
-		return inkCount;
 	}
 
-	public int getPaperUsed(StringBuilder sb){
-		int paperCount = 0;
-		for (int i = 0; i < sb.length(); i++) {
-			char c = sb.charAt(i);
-			if (c == '\n') {
-				paperCount++;
-			}
-		}
-		return paperCount;
+	@Override
+	public void onLowBills(BillDispenser dispenser, Bill bill) {
+		// TODO Auto-generated method stub
+
 	}
 
-	public void checkLevels(){
-		int inkLevel = inkAdded - inkUsed;
-		int paperLevel = paperAdded - paperUsed;
-
-		if (inkLevel < ALERT_THRESHOLD) {
-			setState(State.DISABLED);
-			for (CustomerControllerListener listener : listeners) {
-				listener.reactToLowInkAlert();
-			}
-		}
-
-		if (paperLevel < ALERT_THRESHOLD){
-			setState(State.DISABLED);
-			for (CustomerControllerListener listener : listeners) {
-				listener.reactToLowPaperAlert();
-			}
-		}
-	}
 }
