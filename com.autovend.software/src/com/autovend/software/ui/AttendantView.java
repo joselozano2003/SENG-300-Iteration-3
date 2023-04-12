@@ -30,6 +30,12 @@ package com.autovend.software.ui;
 
 import javax.swing.JPanel;
 
+/**
+ * AttendantView is a JPanel that serves as a container for various sub-views related to
+ * managing items at a station. It contains three sub-views: StationTableView, AddItemByTextSearchView,
+ * and RemoveItemView.
+ */
+
 public class AttendantView extends JPanel {
 
 	public StationTableView tableView;
