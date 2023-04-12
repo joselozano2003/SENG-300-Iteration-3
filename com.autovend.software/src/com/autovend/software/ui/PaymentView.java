@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PaymentView extends JPanel {
 
-	private List<UIEventListener> observers;
+	private List<CustomerUIEventListener> observers;
 
 	private JTextArea receipt;
 	private JLabel amountDueValueLabel;
@@ -142,7 +142,7 @@ public class PaymentView extends JPanel {
 	 * @param listener the UIEventListener to be added to the list of observers
 	 */
 	
-	public void register(UIEventListener listener) {
+	public void register(CustomerUIEventListener listener) {
 		observers.add(listener);
 	}
 	
@@ -186,7 +186,7 @@ public class PaymentView extends JPanel {
 	
 
 	public void notifyPaymentMethod(String paymentMethod) {
-		for (UIEventListener listener : observers) {
+		for (CustomerUIEventListener listener : observers) {
 			paymentMethodLabel.setText("Method Chosen: " + paymentMethod );
 			listener.onSelectPaymentMethod(paymentMethod);
 		}
@@ -198,7 +198,7 @@ public class PaymentView extends JPanel {
 	 */
 	
 	public void notifyAddMoreItems() {
-		for (UIEventListener listener : observers) {
+		for (CustomerUIEventListener listener : observers) {
 			listener.onStartAddingItems();
 		}
 

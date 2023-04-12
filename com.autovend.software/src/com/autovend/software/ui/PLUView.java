@@ -17,7 +17,7 @@ public class PLUView extends JPanel {
 	private JButton addButton;
 	private JButton backButton;
 	private List<PLUViewObserver> observers;
-	private List<UIEventListener> listeners;
+	private List<CustomerUIEventListener> listeners;
 
 	/**
 	 *PLU constructor and swing GUI creations 
@@ -92,7 +92,7 @@ public class PLUView extends JPanel {
 	 */
 	
 	public void notifyGoBackToCheckout() {
-		for (UIEventListener listener : listeners) {
+		for (CustomerUIEventListener listener : listeners) {
 			listener.goBackToCheckout();
 		}
 	}
@@ -146,7 +146,7 @@ public class PLUView extends JPanel {
 	 * @param listener the UIEventListener to be added to the list of listeners
 	 */
 	
-	public void register(UIEventListener listener) {
+	public void register(CustomerUIEventListener listener) {
 		listeners.add(listener);
 	}
 

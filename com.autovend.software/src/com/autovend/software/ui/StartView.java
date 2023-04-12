@@ -11,7 +11,7 @@ import java.util.List;
 public class StartView extends JPanel {
     private JButton startButton;
     private JButton addMembershipNumberButton;
-    private List<UIEventListener> observers;
+    private List<CustomerUIEventListener> observers;
     
     /**
      * Constructor for start view with SWING guy creation and functionality
@@ -70,7 +70,7 @@ public class StartView extends JPanel {
      * @param listener the UIEventListener to be added to the list of observers
      */
     
-    public void register(UIEventListener listener) {
+    public void register(CustomerUIEventListener listener) {
         observers.add(listener);
     }
 
@@ -80,13 +80,13 @@ public class StartView extends JPanel {
  */
     
     public void notifyStartButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onStartAddingItems();
         }
     }
     
     public void notifyAddMembershipButtonPressed() {
-        for (UIEventListener listener : observers) {
+        for (CustomerUIEventListener listener : observers) {
             listener.onAddMembershipNumber();
         }
     }
