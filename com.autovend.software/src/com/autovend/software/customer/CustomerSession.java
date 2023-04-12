@@ -195,4 +195,11 @@ public class CustomerSession {
 		}
 	}
 
+	public String getMembershipNumber() {
+		return membershipNumber;
+	}
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
 }
