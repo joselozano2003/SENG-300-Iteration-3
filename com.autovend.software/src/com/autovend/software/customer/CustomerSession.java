@@ -45,6 +45,7 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private String membershipCode = null;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
@@ -118,6 +119,14 @@ public class CustomerSession {
 		} else {
 			return false;
 		}
+	}
+
+	public String getMembershipCode() {
+		return membershipCode;
+	}
+
+	public void setMembershipCode(String membershipCode) {
+		this.membershipCode = membershipCode;
 	}
 
 }

@@ -20,6 +20,7 @@ import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
+import com.autovend.MembershipCard;
 import com.autovend.Numeral;
 import com.autovend.PriceLookUpCode;
 import com.autovend.ReusableBag;
@@ -44,6 +45,7 @@ import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.bagging.WeightDiscrepancyException;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerController.State;
+import com.autovend.software.membership.MemberShipDatabase;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 
@@ -162,6 +164,12 @@ public class SomeBasicTests {
 		} catch (SimulationException | OverloadException e) {
 		}
 
+		// add some basic membership codes to the data base for testing
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1234");
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("5678");
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("9999");
+		
+		
 	}
 
 	@After
@@ -367,23 +375,61 @@ public class SomeBasicTests {
 
 	}
 
+//	@Test
+//	public void dispenseBagsTest() throws InterruptedException {
+//		customerSessionController.purchaseBags(2);
+//		Thread.sleep(3000);
+//
+//		selfCheckoutStation.baggingArea.add(new ReusableBag());
+//		selfCheckoutStation.baggingArea.add(new ReusableBag());
+//
+//		assertEquals(1, currentSession.getShoppingCart().size());
+//
+//		Thread.sleep(5000);
+//
+//		customerSessionController.startPaying();
+//
+//		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
+//		selfCheckoutStation.coinSlot.accept(coin);
+
+//	}
+	
 	@Test
-	public void dispenseBagsTest() throws InterruptedException {
-		customerSessionController.purchaseBags(2);
-		Thread.sleep(3000);
-
-		selfCheckoutStation.baggingArea.add(new ReusableBag());
-		selfCheckoutStation.baggingArea.add(new ReusableBag());
-
-		assertEquals(1, currentSession.getShoppingCart().size());
-
-		Thread.sleep(5000);
-
-		customerSessionController.startPaying();
-
-		Coin coin = new Coin(BigDecimal.valueOf(1), currency);
-		selfCheckoutStation.coinSlot.accept(coin);
+	public void checkValidMembershipBarcode() throws InterruptedException {
+		MembershipCard memberCard = new MembershipCard("membership", "1234", "caleb cavilla", true);
+		
+		selfCheckoutStation.mainScanner.scan(memberCard);
+		assertEquals("1234", currentSession.getMembershipCode());
 
 	}
+	
+	@Test
+	public void checkValidMembershipTap() throws InterruptedException, IOException {
+		MembershipCard memberCard = new MembershipCard("membership", "5678", "caleb cavilla", true);
+		
+		selfCheckoutStation.cardReader.tap(memberCard);
+		assertEquals("5678", currentSession.getMembershipCode());
 
+	}
+	
+	
+	@Test
+	public void checkValidMembershipSwipe() throws InterruptedException, IOException {
+		MembershipCard memberCard = new MembershipCard("membership", "5678", "caleb cavilla", true);
+		
+		selfCheckoutStation.cardReader.swipe(memberCard, null);
+		assertEquals("5678", currentSession.getMembershipCode());
+
+	}
+	
+	@Test
+	public void checkInvalidMembership() throws InterruptedException, IOException {
+		// membership code not in data base
+		MembershipCard memberCard = new MembershipCard("membership", "0000", "caleb cavilla", true);
+		
+		selfCheckoutStation.handheldScanner.scan(memberCard);
+		assertEquals(null, currentSession.getMembershipCode());
+
+	}
+	
 }

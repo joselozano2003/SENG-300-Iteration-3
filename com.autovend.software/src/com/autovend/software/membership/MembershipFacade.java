@@ -71,7 +71,7 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		 */
 		public void reactToBarcodeScannedEvent(BarcodeScanner barcodeScanner, Barcode barcode) {
 
-			if (MemberShipDatabase.userExists(barcode.toString()) == true) {
+			if (MemberShipDatabase.userExists(barcode.toString())) {
 				membershipEntered = true;
 				for (MembershipListener listener : listeners)
 					listener.reactToValidMembershipEntered(barcode.toString());
@@ -101,10 +101,11 @@ public class MembershipFacade extends AbstractFacade<MembershipListener> {
 		}
 		@Override
 		public void reactToCardDataReadEvent(CardReader reader, CardData data) {
-			if (MemberShipDatabase.userExists(data.getNumber()) == true) {
+			if (MemberShipDatabase.userExists(data.getNumber())) {
 				membershipEntered = true;
-				for (MembershipListener listener : listeners)
+				for (MembershipListener listener : listeners) {
 					listener.reactToValidMembershipEntered(data.getNumber());
+				}
 			} else {
 				membershipEntered = false;
 				if (data.getType().equals("membership")) {

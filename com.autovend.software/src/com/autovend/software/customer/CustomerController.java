@@ -376,7 +376,8 @@ public class CustomerController
 
 	@Override
 	public void reactToValidMembershipEntered(String number) {
-		// TODO Auto-generated method stub
+		currentSession.setMembershipCode(number);
+		setState(State.PAYING);
 		
 	}
 
@@ -386,7 +387,7 @@ public class CustomerController
 				+ "\n scanned an invalid membership card,"
 				+ "\n the card is not activated,\n "
 				+ "or there is a typo in the entered membership number\n");
-		setState(State.INITIAL);
+		setState(State.SCANNING_MEMBERSHIP);
 	}
 
 }
