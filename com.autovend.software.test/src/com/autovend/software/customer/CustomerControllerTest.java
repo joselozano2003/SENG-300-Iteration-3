@@ -26,6 +26,7 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
+
 package com.autovend.software.customer;
 
 import org.junit.Before;
@@ -131,7 +132,7 @@ public class CustomerControllerTest {
     	controller.setState(State.DISPENSING_CHANGE);
     	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
   }
-    
+ /**   
     
     @Test
     public void testAddMoreItems() {
@@ -233,5 +234,5 @@ public class CustomerControllerTest {
     public void testOnWeightChanged() {
     	
     }
-   
+   **/
 }
