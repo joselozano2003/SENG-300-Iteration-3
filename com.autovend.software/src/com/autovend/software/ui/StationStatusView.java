@@ -14,12 +14,12 @@ import com.autovend.software.attendant.AttendantController;
 import auth.AttendantAccount;
 
 public class StationStatusView extends JPanel {
-	
+
 	int num_stations;
-	
+
 	AttendantController controller;
 	AttendantAccount account;
-	
+
 	JPanel attendantPanel = this;
 	JLabel discrepancyLabels[];
 	JButton overrideButtons[];
@@ -30,11 +30,11 @@ public class StationStatusView extends JPanel {
 	JButton shutdownStationButtons[];
 	JButton turnonStationButtons[];
 	GridLayout gLayout;
-	
+
 	private List<UIEventListener> observers;
-	
+
 	List<UIEventListener> listeners;
-	
+
 	public static void main(String args[]) {
 		JFrame testFrame = new JFrame();
 		StationStatusView ssv = new StationStatusView(10);
@@ -43,8 +43,8 @@ public class StationStatusView extends JPanel {
 		testFrame.validate();
 		testFrame.pack();
 	}
-	
-	
+
+
 	// Display attendant interface.
 	// Number of stations is preset when AttendantView is constructed. Should incorporate option to change language.
 	public StationStatusView(int num_stations) {
@@ -59,7 +59,7 @@ public class StationStatusView extends JPanel {
 		turnonStationButtons = new JButton[num_stations];
 		gLayout = new GridLayout(num_stations, 3, 0, 10);
 		this.setLayout(gLayout);
-		
+
 		// Set up each row. Initially, no weight discrepancies.
 		for (int i = 0; i < num_stations; ++i) {
 			discrepancyLabels[i] = new JLabel("Station"
@@ -71,59 +71,59 @@ public class StationStatusView extends JPanel {
 			unlockStationButtons[i] = new JButton("Unlock Station");
 			shutdownStationButtons[i] = new JButton("Shutdown Station");
 			turnonStationButtons[i] = new JButton("Start Station");
-			
+
 			final int buttonIndex = i;
-			
+
 			overrideButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                notifyOverrideButtonPressed(buttonIndex);
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyOverrideButtonPressed(buttonIndex);
+				}
+			});
+
 			addByTextButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                // add method
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyItemByTextButtonPressed(buttonIndex);
+				}
+			});
+
 			removeItemButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                notifyRemoveItemButtonPressed(buttonIndex);// add method
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyRemoveItemButtonPressed(buttonIndex);
+				}
+			});
+
 			lockStationButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                // add method
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyLockButtonPressed(buttonIndex);
+				}
+			});
+
 			unlockStationButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                // add method
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyEnableButtonPressed(buttonIndex);
+				}
+			});
+
 			shutdownStationButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                // add method
-	            }
-	        });
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyShutdownButtonPressed(buttonIndex);
+				}
+			});
+
 			turnonStationButtons[i].addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                // add method
-	            }
-	        });
-			
-			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					notifyStationTurnonButtonPressed(buttonIndex);
+				}
+			});
+
+
 			attendantPanel.add(discrepancyLabels[i]);
 			attendantPanel.add(overrideButtons[i]);
 			attendantPanel.add(addByTextButtons[i]);
@@ -132,36 +132,69 @@ public class StationStatusView extends JPanel {
 			attendantPanel.add(unlockStationButtons[i]);
 			attendantPanel.add(turnonStationButtons[i]);
 			attendantPanel.add(shutdownStationButtons[i]);
-			
+
 		}
-		
-    	
+
+
 	}
-	
+
 	//////////////////////
 	// BUTTON LISTENERS //
 	//////////////////////
-	
-	
+
+
 	public void register(UIEventListener listener) {
 		observers.add(listener);
 	}
-	
-	public void notifyOverrideButtonPressed(int stationNum) {
-		for (UIEventListener listener : observers) {
-			listener.onOverride(stationNum);
-		}
-	}
-	
+
 	public void notifyRemoveItemButtonPressed(int stationNum) {
+		if (observers == null) return;
 		for (UIEventListener listener : observers) {
 			listener.onStationRemoveItemPressed(stationNum);
 		}
 	}
-	
-	
-	
-	
-	
+
+	public void notifyOverrideButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onOverride(stationNum);
+		}
+	}
+
+	public void notifyItemByTextButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onStationAddByTextPressed(stationNum);
+		}
+	}
+
+	public void notifyShutdownButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onStationShutdown(stationNum);
+		}
+	}
+
+	public void notifyStationTurnonButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onStationTurnon(stationNum);
+		}
+	}
+
+	public void notifyLockButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onStationLock(stationNum);
+		}
+	}
+
+	public void notifyEnableButtonPressed(int stationNum) {
+		if (observers == null) return;
+		for (UIEventListener listener : observers) {
+			listener.onStationUnlock(stationNum);
+		}
+	}
+
 
 }

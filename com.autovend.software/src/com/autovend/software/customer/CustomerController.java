@@ -480,6 +480,41 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public void onAttendantLoginAttempt(AttendantAccount account) {
 		// how does this fit??
 	}
+
+	@Override
+	public void onStationLogout() {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationLock(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationUnlock(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationShutdown(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationTurnon(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationAddByTextPressed(int value) {
+		// how does this fit??
+	}
+
+	@Override
+	public void onStationRemoveItemPressed(int value) {
+		// how does this fit??
+	}
 	
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;
