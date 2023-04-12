@@ -57,6 +57,8 @@ public class CustomerSessionTest {
 	public void setUp() throws Exception {
 		session = new CustomerSession();
 		barcodedProduct = Setup.createBarcodedProduct123(12, 5, true);
+		pluCodedProduct = Setup.createPLUProduct1234(12, 1, true); //In CustomerSession Class, quantity to add was assumed to be the weight.
+		reusableBagProduct = new ReusableBagProduct();
 	}
 
 //TESTING PAYMENT-COMPLETION.
@@ -124,11 +126,11 @@ public class CustomerSessionTest {
 			assertFalse(session.isPaymentComplete()); //So Payment isn't complete.
 			}
 		
-//TESTING CUSTOMER PAYMENT (addPayment method)
+//TESTING CUSTOMER PAYMENT (addPayment method) ON BARCODED ITEMS
 		
 		//Making Payment on 1 item
 		@Test
-		public void customerPaymentTestOneItem() {
+		public void customerPaymentTestOneBarcodedItem() {
 			
 			session.addItemToCart(barcodedProduct, 1); // 12 dollar worth product
 			
@@ -147,7 +149,7 @@ public class CustomerSessionTest {
 		
 		//Making Payment on 2 items
 		@Test
-		public void customerPaymentTestTwoItems() {
+		public void customerPaymentTestTwoBarcodedItems() {
 			
 			session.addItemToCart(barcodedProduct, 2); // 12 dollar worth product
 				
@@ -166,7 +168,7 @@ public class CustomerSessionTest {
 		
 		//Making Payment on 20 items
 		@Test
-		public void customerPaymentTestTwentyItems() {
+		public void customerPaymentTestTwentyBarcodedItems() {
 				
 			session.addItemToCart(barcodedProduct, 20); // 12 dollar worth product
 					
@@ -451,10 +453,193 @@ public class CustomerSessionTest {
 			assertEquals(expected, session.getTotalCost()); //Total cost shouldn't be updated	
 		}			
 		
-//TEST TO
+//TESTING PAYMENT ON PLU CODED PRODUCTS
+		//Making Payment on 1 item
+		@Test
+		public void customerPaymentTestOnePLUItem() {
+			
+			session.addItemToCart(pluCodedProduct, 1); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+			
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(10));
+			assertEquals(BigDecimal.valueOf(10), session.getTotalPaid());
+			 
+			
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(2));
+			assertEquals(BigDecimal.valueOf(12), session.getTotalPaid());	
+		}
+		
+		//Making Payment on 2 items
+		@Test
+		public void customerPaymentTestTwoPLUItems() {
+			
+			session.addItemToCart(pluCodedProduct, 2); // 12 dollar worth product
+				
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+				
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(10));
+			assertEquals(BigDecimal.valueOf(10), session.getTotalPaid());
+				 
+				
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(14));
+			assertEquals(BigDecimal.valueOf(24), session.getTotalPaid());	
+			}
+		
+		//Making Payment on 20 items
+		@Test
+		public void customerPaymentTestTwentyPLUItems() {
+				
+			session.addItemToCart(pluCodedProduct, 20); // 12 dollar worth product
+					
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+					
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(200));
+			assertEquals(BigDecimal.valueOf(200), session.getTotalPaid());
+					 
+					
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(40));
+			assertEquals(BigDecimal.valueOf(240), session.getTotalPaid());	
+			}
+		
+//TESTING PAYMENT ON REUSABLE BAG PRODUCTS
+		
+		//Making Payment on 1 item
+		@Test
+		public void customerPaymentTestOneReusableBagItem() {
+			
+			session.addItemToCart(reusableBagProduct, 1); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+			
+			//Making payment
+			session.addPayment(BigDecimal.valueOf(0.05));
+			assertEquals(BigDecimal.valueOf(0.05), session.getTotalPaid());
+			 
+			
+				
+		}
+		
+		//Making Payment on 2 items
+		@Test
+		public void customerPaymentTestTwoReusableBagItems() {
+			
+			session.addItemToCart(reusableBagProduct, 2); // 12 dollar worth product
+				
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+				
+			//Making payment
+			session.addPayment(BigDecimal.valueOf(0.10));
+			assertEquals(BigDecimal.valueOf(0.10), session.getTotalPaid());
+				 	
+			}
+		
+		//Making Payment on 20 items
+		@Test
+		public void customerPaymentTestTwentyReusableBagItems() {
+				
+			session.addItemToCart(reusableBagProduct, 20); // 12 dollar worth product
+					
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+					
+			//Making payment
+			session.addPayment(BigDecimal.valueOf(1));
+			assertEquals(BigDecimal.valueOf(1), session.getTotalPaid());
+	
+			}
+		
+//TESTING FOR EXPECTED WEIGHT CALCULATION
+		
+		@Test
+		public void addOneItemBarcodedTestWeight() {
+				
+			session.addItemToCart(barcodedProduct, 1); // Weight of one item is 5												
+										
+			assertEquals(5.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addTwoItemsBarcodedTestWeight() {
+				
+			session.addItemToCart(barcodedProduct, 2); // Weight of one item is 5												
+										
+			assertEquals(10.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addOneHundredBarcodedItemsTestWeight() {
+				
+			session.addItemToCart(barcodedProduct, 100); // Weight of one item is 5												
+										
+			assertEquals(500.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addNinetyNineBarcodedItemsTestWeight() {
+				
+			session.addItemToCart(barcodedProduct, 99); // Weight of one item is 5												
+										
+			assertEquals(495.0, session.getExpectedWeight(), 0.1);
+			
+			}
+		
+		
+		@Test
+		public void addOneItemPLUTestWeight() {
+				
+			session.addItemToCart(pluCodedProduct, 1); // Weight of one item is 5												
+										
+			assertEquals(1.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addTwoItemsPLUTestWeight() {
+				
+			session.addItemToCart(pluCodedProduct, 2); // Weight of one item is 5												
+										
+			assertEquals(2.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addOneHundredPLUItemsTestWeight() {
+				
+			session.addItemToCart(pluCodedProduct, 100); // Weight of one item is 5												
+										
+			assertEquals(100.0, session.getExpectedWeight(), 0.1);
+	
+			}
+		@Test
+		public void addNinetyNinePLUItemsTestWeight() {
+				
+			session.addItemToCart(pluCodedProduct, 99); // Weight of one item is 5												
+										
+			assertEquals(99.0, session.getExpectedWeight(), 0.1);
+			
+			}
+		
+//TESTS FOR ADDING MEMBERSHIP 
+		@Test
+		public void membershipNumberTest() {
+			session.addMembershipNumber("30143490");
+			assertEquals("30143490", session.getMembershipNumber());
+		}
+		
+
+}		
 		
 		
 
 	
 
-}

@@ -140,5 +140,8 @@ public class CustomerSession {
 			return false;
 		}
 	}
+	public String getMembershipNumber() {
+		return membershipNumber;
+	}
 
 }
