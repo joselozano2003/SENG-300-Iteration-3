@@ -28,12 +28,11 @@
  */
 package com.autovend.software.attendant;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
+import com.autovend.Bill;
 import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.BillDispenser;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
@@ -142,6 +141,20 @@ public class AttendantController implements CustomerStationListener {
 
 	public void denyStationUse(int stationNumber) {
 		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
+	}
+
+	public void reEnableStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.ADDING_ITEMS);
+	}
+
+	public void adjustBills(int stationNumber, int bills, int amountToAdd) throws OverloadException {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		BillDispenser dispenser = station.billDispensers.get(bills);
+		Bill bill = new Bill(bills, Currency.getInstance("CAD"));
+		for (int i = 0; i < amountToAdd; i++) {
+			dispenser.load(bill, bill);
+		}
+
 	}
 
 	@Override
