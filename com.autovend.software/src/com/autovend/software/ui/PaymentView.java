@@ -19,7 +19,10 @@ public class PaymentView extends JPanel {
 	private JButton creditOrDebitButton;
 	private JButton giftCardButton;
 	private JButton addMoreItemsButton;
-
+	/**
+	 * Payment view constructor and swing GUI construction for the Pay View 
+	 * 
+	 */
 
 	public PaymentView() {
 		observers = new ArrayList<>();
@@ -123,24 +126,54 @@ public class PaymentView extends JPanel {
 
 	}
 
+	/**
+	 * Registers a UIEventListener to the list of observers.
+	 *
+	 * @param listener the UIEventListener to be added to the list of observers
+	 */
+	
 	public void register(UIEventListener listener) {
 		observers.add(listener);
 	}
 	
+	/**
+	 * Updates the amount due value displayed on the user interface.
+	 *
+	 * @param amountDueText the text representing the updated amount due
+	 */
 	
 
 	public void updateAmountDue(String amountDueText) {
 		amountDueValueLabel.setText(amountDueText);
 	}
-
+	
+	/**
+	 * Updates the change due value displayed on the user interface.
+	 *
+	 * @param amountDueText the text representing the updated change due
+	 */
+	
 	public void updateChangeDue(String amountDueText) {
 		changeDueValueLabel.setText(amountDueText);
 	}
 
+	/**
+	 * Updates the receipt content displayed on the user interface.
+	 *
+	 * @param receiptText the text representing the updated receipt content
+	 */
+	
 	public void updateReceipt(String receiptText) {
 		receipt.setText(receiptText); 
 
 	}
+	
+	/**
+	 * Notifies all registered UIEventListener objects of the selected payment method.
+	 *
+	 * @param paymentMethod the payment method selected by the user
+	 */
+	
 
 	public void notifyPaymentMethod(String paymentMethod) {
 		for (UIEventListener listener : observers) {
@@ -148,6 +181,10 @@ public class PaymentView extends JPanel {
 		}
 
 	}
+	
+	/**
+	 * Notifies all registered UIEventListener objects that the user wants to add more items.
+	 */
 	
 	public void notifyAddMoreItems() {
 		for (UIEventListener listener : observers) {

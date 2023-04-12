@@ -24,6 +24,11 @@ public class LoginView extends JPanel {
 	
 	List<UIEventListener> listeners;
 	
+	/**
+	 * Constructor for the Log in View wich contructs the Swing 
+	 * GUI and functionality for the Buttons 
+	 */
+	
 	public LoginView() {
 
 		loginFrame = new JFrame("Attendant Login");

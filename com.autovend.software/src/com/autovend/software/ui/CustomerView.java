@@ -30,6 +30,12 @@ package com.autovend.software.ui;
 
 import javax.swing.JFrame;
 
+/**
+ * CustomerView is a container for various sub-views related to the customer's interactions
+ * with the system, such as selecting items, starting a session, and making payments. It
+ * contains five sub-views: PLUView, StartView, CheckoutView, PaymentView, and AddItemByBrowsingView.
+ */
+
 public class CustomerView {
 	
 	public PLUView pluView;
