@@ -60,4 +60,8 @@ public interface PaymentEventListener extends AbstractEventListener {
 
 	public void onLowBills(BillDispenser dispenser);
 
+	public void cardInserted();
+
+	public void cardRemoved();
+
 }
