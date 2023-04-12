@@ -29,6 +29,8 @@
 package com.autovend.software.item;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -86,47 +88,6 @@ public class ItemFacadeTest {
 		new ItemFacade(station, null, false);
 	}
 	
-	
-	
-//	/**
-//	 * Test a null item being added.
-//	 */
-//	@Test
-//	public void testAddNullItem() {
-//		int expected = 0;
-//		Product nullProd = null;
-//		itemFacade.addProduct(nullProd);
-//		
-//		int actual = itemFacade.getItemList().size();
-//		assertEquals(expected, actual);
-//	}
-//	
-//	/**
-//	 * Tests a single BarcodedProduct being added.
-//	 */
-//	@Test
-//	public void testSingleBarcodedProductBeingAdded() {
-//		int expected = 1;
-//		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(12.34, 56, true);
-//		itemFacade.addProduct(barcodedProduct0);
-//		
-//		int actual = itemFacade.getItemList().size();
-//		assertEquals(expected, actual);	
-//	}
-//	
-//	/**
-//	 * Tests a single PLUCodedProduct being added.
-//	 */
-//	@Test
-//	public void testSinglePLUCodedProductBeingAdded() {
-//		int expected = 1;
-//		PLUCodedProduct pluProduct0 = Setup.createPLUProduct1234(11.10, 2, true);
-//		itemFacade.addProduct(pluProduct0);
-//		
-//		int actual = itemFacade.getItemList().size();
-//		assertEquals(expected, actual);	
-//	}
-	
 	/**
 	 * Tests that ItemFacade getChildren list contains the correct number of children
 	 */
@@ -144,4 +105,37 @@ public class ItemFacadeTest {
 	public void testGetNullInstanceOfItemFacade() {
 		assertEquals(itemFacade, itemFacade.getInstance());
 	}
+	
+	/**
+	 * Tests that no listeners have been registered to ItemFacade
+	 * and the Listeners list is empty.
+	 */
+	@Test
+	public void testEmptyListenerListOfItemFacade() {
+		int expectedSize = 0;
+		int actualSize = itemFacade.getListeners().size();
+		
+		assertEquals(expectedSize, actualSize);
+		assertTrue(itemFacade.getListeners().isEmpty());
+	}
+	
+	/**
+	 * Tests that two listeners have been registered to ItemFacade
+	 * and the Listeners list is not empty (has size 2).
+	 */
+	@Test
+	public void testNonEmptyListenerListOfItemFacade() {
+		int expectedSize = 2;
+		
+		ItemListenerStub listener1 = new ItemListenerStub();
+		ItemListenerStub listener2 = new ItemListenerStub();
+		
+		itemFacade.register(listener1);
+		itemFacade.register(listener2);
+		
+		int actualSize = itemFacade.getListeners().size();
+		
+		assertEquals(expectedSize, actualSize);
+		assertFalse(itemFacade.getListeners().isEmpty());	
+	}	
 }

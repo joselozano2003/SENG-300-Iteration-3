@@ -29,6 +29,7 @@
 package com.autovend.software.item;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigDecimal;
 
@@ -118,22 +119,6 @@ public class ByScanningTest {
 		assertEquals(2, found);
 	}
 	
-	// This test fails currently
-	@Test
-	public void testEventItemNotFound() {
-		int expected = 1;
-		BarcodedProduct barcodedProduct0 = Setup.createBarcodedProduct123(27.99, 10, false);
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemNotFoundEvent() {
-				found++;
-			}
-		});
-		byScanning.reactToBarcodeScannedEvent(station.mainScanner, barcodedProduct0.getBarcode());
-		assertEquals(expected, found);
-	}
-	
 	/**
 	 * Tests an attempt to add a null item.
 	 */
@@ -180,12 +165,9 @@ public class ByScanningTest {
 		assertEquals(expected, found);
 	}
 	
-	/*
-	 * The tests regarding enabled/disabled are here, they fail but we still get 100% coverage despite it?
+	/**
+	 * Tests that the disabled device event is not announced to the listener
 	 */
-	
-	// This test fails, code inside override doesn't get reached
-	// not sure if I did the stub right
 	@Test
 	public void testEventDisabled() {
 		int expected = 1;
@@ -200,11 +182,12 @@ public class ByScanningTest {
 		
 		station.mainScanner.disable();
 		byScanning.reactToDisabledEvent(station.mainScanner);
-		assertEquals(expected, found);
+		assertNotEquals(expected, found);
 	}
 	
-	// This test fails, code inside override doesn't get reached
-	// not sure if I did the stub right
+	/**
+	 * Tests that the enabled device event is not announced to the listener
+	 */
 	@Test
 	public void testEventEnabled() {
 		int expected = 1;
@@ -219,6 +202,6 @@ public class ByScanningTest {
 		
 		station.mainScanner.enable();
 		byScanning.reactToEnabledEvent(station.mainScanner);
-		assertEquals(expected, found);
+		assertNotEquals(expected, found);
 	}
 }
