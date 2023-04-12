@@ -74,11 +74,6 @@ public class ByPLUCode extends ItemFacade implements PLUViewObserver, Electronic
 			listener.onItemAddedEvent(pluCodedProduct, quantity);
 			this.currentPLUCode = null;
 		}
-
-		{
-			for (ItemEventListener listener : listeners)
-				listener.onItemNotFoundEvent();
-		}
 	}
 
 	@Override
