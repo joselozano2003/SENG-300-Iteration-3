@@ -28,79 +28,50 @@
  */
 package com.autovend.software.item;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
-import com.autovend.software.AbstractSoftware;
+import com.autovend.software.AbstractFacade;
+import com.autovend.software.ui.CustomerView;
+import com.autovend.software.ui.PLUView;
 
 @SuppressWarnings("serial")
-public class ItemFacade extends AbstractSoftware<ItemListener>{
+public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
 	private static List<Product> itemList;
-	private static double expectedWeight;
-	private static BigDecimal totalCost;
-	
-    public ItemFacade(SelfCheckoutStation station) {
-		super(station);
-		//Initialize this instance and children once.
-		if (instance == null) {
-			instance = this;
+
+	public ItemFacade(SelfCheckoutStation station, CustomerView customerView, boolean isChild) {
+		super(station, customerView);
+
+		// Initialize this instance and children once.
+
+		if (!isChild) {
 			itemList = new ArrayList<Product>();
-			expectedWeight = 0.0;
-			totalCost = BigDecimal.ZERO;
 			children = new ArrayList<ItemFacade>();
-			children.add(new ByScanning(station));
-			children.add(new ByBrowsing(station));
-			children.add(new ByPLUCode(station));
-			children.add(new ByTextSearch(station));
+			children.add(new ByScanning(station, customerView));
+			children.add(new ByBrowsing(station, customerView));
+			children.add(new ByPLUCode(station, customerView));
+			children.add(new ByTextSearch(station, customerView));
 		}
 	}
 
-	protected void addProduct(Product product) {
-		if (product != null)
-			itemList.add(product);
-    }
-	
-	public void removeProduct(Product product) {
-		itemList.remove(product);
-	}
-	
-	public List<Product> getItemList() {
-		return itemList;
-	}
-	
-	public void adjustExpectedWeight(double adjust) {
-		expectedWeight += adjust;
-	}
-	
-	public double getExpectedWeight() {
-		return expectedWeight;
-	}
-	
-	public void adjustTotalCost(BigDecimal adjust) {
-		totalCost.add(adjust);
-	}
-	
-	public BigDecimal getTotalCost() {
-		return totalCost;
-	}
-	
 	/**
 	 * @return List of active subclasses.
 	 */
-	protected List<ItemFacade> getChildren() {
+	public List<ItemFacade> getChildren() {
 		return children;
 	}
-	
+
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
 	public static ItemFacade getInstance() {
 		return instance;
 	}
-	
+
 }

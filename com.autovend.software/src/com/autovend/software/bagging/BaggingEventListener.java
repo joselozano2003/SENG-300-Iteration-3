@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,33 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.bagging;
 
 import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractEventListener {
+public interface BaggingEventListener extends AbstractEventListener {
 	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
+	 * Signals that the weight on a scale increased.
+	 * 
+	 * @throws WeightDiscrepancyException
 	 */
-	void reactToValidMembershipEntered(String number);
-	
+
+	void onWeightChanged(double weightInGrams);
+
 	/**
-	 * Announces that an invalid membership number has been entered by the user.
+	 * Signals that the customer purchased x number of reusable bags
+	 * @param bagProduct 
+	 * 
+	 * @param amount
 	 */
-	void reactToInvalidMembershipEntered();
+	 void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount);
+
+	/**
+	 * Signals that the customer purchased x number of reusable bags
+	 * @param bagProduct
+	 *
+	 * @param amountDispensed
+	 */
+	void onBagsDispensedFailure(ReusableBagProduct bagProduct,int amountLeft, int amountDispensed);
+
 }

@@ -1,5 +1,5 @@
 /* P3-4 Group Members
- *
+ * 
  * Abdelrhafour, Achraf (30022366)
  * Campos, Oscar (30057153)
  * Cavilla, Caleb (30145972)
@@ -26,19 +26,28 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software;
 
-import com.autovend.software.AbstractEventListener;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.observers.AbstractDeviceObserver;
 
-public interface MembershipListener extends AbstractEventListener {
+/**
+ * Ported from hardware and changed a bit.
+ * 
+ * This class represents the abstract interface for all software listeners.
+ * All subclasses should add their own event notification methods, the first
+ * parameter of which should always be the software affected.
+ */
+public interface AbstractEventListener {
 	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
+	 *
+	 * Announces that the entire station should be disabled.
 	 */
-	void reactToValidMembershipEntered(String number);
-	
+	void reactToDisableStationRequest();
 	/**
-	 * Announces that an invalid membership number has been entered by the user.
+	 * Announces that the entire station should be enabled.
 	 */
-	void reactToInvalidMembershipEntered();
+	void reactToEnableStationRequest();
+
+
 }

@@ -26,19 +26,30 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.bagging;
 
-import com.autovend.software.AbstractEventListener;
+import java.math.BigDecimal;
 
-public interface MembershipListener extends AbstractEventListener {
-	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
-	 */
-	void reactToValidMembershipEntered(String number);
+import com.autovend.ReusableBag;
+import com.autovend.products.Product;
+
+public class ReusableBagProduct extends Product {
+
+	private double expectedWeight;
+	private static BigDecimal DEFAULT_PRICE = new BigDecimal("0.05");
 	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
-	 */
-	void reactToInvalidMembershipEntered();
+	public ReusableBagProduct() {
+		super(DEFAULT_PRICE, true);
+		ReusableBag reusableBag = new ReusableBag();
+		this.expectedWeight = reusableBag.getWeight();
+	}
+
+	public double getExpectedWeight() {
+		return expectedWeight;
+	}
+	
+	public void setPrice(BigDecimal newPrice) {
+		DEFAULT_PRICE = newPrice;
+	}
+
 }

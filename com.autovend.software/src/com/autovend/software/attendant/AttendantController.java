@@ -28,26 +28,176 @@
  */
 package com.autovend.software.attendant;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 
-import com.autovend.software.customer.CustomerStation;
+import com.autovend.Bill;
+import com.autovend.Coin;
+import com.autovend.devices.*;
+import com.autovend.products.Product;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerSession;
+import com.autovend.software.customer.CustomerStationListener;
+import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.item.ItemFacade;
 
-public class AttendantController {
-	
-	private static List<CustomerStation> customerStations;
+import auth.AttendantAccount;
+import auth.AuthFacade;
+import com.autovend.software.item.ProductsDatabase2;
+
+public class AttendantController implements CustomerStationListener{
+
+	private static ArrayList<CustomerStationLogic> customerStations;
 	private AttendantModel model;
-	private AttendantView view;
+	private AuthFacade auth;
+	private ArrayList<HashMap<Product, Double>> removedProductsRequest;
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStation> list) {
-		if (model == null || view == null || list == null)
-			throw new NullPointerException("Null arguments given");
-		this.model = model;
-		this.view = view;
-		customerStations = list;
+	public AttendantController(SupervisionStation supervisionStation ) {
+		this.auth = new AuthFacade();
+		customerStations = new ArrayList<CustomerStationLogic>();
+		removedProductsRequest = new ArrayList<HashMap<Product, Double>>();
 	}
-	
-	public void startupStation(/*station*/) {
-		
+
+	public boolean startLogIn(AttendantAccount attendantAccount) {
+		return auth.logIn(attendantAccount);
 	}
-	
+
+	public boolean startLogOut(AttendantAccount attendantAccount) {
+		return auth.logOut(attendantAccount);
+	}
+
+	public boolean startAddAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
+		return auth.addAccount(attendantAccount, addedAccount);
+	}
+
+	public boolean startDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removeAccount) {
+		return auth.deleteAccount(attendantAccount, removeAccount);
+	}
+
+	// TODO: Gets triggered from GUI
+	/**
+	 * This method is called when the attendant wants to add a new customer station
+	 * @param stationNumber, stationNumber is the number of the station that the attendant wants to oprate on
+	 *
+	 * @param product, product is the product that the attendant wants to add to the station. It is given through the keyboard
+	 *
+	 * @param quantity, quantity is the quantity of the product that the attendant wants to add to the station. It is given through the keyboard
+	 */
+	public void addItemToStationByTextSearch(int stationNumber, String product, double quantity) {
+		CustomerStationLogic stationLogic = customerStations.get(stationNumber);
+		CustomerSession currentSession = stationLogic.getController().getCurrentSession();
+		if (ProductsDatabase2.Products_Textsearch_Keywords_Database.containsKey(product)) {
+			Product item = ProductsDatabase2.Products_Textsearch_Keywords_Database.get(product);
+			currentSession.addItemToCart(item, quantity);
+		}
+		else {
+			//TODO: Display Item not found
+		}
+	}
+
+	// This is triggered from the INITIAL state
+	public void addInkToStation(int stationNumber, int inkLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addInk(inkLevel);
+			customerStations.get(stationNumber).getController().inkAdded += inkLevel;
+			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+		} catch (OverloadException e) {
+			// TODO: Show attendant screen that too much ink was tried to be added
+		}
+	}
+	public void addPaperToStation(int stationNumber, int paperLevel) {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		try {
+			station.printer.addPaper(paperLevel);
+			customerStations.get(stationNumber).getController().paperAdded += paperLevel;
+			customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+		} catch (OverloadException e) {
+			//TODO: Show attendant screen that too much paper was tried to be added
+		}
+	}
+
+	public void removeItemfromStation(int stationNumber, Product product, double quantity) {
+		CustomerStationLogic station = customerStations.get(stationNumber);
+		station.getController().getCurrentSession().removeItemFromCart(product, quantity);
+	}
+
+	public void addCustomerStation(CustomerStationLogic station) {
+		customerStations.add(station);
+	}
+
+	public ArrayList<CustomerStationLogic> getCustomerStationsManaged() {
+		return customerStations;
+	}
+
+	public void shutDownStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
+	}
+
+	public void startUpStation(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.STARTUP);
+	}
+
+	public void permitStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
+	}
+
+	public void denyStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
+	}
+
+	public void reEnableStationUse(int stationNumber) {
+		customerStations.get(stationNumber).getController().setState(CustomerController.State.ADDING_ITEMS);
+	}
+
+	public void adjustBills(int stationNumber, int bills, int amountToAdd) throws OverloadException {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		BillDispenser dispenser = station.billDispensers.get(bills);
+		Bill bill = new Bill(bills, Currency.getInstance("CAD"));
+		for (int i = 0; i < amountToAdd; i++) {
+			dispenser.load(bill, bill);
+		}
+	}
+
+	public void adjustCoins(int stationNumber, int coins, int amountToAdd) throws OverloadException {
+		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
+		BigDecimal value = BigDecimal.valueOf(coins);
+		CoinDispenser dispenser = station.coinDispensers.get(value);
+		Coin coin = new Coin(value, Currency.getInstance("CAD"));
+		for (int i = 0; i < amountToAdd; i++) {
+			dispenser.load(coin, coin);
+		}
+	}
+	@Override
+	public void reactToDisableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToEnableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToRemoveItemRequest(Product product, double quantity, CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		removedProductsRequest.get(stationNumber).put(product, quantity);
+		String productName = "Request to remove " + quantity + " of " + product.toString() + " from station " + stationNumber;
+		//TODO: Show this message in attendant view
+	}
+
+	@Override
+	public void lowInkAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		//TODO: Show to attendant view the station number that needs ink
+	}
+
+	@Override
+	public void lowPaperAlert(CustomerStationLogic stationLogic) {
+		int stationNumber = customerStations.indexOf(stationLogic);
+		//TODO: Show to attendant view the station number that needs paper
+	}
 }

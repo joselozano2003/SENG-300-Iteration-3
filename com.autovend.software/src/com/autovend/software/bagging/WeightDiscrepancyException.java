@@ -1,3 +1,4 @@
+
 /* P3-4 Group Members
  *
  * Abdelrhafour, Achraf (30022366)
@@ -25,20 +26,8 @@
  * Samin Rashid, Khondaker (30143490)
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
- */
-package com.autovend.software.membership;
+ */package com.autovend.software.bagging;
 
-import com.autovend.software.AbstractEventListener;
+public class WeightDiscrepancyException extends Exception {
 
-public interface MembershipListener extends AbstractEventListener {
-	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
-	 */
-	void reactToValidMembershipEntered(String number);
-	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
-	 */
-	void reactToInvalidMembershipEntered();
 }

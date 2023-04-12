@@ -26,19 +26,17 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.membership;
+package com.autovend.software.customer;
 
+import com.autovend.products.Product;
 import com.autovend.software.AbstractEventListener;
 
-public interface MembershipListener extends AbstractEventListener {
-	/**
-	 * Announces that a valid membership number has been entered by the user.
-	 * @param number The String number entered
-	 */
-	void reactToValidMembershipEntered(String number);
-	
-	/**
-	 * Announces that an invalid membership number has been entered by the user.
-	 */
-	void reactToInvalidMembershipEntered();
+public interface CustomerControllerListener extends AbstractEventListener {
+
+    void reactToLowInkAlert();
+
+    void reactToLowPaperAlert();
+
+    void removeItemRequest(Product product, double quantity, CustomerController controller);
 }
+
