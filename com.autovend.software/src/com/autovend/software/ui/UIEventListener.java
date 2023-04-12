@@ -1,5 +1,7 @@
 package com.autovend.software.ui;
 
+import com.autovend.products.Product;
+
 import auth.AttendantAccount;
 
 /**
@@ -52,5 +54,7 @@ public interface UIEventListener {
 	public void onStationAddByTextPressed(int stationNumber);
 	
 	public void onStationRemoveItemPressed(int stationNumber);
+	
+	public void onAddItem(Product product);
 
 }
