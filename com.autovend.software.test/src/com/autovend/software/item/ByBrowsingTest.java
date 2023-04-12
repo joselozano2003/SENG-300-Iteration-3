@@ -29,28 +29,26 @@
 package com.autovend.software.item;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 
 /**
- * A test class that performs tests on the ByPLUCode class.
+ * A test class that performs tests on the ByBrowsing class.
  * @author Akansha
  *
  */
-public class ByPLUCodeTest {
+public class ByBrowsingTest {
 	private SelfCheckoutStation station;
-	private ByPLUCode byPLUCode;
+	private ByBrowsing byBrowsing;
 	private ItemFacade instance;
 	private int found;
 	
@@ -62,7 +60,7 @@ public class ByPLUCodeTest {
 		
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		byPLUCode = new ByPLUCode(station, new CustomerView());
+		byBrowsing = new ByBrowsing(station, new CustomerView());
 		instance = new ItemFacade(station, new CustomerView(), false);
 	}
 	
@@ -72,36 +70,34 @@ public class ByPLUCodeTest {
 	@After
 	public void teardown() {
 		station = null;
-		byPLUCode = null;
+		byBrowsing = null;
 		instance = null;
 		found = 0;
 	}
 	
 	/**
-	 * Test ByPLUCode constructor with null station parameter.
+	 * Test ByBrowsing constructor with null station parameter.
 	 */
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
-		new ByPLUCode(null, new CustomerView());
+		new ByBrowsing(null, new CustomerView());
 	}
 	
 	/**
-	 * Test ByPLUCode constructor with null customer view parameter.
+	 * Test ByBrowsing constructor with null customer view parameter.
 	 */
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullView() {
-		new ByPLUCode(station, null);
+		new ByBrowsing(station, null);
 	}
 	
 	/**
-	 * Tests the processing of a single PLUCoded Product
+	 * Tests the event that a single PLUCoded Product was found and selected
 	 */
 	@Test
-	public void testSingleValidPLUProcessing() {
+	public void testBrowsingASinglePLUProductEvent() {
 		int expected = 1;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
-		
-		byPLUCode.reactToPLUCodeEntered("1234");
+		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(9.99, 4, true);
 		
 		instance.register(new ItemListenerStub() {
 			@Override
@@ -112,103 +108,75 @@ public class ByPLUCodeTest {
 				}
 			}});
 		
-		byPLUCode.processPLUInput("1234", 2);
+		byBrowsing.productFromVisualCatalogueSelected(PLUProd123);
 		assertEquals(expected, found);
 	}
 	
 	/**
-	 * Tests the processing of a multiple PLUCoded Products
+	 * Tests the event that a single Barcoded Product was found and selected
 	 */
 	@Test
-	public void testMultipleValidPLUProcessing() {
-		int expected = 2;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
-		PLUCodedProduct PLUProd456 = Setup.createPLUProduct56789(3.57, 1, true);
+	public void testBrowsingASingleBarcodedProductEvent() {
+		int expected = 1;
+		BarcodedProduct BarcodedProd123 = Setup.createBarcodedProduct123(12.99, 3, true);
 		
 		instance.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
 				if (found == 1) {
-					assertEquals(PLUProd123, product);
+					assertEquals(BarcodedProd123, product);
+				}
+			}});
+		
+		byBrowsing.productFromVisualCatalogueSelected(BarcodedProd123);
+		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Tests the event that two products, Barcoded and PLUCoded, were found and selected
+	 */
+	@Test
+	public void testBrowsingMultipleProductsEvent() {
+		int expected = 2;
+		BarcodedProduct BarcodedProd123 = Setup.createBarcodedProduct123(12.99, 3, true);
+		PLUCodedProduct PLUProd56789 = Setup.createPLUProduct56789(7.99, 4, true);
+		
+		instance.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+				if (found == 1) {
+					assertEquals(BarcodedProd123, product);
 				}
 				
 				if (found == 2) {
-					assertEquals(PLUProd456, product);
+					assertEquals(PLUProd56789, product);
 				}
 			}});
 		
-		byPLUCode.processPLUInput("1234", 2);
-		byPLUCode.processPLUInput("56789", 1);
-		assertEquals(expected, found);
-	}
-	
-	/*
-	 * Attempt to getting a PLUCodedProduct with a null PLUCode but it won't be possible..
-	 */
-	
-	/*
-	@Test
-	public void testValidAndInvalidPLUProcessing() {
-		int expected = 2;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
-		PLUCodedProduct PLUProd456 = Setup.createPLUProduct56789(3.57, 1, false);
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(PLUProd123, product);
-				}
-			}
-			
-			@Override 
-			public void onItemNotFoundEvent() {
-				found++;
-		}});
-		
-		byPLUCode.processPLUInput("1234", 2);
-		byPLUCode.processPLUInput("56789", 1);
-		
-		assertEquals(expected, found);
-	}
-	*/
-	
-	/**
-	 * Tests the event when the weight is changed during a PLUCode scan
-	 */
-	@Test
-	public void testEventReactToWeightChanged() {
-		int expected = 1;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
-		byPLUCode.reactToPLUCodeEntered("1234");
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(PLUProd123, product);
-				}
-			}});
-		
-		byPLUCode.reactToWeightChangedEvent(station.scale, 6);
+		byBrowsing.productFromVisualCatalogueSelected(BarcodedProd123);
+		byBrowsing.productFromVisualCatalogueSelected(PLUProd56789);
 		assertEquals(expected, found);
 	}
 	
 	/**
-	 * Assert that these hardware events don't announce to listeners.
+	 * Tests the event that a null product was attempted to be selected and found
 	 */
 	@Test
-	public void testMethodsNoEvents() {
-		//Will fail if any listener event is entered.
-		instance.register(new ItemListenerStub());
-		byPLUCode.reactToEnabledEvent(station.scale);
-		byPLUCode.reactToDisabledEvent(station.scale);
-		byPLUCode.reactToOverloadEvent(station.scale);
-		byPLUCode.reactToOutOfOverloadEvent(station.scale);
+	public void testBrowsingNullProductEvent() {
+		int expected = 0;
+		Product Prod = null;
 		
-		assertEquals(byPLUCode.getListeners(), instance.getListeners());	
+		instance.register(new ItemListenerStub() {
+			@Override
+			// The inside of this code shouldn't get reached. As a null product should not
+			// be browsed or announced, as desired
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
+		
+		byBrowsing.productFromVisualCatalogueSelected(Prod);
+		assertEquals(expected, found);
 	}
 }
