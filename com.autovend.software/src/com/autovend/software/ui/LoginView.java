@@ -56,7 +56,7 @@ public class LoginView extends JPanel {
 			// When button is pressed, have UI event listeners react to loginEvent.
 			if (listeners == null) return;
 			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
-			for (CustomerUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
+			//for (CustomerUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
 		});
 
 
