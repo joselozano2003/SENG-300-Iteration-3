@@ -107,11 +107,14 @@ public class CustomerControllerTest {
     	controller.onStartAddingItems();
     	assertEquals(State.ADDING_ITEMS, controller.getCurrentState());
     }
+    
+    
     @Test
     public void setStatePrintingReceiptTest() {
     	controller.setState(State.PRINTING_RECEIPT);
     	assertEquals(State.PRINTING_RECEIPT, controller.getCurrentState());
     }
+    
     @Test
     public void stateTransactionFinishedTest() {
     	controller.setState(State.FINISHED);
@@ -123,11 +126,11 @@ public class CustomerControllerTest {
     	assertEquals(State.DISABLED, controller.getCurrentState());
     }
     
-//    @Test
-//   public void setStateDispenseChangeTest() {
-//    	controller.setState(State.DISPENSING_CHANGE);
-//    	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
-//  }
+    @Test
+   public void setStateDispenseChangeTest() {
+    	controller.setState(State.DISPENSING_CHANGE);
+    	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
+  }
     
     
     @Test
