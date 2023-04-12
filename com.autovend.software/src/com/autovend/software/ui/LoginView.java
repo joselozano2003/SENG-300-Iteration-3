@@ -28,10 +28,18 @@ public class LoginView extends JPanel {
 	 * Constructor for the Log in View wich contructs the Swing 
 	 * GUI and functionality for the Buttons 
 	 */
+
+	public static void main(String[] args) {
+		JFrame testFrame = new JFrame();
+		testFrame.add(new LoginView());
+		testFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		testFrame.setUndecorated(true);
+		testFrame.setVisible(true);
+		testFrame.validate();
+	}
 	
 	public LoginView() {
 
-		loginFrame = new JFrame("Attendant Login");
 		this.setLayout(new GridLayout(3, 2));
 		
 		JLabel userLabel = new JLabel("Username:");
@@ -43,6 +51,7 @@ public class LoginView extends JPanel {
 		
 		loginButton.addActionListener(e -> {
 			// When button is pressed, have UI event listeners react to loginEvent.
+			if (listeners == null) return;
 			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
 			for (UIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
 		});
@@ -53,12 +62,7 @@ public class LoginView extends JPanel {
 		this.add(passText);
 		this.add(errorLabel);
 		this.add(loginButton);
-		
-		loginFrame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		loginFrame.pack();
-		loginFrame.setVisible(true);
+
 	}
 
 }

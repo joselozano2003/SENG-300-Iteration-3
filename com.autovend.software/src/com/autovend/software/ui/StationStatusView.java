@@ -20,7 +20,9 @@ public class StationStatusView extends JPanel {
 	AttendantController controller;
 	AttendantAccount account;
 
-	JPanel attendantPanel = this;
+	JPanel attendantPanel;
+
+	JPanel mainPanel = this;
 	JLabel discrepancyLabels[];
 	JButton overrideButtons[];
 	JButton addByTextButtons[];
@@ -29,6 +31,8 @@ public class StationStatusView extends JPanel {
 	JButton unlockStationButtons[];
 	JButton shutdownStationButtons[];
 	JButton turnonStationButtons[];
+
+	JButton logOutButton;
 	GridLayout gLayout;
 
 	private List<UIEventListener> observers;
@@ -49,6 +53,9 @@ public class StationStatusView extends JPanel {
 	// Number of stations is preset when AttendantView is constructed. Should incorporate option to change language.
 	public StationStatusView(int num_stations) {
 		this.num_stations = num_stations;
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+		attendantPanel = new JPanel();
+		logOutButton = new JButton("Logout");
 		discrepancyLabels = new JLabel[num_stations];
 		overrideButtons = new JButton[num_stations];
 		addByTextButtons = new JButton[num_stations];
@@ -58,7 +65,7 @@ public class StationStatusView extends JPanel {
 		shutdownStationButtons = new JButton[num_stations];
 		turnonStationButtons = new JButton[num_stations];
 		gLayout = new GridLayout(num_stations, 3, 0, 10);
-		this.setLayout(gLayout);
+		attendantPanel.setLayout(gLayout);
 
 		// Set up each row. Initially, no weight discrepancies.
 		for (int i = 0; i < num_stations; ++i) {
@@ -123,7 +130,7 @@ public class StationStatusView extends JPanel {
 				}
 			});
 
-
+			mainPanel.add(attendantPanel);
 			attendantPanel.add(discrepancyLabels[i]);
 			attendantPanel.add(overrideButtons[i]);
 			attendantPanel.add(addByTextButtons[i]);
@@ -132,6 +139,8 @@ public class StationStatusView extends JPanel {
 			attendantPanel.add(unlockStationButtons[i]);
 			attendantPanel.add(turnonStationButtons[i]);
 			attendantPanel.add(shutdownStationButtons[i]);
+			mainPanel.add(logOutButton);
+
 
 		}
 

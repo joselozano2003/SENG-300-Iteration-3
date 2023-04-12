@@ -1,5 +1,9 @@
 package com.autovend.software.ui;
 
-public class RemoveItemView {
+import javax.swing.*;
+
+public class RemoveItemView extends JPanel {
+
+    
 
 }
