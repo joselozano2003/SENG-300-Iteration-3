@@ -98,7 +98,7 @@ public class AddItemByBrowsingView extends JPanel {
 		listeners = new ArrayList<>();
 
 		Map<JButton, Product> productMap = ProductsDatabase2.Products_In_Visual_Catalogue_Database;
-		System.out.println(productMap.size());
+		
 
 		// Create back button
 		backButton = new JButton("Go Back");
