@@ -26,20 +26,16 @@
  * Sloan, Jaxon (30123845)
  * Tran, Kevin (30146900)
  */
-package com.autovend.software.item;
+package com.autovend.software.customer;
 
-import com.autovend.products.BarcodedProduct;
-import com.autovend.products.Product;
-import com.autovend.software.AbstractEventListener;
+public class CustomerView {
 
-public interface ItemEventListener extends AbstractEventListener {
-	/**
-	 * Signals an event in which a product was successfully added.
-	 * @param product
-	 */
-	public void onItemAddedEvent(Product product, double quantity);
+	public void setVisible(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
 	
-	public void onItemNotFoundEvent();
+	//view for customer
+	
 
-    void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }

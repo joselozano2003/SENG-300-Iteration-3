@@ -44,22 +44,24 @@ import com.autovend.devices.observers.CoinSlotObserver;
 import com.autovend.devices.observers.CoinStorageObserver;
 import com.autovend.devices.observers.CoinTrayObserver;
 import com.autovend.devices.observers.CoinValidatorObserver;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSlotObserver, CoinStorageObserver,
 		CoinTrayObserver, CoinValidatorObserver {
 
-	public PayWithCoin(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, customerView, true);
+	public PayWithCoin(SelfCheckoutStation station) {
+		super(station, true);
+		try {
 			station.coinDispensers.forEach((k, v) -> v.register(this));
 			station.coinSlot.register(this);
 			station.coinStorage.register(this);
 			station.coinTray.register(this);
 			station.coinValidator.register(this);
-		
+		} catch (Exception e) {
+			for (PaymentEventListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
-	
 
 	@Override
 	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
@@ -118,11 +120,6 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 
 	@Override
 	public void reactToCoinRemovedEvent(CoinDispenser dispenser, Coin coin) {
-		int dispenserAmount = dispenser.size();
-		if (dispenserAmount < 0.10 * dispenser.getCapacity()) {
-			for (PaymentEventListener listener : listeners)
-				listener.onLowCoins(dispenser, coin);
-		}
 	}
 
 	@Override

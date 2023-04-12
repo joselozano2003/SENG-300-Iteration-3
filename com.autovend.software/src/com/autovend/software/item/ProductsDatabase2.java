@@ -18,7 +18,7 @@ public class ProductsDatabase2 {
 	
 	//map with keywords that correspond to a product
 	//will need to populate this map with all products that we want the attendant to be able to search up
-	public static Map<String, Product> Products_Textsearch_Keywords_Database = new HashMap<>();
+	public static Map<String, TextSearchProduct> Products_Textsearch_Keywords_Database = new HashMap<>();
 	
 	//cost of a reusable bag
 	public static BigDecimal costOfReusableBag;

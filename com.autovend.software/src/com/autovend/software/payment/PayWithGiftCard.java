@@ -41,56 +41,46 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.CardIssuer;
 import com.autovend.software.BankIO;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver {
 
-	public PayWithGiftCard(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, customerView, true);
-
-		station.cardReader.register(this);
-
+	public PayWithGiftCard(SelfCheckoutStation station) {
+		super(station, true);
+		try {
+			station.cardReader.register(this);
+		} catch (Exception e) {
+			for (PaymentEventListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-	}
-
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 	@Override
-	public void reactToCardInsertedEvent(CardReader reader) {
-	}
-
+	public void reactToCardInsertedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardRemovedEvent(CardReader reader) {
-	}
-
+	public void reactToCardRemovedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardTappedEvent(CardReader reader) {
-	}
-
+	public void reactToCardTappedEvent(CardReader reader) {}
 	@Override
-	public void reactToCardSwipedEvent(CardReader reader) {
-	}
-
+	public void reactToCardSwipedEvent(CardReader reader) {}
 	@Override
 	public void reactToCardDataReadEvent(CardReader reader, CardData data) {
 		if (data instanceof GiftCard.GiftCardInsertData) {
 			BigDecimal value = getAmountDue();
-
+	
 			if (!GiftCardDatabase.isGiftCard(data.getNumber())) {
 				for (PaymentEventListener listener : listeners) {
 					listener.onPaymentFailure();
-				}
+			}
 				return;
 			}
-
+			
 			data = (GiftCard.GiftCardInsertData) data;
-
+				
 			try {
 				if (((GiftCardInsertData) data).deduct(value)) {
 					subtractAmountDue(value);
@@ -108,7 +98,7 @@ public class PayWithGiftCard extends PaymentFacade implements CardReaderObserver
 					listener.onPaymentFailure();
 				}
 			}
-
+			
 		}
 	}
 }

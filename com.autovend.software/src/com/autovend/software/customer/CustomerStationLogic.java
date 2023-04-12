@@ -6,39 +6,47 @@ import java.util.Currency;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.software.bagging.BaggingFacade;
-import com.autovend.software.item.ItemFacade;
-import com.autovend.software.membership.MembershipFacade;
-import com.autovend.software.payment.PaymentFacade;
-import com.autovend.software.receipt.ReceiptFacade;
-import com.autovend.software.ui.CustomerView;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.products.Product;
+import com.autovend.software.AbstractEventListener;
+import com.autovend.software.AbstractFacade;
 
-public class CustomerStationLogic {
+public class CustomerStationLogic extends AbstractFacade<CustomerStationListener> implements CustomerControllerListener{
 
-	//CustomerModel model;
 	CustomerView view;
 	CustomerController controller;
+	SelfCheckoutStation station;
 
 	public static CustomerStationLogic installOn(SelfCheckoutStation station) {
 		return new CustomerStationLogic(station);
 	}
 
-	private CustomerStationLogic(SelfCheckoutStation station) {
+	public CustomerStationLogic(SelfCheckoutStation station) {
+		super(station);
 		// Initiate facades.
-	//	ItemFacade item = new ItemFacade(station, false);
-	//	PaymentFacade payment = new PaymentFacade(station, false);
-	//	ReceiptFacade receipt = new ReceiptFacade(station);
+		this.station = station;
+		controller = new CustomerController(station, new ReusableBagDispenser(20));
+		//ItemFacade item = new ItemFacade(station, false);
+		//PaymentFacade payment = new PaymentFacade(station, false);
+		//ReceiptFacade receipt = new ReceiptFacade(station);
 	//	BaggingFacade bagging = new BaggingFacade(station);
-	//	MembershipFacade membership = new MembershipFacade(station);
+		//MembershipFacade membership = new MembershipFacade(station);
 		// Initiate station with MVC design.
-		//model = new CustomerModel(item, payment, receipt, bagging, membership);
 		view = new CustomerView();
-		//controller = new CustomerController(model, view);
+
+		controller.register(this);
+	}
+	public CustomerController getController() {
+		return this.controller;
 	}
 
+
+
 	public void turnOnDisplay() {
-//		view.setVisible(true);
+		view.setVisible(true);
 	}
 
 	/**
@@ -57,7 +65,49 @@ public class CustomerStationLogic {
 
 		CustomerStationLogic self = CustomerStationLogic.installOn(station);
 		self.turnOnDisplay();
+	}
+
+	// TODO: Connect to event from GUI
+	// React when the customer requests to remove an item.
+	// Sends request to the attendant
+	public void removeItemRequest(Product product, double quantity) {
+		for (CustomerStationListener listener : listeners) {
+			listener.reactToRemoveItemRequest(product, quantity, this);
+		}
+	}
+
+
+	@Override
+	public void reactToHardwareFailure() {
 
 	}
 
+	@Override
+	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+
+	}
+
+	@Override
+	public void reactToDisableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToLowInkAlert() {
+		for (CustomerStationListener listener : listeners) {
+			listener.lowInkAlert(this);
+		}
+	}
+
+	@Override
+	public void reactToLowPaperAlert() {
+		for (CustomerStationListener listener : listeners) {
+			listener.lowPaperAlert(this);
+		}
+	}
 }

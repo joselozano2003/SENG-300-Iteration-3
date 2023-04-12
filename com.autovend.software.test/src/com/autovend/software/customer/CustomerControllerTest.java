@@ -52,22 +52,22 @@ public class CustomerControllerTest {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
 		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
-		controller = new CustomerController(station, bagDispenser, new CustomerView());
+		controller = new CustomerController(station, bagDispenser);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testConstructorNullStation() {
-		new CustomerController(null, new ReusableBagDispenser(50), new CustomerView());
+		new CustomerController(null, new ReusableBagDispenser(50));
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testConstructorNullBagDispenser() {
-		new CustomerController(station, null, new CustomerView());
+		new CustomerController(station, null);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testConstructorNullView() {
-		new CustomerController(station, null, new CustomerView());
+		new CustomerController(station, null);
 	}
 	
 	

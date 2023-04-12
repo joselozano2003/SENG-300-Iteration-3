@@ -28,73 +28,22 @@
  */
 package com.autovend.software.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.autovend.Numeral;
 import com.autovend.PriceLookUpCode;
-import com.autovend.devices.AbstractDevice;
-import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.observers.AbstractDeviceObserver;
-import com.autovend.devices.observers.ElectronicScaleObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.software.ui.CustomerView;
-import com.autovend.software.ui.PLUView;
-import com.autovend.software.ui.PLUViewObserver;
 
-public class ByPLUCode extends ItemFacade implements PLUViewObserver, ElectronicScaleObserver {
-	private String currentPLUCode;
-
-	protected ByPLUCode(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, customerView, true);
-		customerView.pluView.addObserver(this);
-		station.scale.register(this);
+public class ByPLUCode extends ItemFacade  {
+    protected ByPLUCode(SelfCheckoutStation station) {
+		super(station, true);
 	}
 
-	@Override
-	public void reactToPLUCodeEntered(String pluCode) {
-		this.currentPLUCode = pluCode;
+    
+    
 
-	}
-
-	public void processPLUInput(String stringToProcess, double quantity) {
-		Numeral[] numerals = new Numeral[stringToProcess.length()];
-
-		for (int i = 0; i < stringToProcess.length(); i++) {
-			byte number = Byte.parseByte(Character.toString(stringToProcess.charAt(i)));
-			Numeral numeral = Numeral.valueOf(number);
-			numerals[i] = numeral;
-		}
-
-		PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(new PriceLookUpCode(numerals));
-
-		if (pluCodedProduct.getPLUCode() != null) {
-			for (ItemEventListener listener : getListeners())
-				listener.onItemAddedEvent(pluCodedProduct, quantity);
-		} else {
-			for (ItemEventListener listener : getListeners())
-				listener.onItemNotFoundEvent();
-		}
-	}
-	
-	@Override
-	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
-		processPLUInput(currentPLUCode, weightInGrams);
-		
-	}
-
-	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
-
-	@Override
-	public void reactToOverloadEvent(ElectronicScale scale) {}
-
-	@Override
-	public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
-
+	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
+       PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
+       double weight = weightToPurchase;
+       //addItem()
+    }
 }

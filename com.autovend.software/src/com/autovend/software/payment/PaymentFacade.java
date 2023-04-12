@@ -39,7 +39,6 @@ import com.autovend.devices.EmptyException;
 import com.autovend.devices.OverloadException;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
@@ -47,15 +46,15 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	private List<PaymentFacade> children;
 	private static BigDecimal amountDue;
 
-	public PaymentFacade(SelfCheckoutStation station, CustomerView customerView, boolean isChild) {
-		super(station, customerView);
+	public PaymentFacade(SelfCheckoutStation station, boolean isChild) {
+		super(station);
 		// this.selfCheckoutStation = station;
 		if (!isChild) {
 			children = new ArrayList<PaymentFacade>();
-			children.add(new PayWithCoin(station, customerView));
-			children.add(new PayWithBill(station, customerView));
-			children.add(new PayWithCard(station, customerView));
-			children.add(new PayWithGiftCard(station, customerView));
+			children.add(new PayWithCoin(station));
+			children.add(new PayWithBill(station));
+			children.add(new PayWithCard(station));
+			children.add(new PayWithGiftCard(station));
 			amountDue = BigDecimal.ZERO;
 		}
 	}

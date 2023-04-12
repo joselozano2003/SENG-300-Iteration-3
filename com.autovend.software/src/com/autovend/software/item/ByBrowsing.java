@@ -30,13 +30,12 @@ package com.autovend.software.item;
 
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.Product;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class ByBrowsing extends ItemFacade  {
 
-	protected ByBrowsing(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, customerView, true);
+	protected ByBrowsing(SelfCheckoutStation station) {
+		super(station, true);
 	}
 	
 	/**
@@ -46,7 +45,7 @@ public class ByBrowsing extends ItemFacade  {
 	 */
 	public void productFromVisualCatalogueSelected(Product product) {
 		if(product != null) {
-        	for (ItemEventListener listener : getListeners())
+        	for (ItemEventListener listener : listeners)
 				listener.onItemAddedEvent(product, 1);;
 		}
 	}

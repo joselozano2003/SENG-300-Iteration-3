@@ -39,23 +39,26 @@ import com.autovend.devices.observers.BarcodeScannerObserver;
 import com.autovend.devices.observers.CardReaderObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class MembershipFacade extends AbstractFacade<MembershipListener> {
 	
 	private boolean membershipEntered = false;
 
-	public MembershipFacade(SelfCheckoutStation station, CustomerView customerView) {
-		super(station, customerView);
+	public MembershipFacade(SelfCheckoutStation station) {
+		super(station);
+		try {
 			InnerListener inner = new InnerListener();
 			station.mainScanner.register(inner);
 			station.handheldScanner.register(inner);
 			station.cardReader.register(inner);
-		
+		} catch (Exception e) {
+			for (MembershipListener listener : listeners)
+				listener.reactToHardwareFailure();
+		}
 	}
 	
-	protected class InnerListener implements BarcodeScannerObserver, CardReaderObserver {
+	private class InnerListener implements BarcodeScannerObserver, CardReaderObserver {
 		@Override
 		public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 		@Override

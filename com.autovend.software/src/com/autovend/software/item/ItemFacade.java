@@ -36,48 +36,46 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.AbstractFacade;
-import com.autovend.software.ui.CustomerView;
 
 @SuppressWarnings("serial")
 public class ItemFacade extends AbstractFacade<ItemEventListener> {
 	private static ItemFacade instance;
 	private List<ItemFacade> children;
+	private static List<Product> itemList;
 	private SelfCheckoutStation selfCheckoutStation;
 
-	public ItemFacade(SelfCheckoutStation station, CustomerView view, boolean isChild) {
-		super(station, view);
+	public ItemFacade(SelfCheckoutStation station, boolean isChild) {
+		super(station);
 		this.selfCheckoutStation = station;
 		// Initialize this instance and children once.
 
-		if (!isChild || instance == null) {
-			instance = this;
+		if (!isChild) {
+			itemList = new ArrayList<Product>();
 			children = new ArrayList<ItemFacade>();
-			children.add(new ByScanning(station, view));
-			children.add(new ByBrowsing(station, view));
-			children.add(new ByPLUCode(station, view));
-			children.add(new ByTextSearch(station, view));
+			children.add(new ByScanning(station));
+			children.add(new ByBrowsing(station));
+			children.add(new ByPLUCode(station));
+			children.add(new ByTextSearch(station));
 		}
 	}
 
-	/**
-	 * @return This current active instance of this class. Could be null.
-	 */
-	public static ArrayList<ItemEventListener> getListeners() {
-		return instance.listeners;
+
+	public List<Product> getItemList() {
+		return itemList;
 	}
-	
+
+	/**
+	 * @return List of active subclasses.
+	 */
+	public List<ItemFacade> getChildren() {
+		return children;
+	}
+
 	/**
 	 * @return This current active instance of this class. Could be null.
 	 */
 	public static ItemFacade getInstance() {
 		return instance;
-	}
-	
-	/**
-	 * @return List of active subclasses.
-	 */
-	protected List<ItemFacade> getChildren() {
-		return children;
 	}
 
 }

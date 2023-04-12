@@ -42,6 +42,7 @@ public interface AbstractEventListener {
 	/**
 	 * Announces that the indicated software failed to complete due to a hardware failure.
 	 */
+	public void reactToHardwareFailure();
 	/**
 	 * Announces that a device should be disabled.
 	 * 
@@ -60,8 +61,6 @@ public interface AbstractEventListener {
 	 * Announces that the entire station should be disabled.
 	 */
 	public void reactToDisableStationRequest();
-	/**
-	 * Announces that the entire station should be enabled.
-	 */
-	public void reactToEnableStationRequest();
+
+
 }

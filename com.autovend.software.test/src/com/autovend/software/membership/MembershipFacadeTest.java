@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.BarcodedUnit;
+import com.autovend.CreditCard;
 import com.autovend.MembershipCard;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
@@ -119,7 +120,7 @@ public class MembershipFacadeTest {
 	 * Expected: no event announced.
 	 */
 	@Test
-	public void testEventInvalidScan2() throws IOException {
+	public void testScanProduct() throws IOException {
 		membershipFacade.register(new ListenerStub());
 		BarcodedProduct p = Setup.createBarcodedProduct123(5.55, 55, true);
 		while (!flag)
@@ -175,13 +176,13 @@ public class MembershipFacadeTest {
 	}
 	
 	/**
-	 * Pre: Membership card is swiped, but card number not in database.
+	 * Pre: Non membership card is swiped.
 	 * Expected: reactToInvalidMembershipEntered event is called.
 	 */
 	@Test
-	public void testEventInvalidSwipe2() throws IOException {
+	public void testSwipeOtherCard() throws IOException {
 		membershipFacade.register(new ListenerStub());
-		MembershipCard card = new MembershipCard("NOT membership", "9999", "cardHolder", true);
+		CreditCard card = new CreditCard("NOT membership", "9999", "cardHolder", "777", "1234", true, true);
 		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
 		while (!flag)
 			try {
