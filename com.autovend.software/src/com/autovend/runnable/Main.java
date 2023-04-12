@@ -42,7 +42,7 @@ public class Main {
 		
 		CustomerView customerView = new CustomerView();
 
-		CustomerController customerController = new CustomerController(station, dispenser, customerView);
+		//CustomerController customerController = new CustomerController(station, dispenser, customerView);
 
 		// Create 1 product
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };

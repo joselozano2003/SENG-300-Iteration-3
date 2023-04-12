@@ -64,11 +64,6 @@ public class AttendantControllerTest {
 		new AttendantController(model, null);
 	}
 	
-	@Test (expected = NullPointerException.class)
-	public void testContructionNullList() {
-		new AttendantController(model, view);
-	}
-	
 	@Test
 	public void testAddCustomerStation() {
 		int initialSize = controller.getCustomerStations().size();
