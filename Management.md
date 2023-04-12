@@ -318,140 +318,175 @@ to "get around" other requirements: don't be a lawyer)
 ---
 
 __APRIL 04 MEETING PLAN - DESIGN AND IMPLEMENTATION TEAM__
-**Things to discuss:**
+    **Things to discuss:**
 
-  - Git Repo setup, check everyone's access
-      -Everyone on eclipse?
-      -Discuss git branching rules
+      - Git Repo setup, check everyone's access
+          -Everyone on eclipse?
+          -Discuss git branching rules
 
-  - Divide up the work (agree on who does what!)
-      -By use case? by similar function??
+      - Divide up the work (agree on who does what!)
+          -By use case? by similar function??
 
-  - Elect managers:
-    - [ ]  1 Product Manager (making sure customer requirements are met),
-    - [ ]  1 Software/Design Manager (making sure the code-base is setup and all use cases are implemented correctly)
-    - [ ]  1 UI Manager (divides up the front-end work)
+      - Elect managers:
+        - [ ]  1 Product Manager (making sure customer requirements are met),
+        - [ ]  1 Software/Design Manager (making sure the code-base is setup and all use cases are implemented correctly)
+        - [ ]  1 UI Manager (divides up the front-end work)
 
 __APRIL 04 MEETING MINUTES__ 
 
-  - Managers Elected:
-    - Product Manager: Ben
-    - Software/Design Manager: Jose
-    - UI Manager: Jaxon
+      - Managers Elected:
+        - Product Manager: Ben
+        - Software/Design Manager: Jose
+        - UI Manager: Jaxon
 
-  - Dividing the work
-    **-Front End (5) vs Back end (7) team**
-    - Front End: Jaxon, Ben, Sara, Mehedi, Oscar 
-          - Java SWING: get familiar with tutorials (By tomorrow!!)
-    - Back end: Jose, Ach, Saadman, Anna, Abi, Caleb, Ran
-       - Design pattern (Model-View-Controller): view, controller (logic) (https://www.youtube.com/watch?v=dTVVa2gfht8)
-          - Pay: Abi, Caleb, Saadman
-          - Add Item: Ran, Anna
-          - The rest: floaters
+      - Dividing the work
+        **-Front End (5) vs Back end (7) team**
+        - Front End: Jaxon, Ben, Sara, Mehedi, Oscar 
+              - Java SWING: get familiar with tutorials (By tomorrow!!)
+        - Back end: Jose, Ach, Saadman, Anna, Abi, Caleb, Ran
+           - Design pattern (Model-View-Controller): view, controller (logic) (https://www.youtube.com/watch?v=dTVVa2gfht8)
+              - Pay: Abi, Caleb, Saadman
+              - Add Item: Ran, Anna
+              - The rest: floaters
 
-GUI (1 DoItYourselfStation, 1 AttendantStation):
-    **DoItYourselfStation:**
-    -> start screen
-     -> view for adding items
-      -> Separate window for payment
-      -> Show print receipt
-    **AttendantStation:**
-    -> exception handling (weight discrepancy, etc)
+    GUI (1 DoItYourselfStation, 1 AttendantStation):
+        **DoItYourselfStation:**
+        -> start screen
+         -> view for adding items
+          -> Separate window for payment
+          -> Show print receipt
+        **AttendantStation:**
+        -> exception handling (weight discrepancy, etc)
 
-**Software Due Dates:**
-Approx: FRIDAY, APR 07 23:59
-
-**Manager Meeting:**
-- FRIDAY, APR 07 xx:xx
+    **Software Due Dates:**
+    Approx: FRIDAY, APR 07 23:59
 
 
 __Quality Assurance Team Meeting Agenda__  
 FRIDAY, APR 07 19:30-20:30
 
-   -> ASSIGNED PEOPLE:
-        1. Kevin Tran  
-        2. Akansha Malik 
-        3. Monmoy Maahdie 
-        4. Scott Polton 
-        5. Sam Lokanc 
-        6. Samin Rashid, Khondaker  
+       -> ASSIGNED PEOPLE:
+            1. Kevin Tran  
+            2. Akansha Malik 
+            3. Monmoy Maahdie 
+            4. Scott Polton 
+            5. Sam Lokanc 
+            6. Samin Rashid, Khondaker  
 
-    -> []  Attendance  (5/6 people attended)
-    -> []  Effects of Design/Implementation Due Date Extension
-    -> []  Code Explanation with someone from Design/Implementation Team
-    -> []  Task Allocation, 
-                  >> refer to Kevin's split of categories: 
-                             split by use case category?
-                                     Akansha. - ITEMS.
-                                     Kevin. - PAYMENT.
-                                     Monmoy. - ATTENDANT-SPECIFIC EVENTS/ACTIONS.
-                                     Scott. - MEMBERSHIP AND MISCELLANEOUS.
-                                     Sam. - STATION MAINTENANCE.
-                                     <VACANT> - ANY SUBJECT TO CHANGE (WILD CARD).
-                                     These are not hard lines, you don't have to stick with this. This is the bare minimum of task y'all can do.
-                  >> see Jose's notion's breakdown:
-    -> []  Manager Election: Kevin (cooperation, checking-in) and Scott (technical, inter team relations)
-    -> []  Scheduling and Due Dates: TEAM DUE DATE: TUESDAY, APR 11 23:59
-    -> []  Team Timeline
-                      >> Start working by Tonight/Tomorrow. Expect finish by Due Date.
-                      >> Work Days: FRIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY
-                      >> Check-In Meetings: SATURDAY, MONDAY or SUNDAY, TUESDAY
-   -> [ ] Contact and Catch Tusher Up.
-   
+        -> []  Attendance  (5/6 people attended)
+        -> []  Effects of Design/Implementation Due Date Extension
+        -> []  Code Explanation with someone from Design/Implementation Team
+        -> []  Task Allocation, 
+                      -> refer to Kevin's split of categories: 
+                                 split by use case category?
+                                         Akansha. - ITEMS.
+                                         Kevin. - PAYMENT.
+                                         Monmoy. - ATTENDANT-SPECIFIC EVENTS/ACTIONS.
+                                         Scott. - MEMBERSHIP AND MISCELLANEOUS.
+                                         Sam. - STATION MAINTENANCE.
+                                         <VACANT> - ANY SUBJECT TO CHANGE (WILD CARD).
+                                         These are not hard lines, you don't have to stick with this. This is the bare minimum of task y'all can do.
+                      -> see Jose's notion's breakdown:
+        -> []  Manager Election: Kevin (cooperation, checking-in) and Scott (technical, inter team relations)
+        -> []  Scheduling and Due Dates: TEAM DUE DATE: TUESDAY, APR 11 23:59
+        -> []  Team Timeline
+                          -> Start working by Tonight/Tomorrow. Expect finish by Due Date.
+                          -> Work Days: FRIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY
+                          -> Check-In Meetings: SATURDAY, MONDAY or SUNDAY, TUESDAY
+       -> [ ] Contact and Catch Tusher Up.
+
    
 __Demonstration Team Meeting Agenda__  
 SUNDAY, APR 08 16:00-16:30
 
--> ASSIGNED PEOPLE:
-     1. Crowell, Madeline  
-     2. Kacmar, Michael 
- 
--> [] Attendance (2/2 people attended)
--> [] Go through task description at SENG 300 D2L
--> [] Code Explanation and GUI Walkthrough (with current progress) from someone in Des/Imp Team, Front-End Band
--> [] Task Allocation
-               Use Case Go Through <- Madeline makes a chart for runthroughs
-               Testing UI  <- Jaxon could make it by further notice.
-               Recording <- Split between both members
-               Editing       <- Split between both members
+    -> ASSIGNED PEOPLE:
 
--> [] Scheduling and Due Dates: should be finished and ready to submit by Wednesday.
--> [] Team Timeline
-                   SUNDAY: Customer UI finished? Attendant UI probably tomorrow? Pick runthroughs per person <- wait for Madeline making a chart for Runthroughs
-                   MONDAY: Have someone from Des/Imp team, check if the implementation matches y'all's runthrough chart. Go Through the Customer UI and Assess which parts of the workload can be preponed. Also possibly record.
-                   TUESDAY: Record the video? Edit the video? 
-                   WEDNESDAY: Edit the video? (reach out to management in case help needed). Hopefully, submission with the project code at the same time.
- 
--> [] Breakdown of Runthroughs <- Madeline, once finished then decide from there.
+         1. Crowell, Madeline  
+
+         2. Kacmar, Michael 
+
+    -> [] Attendance (2/2 people attended)
+
+    -> [] Go through task description at SENG 300 D2L
+
+    -> [] Code Explanation and GUI Walkthrough (with current progress) from someone in Des/Imp Team, Front-End Band
+
+    -> [] Task Allocation
+
+                 Use Case Go Through <- Madeline makes a chart for runthroughs
+
+                 Testing UI  <- Jaxon could make it by further notice.
+
+                 Recording <- Split between both members
+
+                 Editing       <- Split between both members
+
+
+    -> [] Scheduling and Due Dates: should be finished and ready to submit by Wednesday.
+
+    -> [] Team Timeline
+
+                 SUNDAY: Customer UI finished? Attendant UI probably tomorrow? Pick runthroughs per person <- wait for Madeline making a chart for Runthroughs
+
+                 MONDAY: Have someone from Des/Imp team, check if the implementation matches y'all's runthrough chart. Go Through the Customer UI and Assess which parts of the workload can be preponed. Also possibly record.
+
+                 TUESDAY: Record the video? Edit the video? 
+
+                 WEDNESDAY: Edit the video? (reach out to management in case help needed). Hopefully, submission with the project code at the same time.
+
+
+
+    -> [] Breakdown of Runthroughs <- Madeline, once finished then decide from there.
+
                     Multiple Use Cases: different payment methods, issues, try to incorporate multiple use cases in multiple walkthroughs
-                     3 major runthroughs, 1 start up/shut down, prevent station use., 
-                     
-                     
+
+                    3 major runthroughs, 1 start up/shut down, prevent station use., 
+
+
 __Quality Assurance Meeting Agenda__  
 SUNDAY, APR 08 18:30-19:00
 
+
 OBJECTIVES:
-[ ] Attendance (QA team members mainly, optionally someone from dev or management teams maybe?)
-[ ] Progress Check-in 
-[ ] Any conficts??
-[ ] Fixing Git testing branch, merge, etc. if needed
-[ ] Allocate who will test customer classes, other classes, and redistribute tasks if needed
+
+    [ ] Attendance (QA team members mainly, optionally someone from dev or management teams maybe?)
+
+    [ ] Progress Check-in 
+
+    [ ] Any conficts??
+
+    [ ] Fixing Git testing branch, merge, etc. if needed
+
+    [ ] Allocate who will test customer classes, other classes, and redistribute tasks if needed
 
 
 __FINAL GROUP MEETING__  
 TUESDAY, APR 11 19:00 - 20:00
 
 WHO: 
-Managers in @design/implementation team  and @quality assurance team , AND ALL Members of the @documentation team , @demonstration team , and @management team   are required to attend it! For the rest, it's not required unless you want to raise an issue or report an HR conflict such as an uncooperative groupmate (which u can do anyways via DMing Marianna and/or I!)
+
+    Managers in @design/implementation team  and @quality assurance team , AND ALL Members of the @documentation team , @demonstration team , and @management team   are required to attend it! For the rest, it's not required unless you want to raise an issue or report an HR conflict such as an uncooperative groupmate (which u can do anyways via DMing Marianna and/or I!)
 
 AGENDA:
-[X] Attendance (see people above)
-[X] Hardware Adjustment Status Check (how it affects everyone)
-[X] Team Progress Reports (we're gonna ask you what the state of your task completion so far).
-- go over demo pdf
-[X] Submission Plans - Project: still Jose, Demo: Madeline.,  meeting before submission?
-[X] Peer Evaluation & Issue Reports
-[X] Contingency Planning - New Action Plan (in the case, where we are lagging in terms of progress and we need to use our buffer cram time) <- also talk about partial completion for hardware, and check if it allows other teams to work simultaneously alongside with des/imp team dealing with the recent adjustments
-[] Other Housekeeping Stuff
+
+    [X] Attendance (see people above)
+
+    [X] Hardware Adjustment Status Check (how it affects everyone)
+
+    [X] Team Progress Reports (we're gonna ask you what the state of your task completion so far).
+
+    - go over demo pdf
+
+    [X] Submission Plans - Project: still Jose, Demo: Madeline.,  meeting before submission?
+
+    [X] Peer Evaluation & Issue Reports
+
+    [X] Contingency Planning - New Action Plan (in the case, where we are lagging in terms of progress and we 
+    need to use our buffer cram time) <- also talk about partial completion for hardware, and check if it 
+    allows other teams to work simultaneously alongside with des/imp team dealing with the recent adjustments
+
+    [] Other Housekeeping Stuff
+
+
 
 ---
