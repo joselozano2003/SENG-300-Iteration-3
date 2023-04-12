@@ -77,6 +77,7 @@ public class ByScanningTest {
 	public void teardown() {
 		station = null;
 		byScanning = null;
+		instance = null;
 		found = 0;
 	}
 	
