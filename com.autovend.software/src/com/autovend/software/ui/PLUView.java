@@ -19,6 +19,11 @@ public class PLUView extends JPanel {
 	private List<PLUViewObserver> observers;
 	private List<UIEventListener> listeners;
 
+	/**
+	 *PLU constructor and swing GUI creations 
+	 * 
+	 */
+	
 	public PLUView() {
 		observers = new ArrayList<>();
 		listeners = new ArrayList<>();
@@ -81,40 +86,86 @@ public class PLUView extends JPanel {
 		notificationLabel.setBounds(515, 400, 400, 25);
 		add(notificationLabel);
 	}
-
+	
+	/**
+	 * Notifies all registered UIEventListener objects to go back to the checkout view.
+	 */
+	
 	public void notifyGoBackToCheckout() {
 		for (UIEventListener listener : listeners) {
 			listener.goBackToCheckout();
 		}
 	}
 
+	/**
+	 * Notifies all registered PLUViewObserver objects that an item has been added using its PLU code.
+	 *
+	 * @param pluCode the PLU code of the added item
+	 */
+	
 	public void notifyItemAdded(String pluCode) {
 		for (PLUViewObserver observer : observers) {
 			notificationLabel.setText("Please place item on scale.");
 			observer.reactToPLUCodeEntered(pluCode);
 		}
 	}
-
+	
+	/**
+	 * Returns the input field component.
+	 *
+	 * @return the JTextField representing the input field
+	 */
+	
 	public JTextField getInputField() {
 		return this.inputField;
 	}
 
+	/**
+	 * Returns the Add button component.
+	 *
+	 * @return the JButton representing the Add button
+	 */
+	
 	public JButton getAddButton() {
 		return this.addButton;
 	}
 
+	/**
+	 * Returns the Done button component.
+	 *
+	 * @return the JButton representing the Done button
+	 */
+	
 	public JButton getDoneButton() {
 		return this.backButton;
 	}
 
+	/**
+	 * Registers a UIEventListener to the list of listeners.
+	 *
+	 * @param listener the UIEventListener to be added to the list of listeners
+	 */
+	
 	public void register(UIEventListener listener) {
 		listeners.add(listener);
 	}
 
+	/**
+	 * Adds a PLUViewObserver to the list of observers.
+	 *
+	 * @param observer the PLUViewObserver to be added to the list of observers
+	 */
+	
 	public void addObserver(PLUViewObserver observer) {
 		observers.add(observer);
 	}
 
+	/**
+	 * Removes a PLUViewObserver from the list of observers.
+	 *
+	 * @param observer the PLUViewObserver to be removed from the list of observers
+	 */
+	
 	public void removeObserver(PLUViewObserver observer) {
 		observers.remove(observer);
 	}

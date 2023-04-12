@@ -181,6 +181,7 @@ public class StationStatusView extends JPanel {
 	// either approve bags or refuse bags. If approve, call method in software that
 	// updates expected weight and continues checout. If refuse, then call method
 	// in customer interface to prompt customer to remove bags.
+	
 	public void notifyBagApproval(int station_number) {
 		discrepancyLabels[station_number - 1].setText("Station " + station_number + ": Bag approval needed");
 		approveButtons[station_number - 1].setText("Approve");

@@ -96,6 +96,14 @@ public class StationTableView extends JPanel {
 		testView.declareIssue(4, "test");
 	}
 	
+	/**
+	 * Updates the label for a specific station to declare an issue.
+	 *
+	 * @param stationNum the number of the station to update
+	 * @param issue      the issue to declare
+	 */
+	
+	
 	public void declareIssue(int stationNum, String issue) {
 		this.discrepancyLabels[stationNum].setText(
 				"Station " + (stationNum + 1) + ": " + issue);

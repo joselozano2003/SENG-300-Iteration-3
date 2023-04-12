@@ -2,6 +2,12 @@ package com.autovend.software.ui;
 
 import auth.AttendantAccount;
 
+/**
+ * The UIEventListener interface defines the contract for objects that need to be
+ * notified when user interface events occur. Classes implementing this interface
+ * should provide an implementation for each of the defined methods.
+ */
+
 public interface UIEventListener {
 
 	

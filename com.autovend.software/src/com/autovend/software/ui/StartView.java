@@ -11,7 +11,11 @@ import java.util.List;
 public class StartView extends JPanel {
     private JButton startButton;
     private List<UIEventListener> observers;
-
+    
+    /**
+     * Constructor for start view with SWING guy creation and functionality
+     */
+    
     public StartView() {
         observers = new ArrayList<>();
         setLayout(null);
@@ -43,10 +47,21 @@ public class StartView extends JPanel {
         add(title);
     }
 
+    /**
+     * Registers a UIEventListener to the list of observers.
+     *
+     * @param listener the UIEventListener to be added to the list of observers
+     */
+    
     public void register(UIEventListener listener) {
         observers.add(listener);
     }
 
+
+/**
+ * Notifies all registered UIEventListener objects that the start button has been pressed.
+ */
+    
     public void notifyStartButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onStartAddingItems();
