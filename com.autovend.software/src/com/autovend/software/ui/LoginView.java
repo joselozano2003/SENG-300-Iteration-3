@@ -10,12 +10,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import auth.AttendantAccount;
-
 public class LoginView extends JPanel {
 	
 	private JFrame loginFrame;
-	private JPanel loginPanel;
 	private JLabel userLabel;
 	private JTextField userText;
 	private JLabel passLabel;
@@ -26,9 +23,9 @@ public class LoginView extends JPanel {
 	List<UIEventListener> listeners;
 	
 	public LoginView() {
-		JFrame loginFrame = new JFrame("Attendant Login");
-		JPanel loginPanel = new JPanel();
-		loginPanel.setLayout(new GridLayout(3, 2));
+
+		loginFrame = new JFrame("Attendant Login");
+		this.setLayout(new GridLayout(3, 2));
 		
 		JLabel userLabel = new JLabel("Username:");
 		JTextField userText = new JTextField();
@@ -41,14 +38,14 @@ public class LoginView extends JPanel {
 			for (UIEventListener listener : listeners) listener.reactToLoginEvent();
 		});
 		
-		loginPanel.add(userLabel);
-		loginPanel.add(userText);
-		loginPanel.add(passLabel);
-		loginPanel.add(passText);
-		loginPanel.add(errorLabel);
-		loginPanel.add(loginButton);
+		this.add(userLabel);
+		this.add(userText);
+		this.add(passLabel);
+		this.add(passText);
+		this.add(errorLabel);
+		this.add(loginButton);
 		
-		loginFrame.getContentPane().add(loginPanel, BorderLayout.CENTER);
+		loginFrame.getContentPane().add(this, BorderLayout.CENTER);
 		
 		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		loginFrame.pack();
