@@ -82,6 +82,15 @@ public class AddItemByBrowsingView extends JPanel {
 
 	// Called when add item by browsing button is pressed, this method will
 	// make calls to the controller to add items to shopping cart.
+	
+	
+	/**
+	 * Add Item by browsing views
+	 *
+	 */
+	
+	
+	
 	public AddItemByBrowsingView() {
 		// swing compounents needed for the GUI
 
@@ -173,6 +182,14 @@ public class AddItemByBrowsingView extends JPanel {
 		}
 
 	}
+	
+	/**
+	 * Notifies all registered BrowsingViewObserver objects that a Product has been selected.
+	 * This method iterates through the list of observers, sets a message on the messageLabel,
+	 * and calls the reactToProductSelected() method on each observer with the selected Product.
+	 *
+	 * @param product the Product instance that has been selected
+	 */
 
 	public void notifyProductSelected(Product product) {
 		for (BrowsingViewObserver observer : observers) {
@@ -180,14 +197,32 @@ public class AddItemByBrowsingView extends JPanel {
 			observer.reactToProductSelected(product);;
 		}
 	}
+	
+	/**
+	 * Registers a UIEventListener to the list of listeners.
+	 *
+	 * @param listener the UIEventListener to be added to the list of listeners
+	 */
+	
 	public void register(UIEventListener listener) {
 		listeners.add(listener);
 	}
 
+	/**
+	 * Adds a BrowsingViewObserver to the list of observers.
+	 *
+	 * @param observer the BrowsingViewObserver to be added to the list of observers
+	 */
+	
+	
 	public void addObserver(BrowsingViewObserver observer) {
 		observers.add(observer);
 	}
-
+	
+	/**
+	 * Notifies all registered UIEventListener objects to perform the action defined in the goBackToCheckout() method.
+	 * This method iterates through the list of listeners and calls the goBackToCheckout() method on each of them.
+	 */
 	public void notifyGoBackToCheckout() {
 		for (UIEventListener listener : listeners) {
 			listener.goBackToCheckout();
