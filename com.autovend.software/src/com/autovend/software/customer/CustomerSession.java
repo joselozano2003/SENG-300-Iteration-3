@@ -62,6 +62,7 @@ public class CustomerSession {
 					if (barcodedProduct.getBarcode() == ((BarcodedProduct) product).getBarcode()){
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
 						totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
 						break;
 					}
 				}
@@ -74,6 +75,7 @@ public class CustomerSession {
 					if (pluCodedProduct.getPLUCode() == ((PLUCodedProduct) product).getPLUCode()){
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
 						totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
 						break;
 					}
 				}
@@ -84,6 +86,7 @@ public class CustomerSession {
 				if (p instanceof ReusableBagProduct){
 					shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
 					totalCost = totalCost.subtract(((ReusableBagProduct) p).getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+					expectedWeight -= ((ReusableBagProduct) p).getExpectedWeight() * quantityToRemove;
 					break;
 				}
 			}
@@ -95,6 +98,7 @@ public class CustomerSession {
 					if (textSearchProduct.getName().equals(((TextSearchProduct) product).getName())){
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
 						totalCost = totalCost.subtract(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
 						break;
 					}
 				}
