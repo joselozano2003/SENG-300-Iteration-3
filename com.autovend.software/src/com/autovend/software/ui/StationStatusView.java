@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -38,11 +39,14 @@ public class StationStatusView extends JPanel {
 
 	private List<UIEventListener> observers;
 
-	List<UIEventListener> listeners;
+	public List<UIEventListener> listeners = new ArrayList<UIEventListener>();
 
 	public static void main(String args[]) {
 		JFrame testFrame = new JFrame();
 		StationStatusView ssv = new StationStatusView(10);
+		for (int i = 0; i < 10; ++i) {
+			ssv.listeners.add(new ListenerStub());
+		}
 		testFrame.add(ssv);
 		testFrame.setVisible(true);
 		testFrame.validate();
