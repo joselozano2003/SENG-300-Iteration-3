@@ -31,6 +31,7 @@ package com.autovend.software.payment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -39,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.Bill;
+import com.autovend.ChipFailureException;
 import com.autovend.Coin;
 import com.autovend.CreditCard;
 import com.autovend.DebitCard;
@@ -72,6 +74,9 @@ public class PayWithCardTest {
 	private int paymentFailCounter = 0;
 	private int paymentSuccessCounter = 0;
 	
+	// Flag used to rerun methods prone to hardware failure
+	private boolean flag;
+	
 	@Before
 	public void setup() {
 		//Setup the class to test
@@ -79,7 +84,7 @@ public class PayWithCardTest {
 		payWithCard = new PayWithCard(station, new CustomerView());
 		CardReader reader = station.cardReader;
 		PaymentEventListenerStub stub = new PaymentEventListenerStub();
-		payWithCard.register(stub);
+		flag = false;
 		
 		// Setup date to use for cards
 		Calendar date = Calendar.getInstance();
@@ -129,22 +134,40 @@ public class PayWithCardTest {
 	 * 			- Otherwise, expect an onPaymentAddedEvent with the amount passed in
 	 */
 	
-//	/**
-//	 * Attempt payment with a card whose issuer is missing from the BankIO database.
-//	 * Expect a payment failure event to be announced.
-//	 */
-//	@Test
-//	public void PayWithUnregisteredCard() {
-//		try {
-//			reader.insert(unregisteredCard, "1113");
-//			assertEquals(1, paymentFailCounter);
-//		} catch (Exception e) {
-//			// Rerun setup() method and this test in case of random failure
-//			setup();
-//			PayWithUnregisteredCard();
-//		}
-//	}
+	/**
+	 * Attempt payment with a card whose issuer is missing from the BankIO database.
+	 * Expect a payment failure event to be announced.
+	 */
+	@Test
+	public void PayWithUnregisteredCard() {
+		CardReader reader = station.cardReader;
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		while (!flag)
+			try {
+				reader.insert(unregisteredCard, "1113");
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentFailCounter);
+	}
 	
+	/**
+	 * Pay with a valid credit card, by tapping.
+	 * Expect onPaymentAddedEvent passing in amount paid.
+	 */
+	@Test
+	public void PayWithValidCreditTap() {
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(creditCard, "1111");
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentSuccessCounter);
+		assertEquals(BigDecimal.valueOf(5), paymentCounter);
+	}
 	
 	
 	/*--------------- STUBS ---------------*/

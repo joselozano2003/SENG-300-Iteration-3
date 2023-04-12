@@ -219,7 +219,7 @@ public class PaymentFacadeTest {
 		assertEquals(null, child.getChildren());
 	}
 	
-	/** TODO
+	/**
 	 * Get the instance of the payment facade when it is null
 	 */
 	@Test
@@ -227,38 +227,59 @@ public class PaymentFacadeTest {
 		assertEquals(null, paymentFacade.getInstance());
 	}
 	
-//	/**
-//	 * Attempt to dispense change when the bill
-//	 * dispenser is disabled.
-//	 */
-//	@Test
-//	public void changeWhenBillDispenserDisabledTest() {
-//		paymentFacade.register(new PaymentEventListenerStub());
-////		// Disable every bill dispenser
-////		for (int key : station.billDispensers.keySet()) {
-////			station.billDispensers.get(key).disable();
-////		}
-//		station.billDispensers.get(5).disable();
-//		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
-//		assertEquals(1, changeDispensedFailCounter);
-//	}
-//	
-//	/**
-//	 * Attempt to dispense change when the coin
-//	 * dispenser is disabled.
-//	 */
-//	@Test
-//	public void changeWhenCoinDispenserDisabledTest() {
-//		paymentFacade.register(new PaymentEventListenerStub());
-//		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
-//		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
-//		assertEquals(1, changeDispensedFailCounter);
-//	}
+	/**
+	 * Attempt to dispense change when the bill
+	 * dispenser is disabled, expecting a failure event to be announced.
+	 */
+	@Test
+	public void changeWhenBillDispenserDisabledTest() {
+		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
+		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		paymentFacade.register(new PaymentEventListenerStub());
+		station.billDispensers.get(5).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(5.00));
+		assertEquals(1, changeDispensedFailCounter);
+	}
 	
-	// Attempt to trigger an overload exception for bill, and 
+	/**
+	 * Attempt to dispense change when the coin
+	 * dispenser is disabled, expecting a failure event to be announced.
+	 */
+	@Test
+	public void changeWhenCoinDispenserDisabledTest() {
+		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
+		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		paymentFacade.register(new PaymentEventListenerStub());
+		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
+		assertEquals(1, changeDispensedFailCounter);
+	}
 	
+	/**
+	 * Attempt to dispense change when the bill
+	 * dispenser is disabled, expecting a failure event to be announced.
+	 */
+	@Test
+	public void changeWhenBillDispenserDisabledNoListenerTest() {
+		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
+		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		station.billDispensers.get(5).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
+		assertEquals(0, changeDispensedFailCounter);
+	}
 	
-	
+	/**
+	 * Attempt to dispense change when the coin
+	 * dispenser is disabled, expecting a failure event to be announced.
+	 */
+	@Test
+	public void changeWhenCoinDispenserDisabledNoListenerTest() {
+		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
+		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
+		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
+		assertEquals(0, changeDispensedFailCounter);
+	}
 	
 	/*------------------------- Stubs ------------------------*/
 	
