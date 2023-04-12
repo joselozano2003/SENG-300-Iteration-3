@@ -38,10 +38,12 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.BarcodedUnit;
 import com.autovend.MembershipCard;
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.software.membership.MembershipFacade.InnerListener;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
@@ -87,10 +89,7 @@ public class MembershipFacadeTest {
 		MembershipCard card = new MembershipCard("membership", "1234", "cardHolder", true);
 		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
 		while (!flag)
-			try {
-				station.mainScanner.scan(card);
-				flag = true;
-			} catch (Exception e) {}
+			flag = station.mainScanner.scan(card);
 		assertEquals(1, found);
 		assertTrue(membershipFacade.membershipEntered());
 	}
@@ -110,11 +109,21 @@ public class MembershipFacadeTest {
 		MembershipCard card = new MembershipCard("membership", "9999", "cardHolder", true);
 		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
 		while (!flag)
-			try {
-				station.mainScanner.scan(card);
-				flag = true;
-			} catch (Exception e) {}
+			flag = station.mainScanner.scan(card);
 		assertEquals(1, found);
+		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Pre: Product in database is scanned.
+	 * Expected: no event announced.
+	 */
+	@Test
+	public void testEventInvalidScan2() throws IOException {
+		membershipFacade.register(new ListenerStub());
+		BarcodedProduct p = Setup.createBarcodedProduct123(5.55, 55, true);
+		while (!flag)
+			flag = station.mainScanner.scan(new BarcodedUnit(p.getBarcode(), p.getExpectedWeight()));
 		assertFalse(membershipFacade.membershipEntered());
 	}
 	
@@ -166,6 +175,23 @@ public class MembershipFacadeTest {
 	}
 	
 	/**
+	 * Pre: Membership card is swiped, but card number not in database.
+	 * Expected: reactToInvalidMembershipEntered event is called.
+	 */
+	@Test
+	public void testEventInvalidSwipe2() throws IOException {
+		membershipFacade.register(new ListenerStub());
+		MembershipCard card = new MembershipCard("NOT membership", "9999", "cardHolder", true);
+		MemberShipDatabase.MEMBERSHIP_DATABASE.add("1111");
+		while (!flag)
+			try {
+				station.cardReader.swipe(card, null);
+				flag = true;
+			} catch (Exception e) {}
+		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**
 	 * Pre: Valid Membership card is entered through GUI keyboard or touch screen.
 	 * Expected: reactToValidMembershipEntered event is called.
 	 */
@@ -205,6 +231,21 @@ public class MembershipFacadeTest {
 		inner.reactToCodeInputEvent("9999");
 		assertEquals(1, found);
 		assertFalse(membershipFacade.membershipEntered());
+	}
+	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvents() {
+		InnerListener inner = membershipFacade.new InnerListener();
+		//Will fail if any listener event is entered.
+		inner.reactToDisabledEvent(station.mainScanner);
+		inner.reactToEnabledEvent(station.mainScanner);
+		inner.reactToCardRemovedEvent(station.cardReader);
+		inner.reactToCardInsertedEvent(station.cardReader);
+		inner.reactToCardSwipedEvent(station.cardReader);
+		inner.reactToCardTappedEvent(station.cardReader);
 	}
 	
 	/*--------------- STUBS ---------------*/
