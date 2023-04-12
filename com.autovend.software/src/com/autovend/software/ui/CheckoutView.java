@@ -27,6 +27,12 @@ public class CheckoutView extends JPanel {
     private JButton startPaymentButton;
     private DefaultTableModel shoppingCartTableModel;
 
+    /**
+     * Constructor for the Check out view This also construct the 
+     * basic GUI
+     */
+    
+    
     public CheckoutView() {
         observers = new ArrayList<>();
         setLayout(null);
@@ -155,27 +161,54 @@ public class CheckoutView extends JPanel {
         add(totalLabel);
     }
     
+    /**
+     * Registers a UIEventListener to the list of observers.
+     *
+     * @param listener the UIEventListener to be added to the list of observers
+     */
+    
     public void register(UIEventListener listener) {
         observers.add(listener);
     }
 
+    /**
+     * Notifies all registered UIEventListener objects that the Start Add Own Bags button has been pressed.
+     * This method iterates through the list of observers and calls the onStartAddingOwnBags() method on each of them.
+     */
+    
     private void notifyStartAddOwnBagsButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onStartAddingOwnBags();
         }
     }
 
+    /**
+     * Notifies all registered UIEventListener objects that the Stop Add Own Bags button has been pressed.
+     * This method iterates through the list of observers and calls the onFinishAddingOwnBags() method on each of them.
+     */
+    
     private void notifyStopAddOwnBagsButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onFinishAddingOwnBags();
         }
     }
+    
+    /**
+     * Notifies all registered UIEventListener objects that the Purchase Bags button has been pressed.
+     * This method iterates through the list of observers and calls the onPurchaseBags() method on each of them
+     * with a quantity of 1.
+     */
 
     public void notifyPurchaseBagsButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onPurchaseBags(1);
         }
     }
+    
+    /**
+     * Notifies all registered UIEventListener objects that the Add Item By PLU button has been pressed.
+     * This method iterates through the list of observers and calls the onSelectAddItemByPLU() method on each of them.
+     */
 
     public void notifyAddItemByPLUButtonPressed() {
         for (UIEventListener listener : observers) {
@@ -183,13 +216,21 @@ public class CheckoutView extends JPanel {
         }
     }
     
+    /**
+     * Notifies all registered UIEventListener objects that the Add Item By Browsing button has been pressed.
+     * This method iterates through the list of observers and calls the onSelectAddItemByBrowsing() method on each of them.
+     */
+    
     public void notifyAddItemByBrowsingButtonPressed() {
         for (UIEventListener listener : observers) {
             listener.onSelectAddItemByBrowsing();
         }
     }
     
-    
+    /**
+     * Notifies all registered UIEventListener objects that the Start Paying button has been pressed.
+     * This method iterates through the list of observers and calls the onStartPaying() method on each of them.
+     */
     
     public void notifyStartPayingButtonPressed() {
         for (UIEventListener listener : observers) {
@@ -197,6 +238,14 @@ public class CheckoutView extends JPanel {
         }
     }
 
+    /**
+     * Updates the shopping cart table with the current items and quantities from the given CustomerSession.
+     * This method clears the current shopping cart table, then iterates through the shopping cart items
+     * and adds the updated items to the table with their respective names, quantities, and prices.
+     *
+     * @param session the CustomerSession containing the shopping cart to be updated
+     */
+    
     public void updateShoppingCart(CustomerSession session) {
         // Clear the current shopping cart table
         shoppingCartTableModel.setRowCount(0);
