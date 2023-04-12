@@ -28,13 +28,10 @@
  */
 package com.autovend.software.customer;
 
-import com.autovend.ReusableBag;
-import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.ReusableBagProduct;
-import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.item.TextSearchProduct;
 
 import java.math.BigDecimal;
