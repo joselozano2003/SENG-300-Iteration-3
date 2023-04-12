@@ -49,13 +49,13 @@ public interface PaymentEventListener extends AbstractEventListener {
 	 */	
 	public void onPaymentFailure();
 	
-	public void onChangeDispensedEvent();
+	public void onChangeDispensedEvent(BigDecimal amount);
 	
 	public void onChangeDispensedFailure(BigDecimal totalChangeLeft);
 
-	public void onLowCoins(CoinDispenser dispenser, Coin coin);
+	public void onLowCoins(CoinDispenser dispenser);
 	
-	public void onLowBills(BillDispenser dispenser, Bill bill);
+	public void onLowBills(BillDispenser dispenser);
 
 	
 	

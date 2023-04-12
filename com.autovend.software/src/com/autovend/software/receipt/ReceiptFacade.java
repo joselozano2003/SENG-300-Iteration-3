@@ -86,44 +86,45 @@ public class ReceiptFacade extends AbstractFacade<ReceiptEventListener> {
 	}
 
 	public void printReceipt(Map<Product, Double> shoppingCart) {
-		StringBuilder receiptText = new StringBuilder();
-		receiptText.append("Receipt:\n");
+	    StringBuilder receiptText = new StringBuilder();
+	    receiptText.append("======= RECEIPT =======\n\n");
 
-		for (Map.Entry<Product, Double> entry : shoppingCart.entrySet()) {
-			Product product = entry.getKey();
-			String name;
-			if (product instanceof BarcodedProduct) {
-				name = ((BarcodedProduct) product).getDescription();
-			} else if (product instanceof PLUCodedProduct) {
-				name = ((PLUCodedProduct) product).getDescription();
-			} else if (product instanceof ReusableBagProduct) {
-				name = "Reusable Bag";
-			} else {
-				name = "Unknown";
-			}
+	    receiptText.append(String.format("%-40s  %10s  %10s\n", "Name", "Quantity", "Total Price"));
+	    receiptText.append(String.format("%-40s  %10s  %10s\n", "----", "--------", "----------"));
 
-			double quantity = entry.getValue();
-			BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+	    for (Map.Entry<Product, Double> entry : shoppingCart.entrySet()) {
+	        Product product = entry.getKey();
+	        String name;
+	        if (product instanceof BarcodedProduct) {
+	            name = ((BarcodedProduct) product).getDescription();
+	        } else if (product instanceof PLUCodedProduct) {
+	            name = ((PLUCodedProduct) product).getDescription();
+	        } else if (product instanceof ReusableBagProduct) {
+	            name = "Reusable Bag";
+	        } else {
+	            name = "Unknown";
+	        }
 
-			receiptText.append(String.format("%s x %.2f %.2f\n", name, quantity, totalPrice));
+	        double quantity = entry.getValue();
+	        BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
 
-			// System.out.printf("%s -> Quantity: %.2f, Price: %s%n", name, quantity,
-			// totalPrice);
-		}
+	        receiptText.append(String.format("%-40s  %10.2f  %10.2f\n", name, quantity, totalPrice));
+	    }
 
-		try {
-			for (char c : receiptText.toString().toCharArray()) {
-				station.printer.print(c);
+	    receiptText.append("\n========================\n");
 
-			}
-			station.printer.cutPaper();
-			for (ReceiptEventListener listener : listeners) {
-				listener.onReceiptPrintedEvent(receiptText);
-			}
-		} catch (OverloadException | EmptyException e) {
-			System.err.println("Failed to print receipt: " + e.getMessage());
-		}
-
+	    try {
+	        for (char c : receiptText.toString().toCharArray()) {
+	            station.printer.print(c);
+	        }
+	        station.printer.cutPaper();
+	        for (ReceiptEventListener listener : listeners) {
+	            listener.onReceiptPrintedEvent(receiptText);
+	        }
+	    } catch (OverloadException | EmptyException e) {
+	        
+	    }
 	}
+
 
 }

@@ -48,6 +48,6 @@ public interface BaggingEventListener extends AbstractEventListener {
 	 */
 	public void onBagsDispensedEvent(ReusableBagProduct bagProduct, int amount);
 
-	public void onBagsDispensedFailure(ReusableBagProduct bagProduct,int amount);
+	public void onBagsDispensedFailure(ReusableBagProduct bagProduct,int amountLeft, int amountDispensed);
 
 }

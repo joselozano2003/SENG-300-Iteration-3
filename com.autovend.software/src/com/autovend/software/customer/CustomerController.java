@@ -125,6 +125,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		customerView.checkoutView.register(this);
 		customerView.paymentView.register(this);
 		customerView.pluView.register(this);
+		customerView.browsingView.register(this);
 
 		// Make view visible
 		selfCheckoutStation.screen.setVisible(true);
@@ -187,7 +188,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 			break;
 		case FINISHED:
-			onTransactionFinished();
+			// onTransactionFinished();
 			break;
 		case DISABLED:
 			selfCheckoutStation.baggingArea.disable();
@@ -228,7 +229,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			// TODO Auto-generated catch block
 
 		}
-
 		updateView(customerView.startView);
 
 	}
@@ -253,7 +253,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		paymentFacade.setAmountDue(amountDue); // Used only for non-cash payments
 		updateView(customerView.paymentView);
 		customerView.paymentView.updateAmountDue(amountDue.toString());
-
 	}
 
 	@Override
@@ -297,7 +296,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
-	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount) {
+	public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amountDispensed, int amountLeft) {
 		// notify attendant
 
 	}
@@ -329,24 +328,20 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	public void onSelectAddItemByPLU() {
 		updateView(customerView.pluView);
 	}
-	
+
 	@Override
 	public void onSelectAddItemByBrowsing() {
 		updateView(customerView.browsingView);
 	}
 
-
+	@Override
 	public void onItemAddedEvent(Product product, double quantity) {
 
 		currentSession.addItemToCart(product, quantity);
-		System.out.println("hey");
 		customerView.checkoutView.updateShoppingCart(currentSession);
-
 		setState(State.CHECKING_WEIGHT);
 
 	}
-
-
 
 	@Override
 	public void onItemNotFoundEvent() {
@@ -364,14 +359,18 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 			setState(State.DISPENSING_CHANGE);
 		}
-		customerView.paymentView.updateAmountDue(currentSession.getAmountLeft().toString());
+		else {
+			customerView.paymentView.updateAmountDue(currentSession.getAmountLeft().toString());
+
+		}
 	}
 
 	@Override
 	public void onPaymentFailure() {
 		currentSession.addFailedPayment();
 		if (currentSession.getNumberOfFailedPayments() > 5) {
-			// notify attendant
+			// attendantSupervisor.notifyPaymentFailureEvent(this.controller[station,
+			// currentsession])
 		}
 
 	}
@@ -379,17 +378,9 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
 
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-
-		}
 		setState(State.FINISHED);
-		
 		customerView.paymentView.updateReceipt(receiptText.toString());
-		
-		// To "see" the receipt, uncomment the line below
-		// System.out.println(receiptText.toString());
+
 	}
 
 	@Override
@@ -404,7 +395,8 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
-	public void onChangeDispensedEvent() {
+	public void onChangeDispensedEvent(BigDecimal amount) {
+		
 		setState(State.PRINTING_RECEIPT);
 	}
 
@@ -428,7 +420,6 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			} else {
 				setState(State.DISABLED);
 				// notify attendant
-
 			}
 
 		}
@@ -465,13 +456,13 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
-	public void onLowCoins(CoinDispenser dispenser, Coin coin) {
+	public void onLowCoins(CoinDispenser dispenser) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onLowBills(BillDispenser dispenser, Bill bill) {
+	public void onLowBills(BillDispenser dispenser) {
 		// TODO Auto-generated method stub
 
 	}

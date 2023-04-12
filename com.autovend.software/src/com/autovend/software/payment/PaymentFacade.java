@@ -106,7 +106,8 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 			while (changeDue.compareTo(billValue) >= 0 && billDispenser.size() > 0) {
 				try {
 					billDispenser.emit();
-
+					for (PaymentEventListener listener : listeners)
+						listener.onChangeDispensedEvent(billValue);
 					changeDue = changeDue.subtract(billValue);
 				} catch (DisabledException | OverloadException | EmptyException e) {
 					for (PaymentEventListener listener : listeners) {
@@ -126,6 +127,8 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 				try {
 					coinDispenser.emit();
 
+					for (PaymentEventListener listener : listeners)
+						listener.onChangeDispensedEvent(coinDenomination);
 					changeDue = changeDue.subtract(coinDenomination);
 				} catch (DisabledException | OverloadException | EmptyException e) {
 					for (PaymentEventListener listener : listeners) {
@@ -148,10 +151,6 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 
 			}
 
-		}
-
-		for (PaymentEventListener listener : listeners) {
-			listener.onChangeDispensedEvent();
 		}
 
 	}

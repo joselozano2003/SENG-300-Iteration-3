@@ -62,13 +62,29 @@ public class CheckoutView extends JPanel {
             }
         });
         add(searchPLUButton);
+        
+        
+     // Buttons
+        JButton searchByBrowsing = new JButton("by Browsing");
+        searchByBrowsing.setOpaque(true);
+        searchByBrowsing.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        searchByBrowsing.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
+        searchByBrowsing.setBackground(new Color(255, 203, 107));
+        searchByBrowsing.setBounds(800, 150, 280, 50);
+        searchByBrowsing.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	notifyAddItemByBrowsingButtonPressed();
+            }
+        });
+        add(searchByBrowsing);
 
         JButton purchaseBagButton = new JButton("Purchase Bag");
         purchaseBagButton.setOpaque(true);
         purchaseBagButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         purchaseBagButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
         purchaseBagButton.setBackground(new Color(255, 203, 107));
-        purchaseBagButton.setBounds(800, 150, 280, 50);
+        purchaseBagButton.setBounds(800, 250, 280, 50);
         purchaseBagButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +98,7 @@ public class CheckoutView extends JPanel {
         addOwnBagsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addOwnBagsButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
         addOwnBagsButton.setBackground(new Color(255, 203, 107));
-        addOwnBagsButton.setBounds(800, 250, 280, 50);
+        addOwnBagsButton.setBounds(800, 350, 280, 50);
         addOwnBagsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,7 +112,7 @@ public class CheckoutView extends JPanel {
         doneAddOwnBagsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         doneAddOwnBagsButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
         doneAddOwnBagsButton.setBackground(new Color(255, 203, 107));
-        doneAddOwnBagsButton.setBounds(800, 350, 280, 50);
+        doneAddOwnBagsButton.setBounds(800, 450, 280, 50);
         doneAddOwnBagsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,7 +126,7 @@ public class CheckoutView extends JPanel {
         paymentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         paymentButton.setBorder(new LineBorder(new Color(15, 17, 26), 1, true));
         paymentButton.setBackground(new Color(255, 203, 107));
-        paymentButton.setBounds(800, 450, 280, 50);
+        paymentButton.setBounds(800, 550, 280, 50);
         paymentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -166,6 +182,14 @@ public class CheckoutView extends JPanel {
             listener.onSelectAddItemByPLU();
         }
     }
+    
+    public void notifyAddItemByBrowsingButtonPressed() {
+        for (UIEventListener listener : observers) {
+            listener.onSelectAddItemByBrowsing();
+        }
+    }
+    
+    
     
     public void notifyStartPayingButtonPressed() {
         for (UIEventListener listener : observers) {

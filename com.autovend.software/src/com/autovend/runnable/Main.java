@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+import javax.swing.JButton;
+
 import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
@@ -24,11 +26,51 @@ import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.ui.CustomerView;
 
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException, OverloadException {
+
+		// Create 1 product
+		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
+		Barcode barcode = new Barcode(code1);
+		BarcodedProduct barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
+		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
+
+		// Create another product
+		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
+		Barcode barcode2 = new Barcode(code2);
+		BarcodedProduct barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
+		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+
+		Numeral[] code3 = { Numeral.one, Numeral.one, Numeral.one, Numeral.one };
+		PriceLookUpCode pluCode = new PriceLookUpCode(code3);
+		PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "apples", new BigDecimal("1.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
+
+		Numeral[] code4 = { Numeral.zero, Numeral.zero, Numeral.zero, Numeral.zero };
+		PriceLookUpCode pluCode2 = new PriceLookUpCode(code4);
+		PLUCodedProduct pluProduct2 = new PLUCodedProduct(pluCode2, "grapes", new BigDecimal("1.50"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode2, pluProduct2);
+
+		Numeral[] code5 = { Numeral.two, Numeral.two, Numeral.two, Numeral.two };
+		PriceLookUpCode pluCode3 = new PriceLookUpCode(code5);
+		PLUCodedProduct pluProduct3 = new PLUCodedProduct(pluCode3, "bananas", new BigDecimal("1.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode3, pluProduct3);
+
+		Numeral[] code6 = { Numeral.three, Numeral.three, Numeral.three, Numeral.three };
+		PriceLookUpCode pluCode4 = new PriceLookUpCode(code6);
+		PLUCodedProduct pluProduct4 = new PLUCodedProduct(pluCode4, "kiwis", new BigDecimal("3.00"));
+		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode4, pluProduct4);
+
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct);
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct2);
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct3);
+		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct4);
 
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
 		BigDecimal[] coinDenoms = { new BigDecimal("0.05"), new BigDecimal("0.10"), new BigDecimal("0.25"),
@@ -69,38 +111,12 @@ public class Main {
 			}
 		}
 
-		station.printer.addInk(100);
-		station.printer.addPaper(100);
+		station.printer.addInk(1000);
+		station.printer.addPaper(1000);
 
 		CustomerView customerView = new CustomerView();
 
 		CustomerController customerController = new CustomerController(station, dispenser, customerView);
-
-		// Create 1 product
-		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
-		Barcode barcode = new Barcode(code1);
-		BarcodedProduct barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
-		ProductDatabases.INVENTORY.put(barcodeProduct, 25);
-
-		// Create another product
-		Numeral[] code2 = { Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
-		Barcode barcode2 = new Barcode(code2);
-		BarcodedProduct barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2.50"), 15);
-		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
-		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
-
-		Numeral[] code3 = { Numeral.one, Numeral.one, Numeral.one, Numeral.one };
-		PriceLookUpCode pluCode = new PriceLookUpCode(code3);
-
-		PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "product3", new BigDecimal("1.00"));
-		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode, pluProduct);
-
-		Numeral[] code4 = { Numeral.zero, Numeral.zero, Numeral.zero, Numeral.zero };
-		PriceLookUpCode pluCode2 = new PriceLookUpCode(code4);
-
-		PLUCodedProduct pluProduct2 = new PLUCodedProduct(pluCode2, "grapes", new BigDecimal("2.00"));
-		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode2, pluProduct2);
 
 		Thread.sleep(4000);
 		customerView.startView.notifyStartButtonPressed();
@@ -109,17 +125,46 @@ public class Main {
 		station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
+		Thread.sleep(2000);
+
 		station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		Thread.sleep(2000);
 
 		station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		Thread.sleep(4000);
-		customerView.pluView.notifyItemAdded("0000");
-		station.scale.add(new PriceLookUpCodedUnit(pluCode2, 5));
+		customerView.checkoutView.notifyAddItemByPLUButtonPressed();
+		Thread.sleep(2000);
+		customerView.pluView.getInputField().setText("0000");
+		Thread.sleep(2000);
+		customerView.pluView.getAddButton().doClick();
+		Thread.sleep(2000);
+		customerView.pluView.getDoneButton().doClick();
+		Thread.sleep(2000);
 
-		Thread.sleep(4000);
+		PriceLookUpCodedUnit pluUnit1 = new PriceLookUpCodedUnit(pluCode2, 5);
+		station.scale.add(pluUnit1);
+		Thread.sleep(2000);
+		station.scale.remove(pluUnit1);
+
+		// station.scale.remove(new PriceLookUpCodedUnit(pluCode2, 5)); needs to be same
+		// instance station.baggingArea.add(new PriceLookUpCodedUnit(pluCode2, 5));
+		customerView.checkoutView.notifyAddItemByBrowsingButtonPressed();
+		
+		Thread.sleep(3000);
+		customerView.browsingView.notifyProductSelected(pluProduct4);
+		Thread.sleep(3000);
+
+		customerView.browsingView.notifyGoBackToCheckout();
+
+		PriceLookUpCodedUnit pluUnit2 = new PriceLookUpCodedUnit(pluCode4, 10);
+		station.scale.add(pluUnit2);
+		Thread.sleep(2000);
+		station.scale.remove(pluUnit2);
+		Thread.sleep(3000);
+
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
 		Thread.sleep(1000);
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
@@ -132,6 +177,12 @@ public class Main {
 		customerView.paymentView.notifyPaymentMethod("Cash");
 		Thread.sleep(2000);
 
+		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
+		Thread.sleep(3000);
+		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));		
+		Thread.sleep(3000);
+		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
+		Thread.sleep(3000);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));

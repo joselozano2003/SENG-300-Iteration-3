@@ -124,7 +124,7 @@ class PayWithBill extends PaymentFacade
 		int dispenserAmount = dispenser.size();
 		if (dispenserAmount < 0.10 * dispenser.getCapacity()) {
 			for (PaymentEventListener listener : listeners)
-				listener.onLowBills(dispenser, bill);
+				listener.onLowBills(dispenser);
 		}
 	}
 

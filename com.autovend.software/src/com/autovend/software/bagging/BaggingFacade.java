@@ -125,13 +125,17 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 
 			} catch (EmptyException e) {
 				for (BaggingEventListener listener : listeners)
-					listener.onBagsDispensedFailure(bagProduct, amount);
+					listener.onBagsDispensedFailure(bagProduct, amount, successfullyDispensed);
 				break;
 			}
 		}
+		
+		if (amount == 0) {
+			for (BaggingEventListener listener : listeners)
+				listener.onBagsDispensedEvent(bagProduct, successfullyDispensed);		
+		}
 
-		for (BaggingEventListener listener : listeners)
-			listener.onBagsDispensedEvent(bagProduct, successfullyDispensed);
+		
 	}
 
 }

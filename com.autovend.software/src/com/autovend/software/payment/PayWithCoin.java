@@ -121,7 +121,7 @@ class PayWithCoin extends PaymentFacade implements CoinDispenserObserver, CoinSl
 		int dispenserAmount = dispenser.size();
 		if (dispenserAmount < 0.10 * dispenser.getCapacity()) {
 			for (PaymentEventListener listener : listeners)
-				listener.onLowCoins(dispenser, coin);
+				listener.onLowCoins(dispenser);
 		}
 	}
 
