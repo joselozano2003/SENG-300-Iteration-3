@@ -31,6 +31,7 @@ public class StationStatusView extends JPanel {
 	JButton unlockStationButtons[];
 	JButton shutdownStationButtons[];
 	JButton turnonStationButtons[];
+	JButton addItemButtons[];
 
 	JButton logOutButton;
 	GridLayout gLayout;
@@ -64,6 +65,7 @@ public class StationStatusView extends JPanel {
 		unlockStationButtons = new JButton[num_stations];
 		shutdownStationButtons = new JButton[num_stations];
 		turnonStationButtons = new JButton[num_stations];
+		addItemButtons = new JButton[num_stations];
 		gLayout = new GridLayout(num_stations, 3, 0, 10);
 		attendantPanel.setLayout(gLayout);
 
@@ -78,6 +80,7 @@ public class StationStatusView extends JPanel {
 			unlockStationButtons[i] = new JButton("Unlock Station");
 			shutdownStationButtons[i] = new JButton("Shutdown Station");
 			turnonStationButtons[i] = new JButton("Start Station");
+			addItemButtons[i] = new JButton("Add item");
 
 			final int buttonIndex = i;
 
@@ -129,6 +132,8 @@ public class StationStatusView extends JPanel {
 					notifyStationTurnonButtonPressed(buttonIndex);
 				}
 			});
+			
+			addItemButtons[i].addActionListener(new TextSearchListener(i + 1));
 
 			mainPanel.add(attendantPanel);
 			attendantPanel.add(discrepancyLabels[i]);
@@ -139,6 +144,7 @@ public class StationStatusView extends JPanel {
 			attendantPanel.add(unlockStationButtons[i]);
 			attendantPanel.add(turnonStationButtons[i]);
 			attendantPanel.add(shutdownStationButtons[i]);
+			attendantPanel.add(addItemButtons[i]);
 			mainPanel.add(logOutButton);
 
 
@@ -203,6 +209,19 @@ public class StationStatusView extends JPanel {
 		for (UIEventListener listener : observers) {
 			listener.onStationUnlock(stationNum);
 		}
+	}
+	
+	private class TextSearchListener implements ActionListener {
+		private int stationNumber;
+		
+		public TextSearchListener(int stationNumber) {this.stationNumber = stationNumber;}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// When button is pressed, open Text Search Panel.
+			new AddItemByTextSearchView(listeners.get(stationNumber - 1));
+		}
+		
 	}
 
 
