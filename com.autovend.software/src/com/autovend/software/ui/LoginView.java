@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import auth.AttendantAccount;
+
 public class LoginView extends JPanel {
 	
 	private JFrame loginFrame;
@@ -33,9 +35,11 @@ public class LoginView extends JPanel {
 		JTextField passText = new JTextField();
 		JLabel errorLabel = new JLabel("");
 		JButton loginButton = new JButton("Login");
+		
 		loginButton.addActionListener(e -> {
 			// When button is pressed, have UI event listeners react to loginEvent.
-			for (UIEventListener listener : listeners) listener.reactToLoginEvent();
+			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
+			for (UIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
 		});
 		
 		this.add(userLabel);
