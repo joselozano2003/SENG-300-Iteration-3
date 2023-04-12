@@ -71,6 +71,7 @@ public class AttendantController {
 	}
 
 	public boolean startRemoveItem(ItemFacade item, Product product) {
-		return item.removeProduct(product);
+		//return item.removeProduct(product);
+		return false;
 	}
 }

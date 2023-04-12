@@ -49,7 +49,7 @@ public class ByTextSearch extends ItemFacade {
 	public ArrayList getProductsCorrespondingToTextSearch(String attendantInputString) {
 		ArrayList<Product> productsToShow = new ArrayList<Product>();
 		String[] InputStringWords = attendantInputString.split(" ");
-		
+
 		for(String keywords: ProductsDatabase2.Products_Textsearch_Keywords_Database.keySet()) {
 			for(String eachWord: InputStringWords) {
 				if(keywords.contains(eachWord) && !productsToShow.contains(ProductsDatabase2.Products_Textsearch_Keywords_Database.get(keywords))){
@@ -57,18 +57,18 @@ public class ByTextSearch extends ItemFacade {
 				}
 			}
 		}
-		
+
 		return productsToShow;
 	}
-	
+
 	/**
 	 * Method is called when the customer gui detects an attendant selecting a product from text search to be added to a customer's session.
-	 * 
+	 *
 	 * @param product: product the attendant selected from text search
 	 */
 	public void productFromTextSearchSelected(Product product) {
 		if(product != null) {
-        	for (ItemEventListener listener : listeners)
+			for (ItemEventListener listener : listeners)
 				listener.onItemAddedEvent(product, 1);;
 		}
 	}

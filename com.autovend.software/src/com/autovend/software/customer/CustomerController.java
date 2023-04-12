@@ -461,6 +461,16 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	}
 
 	@Override
+	public void cardInserted() {
+
+	}
+
+	@Override
+	public void cardRemoved() {
+
+	}
+
+	@Override
 	public void onOverride(int stationNumber) {
 		// TODO Auto-generated method stub
 

@@ -35,10 +35,10 @@ public interface MembershipListener extends AbstractEventListener {
 	 * Announces that a valid membership number has been entered by the user.
 	 * @param number The String number entered
 	 */
-	public void reactToValidMembershipEntered(String number);
+	void reactToValidMembershipEntered(String number);
 	
 	/**
 	 * Announces that an invalid membership number has been entered by the user.
 	 */
-	public void reactToInvalidMembershipEntered();
+	void reactToInvalidMembershipEntered();
 }
