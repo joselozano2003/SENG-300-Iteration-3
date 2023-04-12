@@ -100,7 +100,7 @@ public class AttendantControllerTest {
 	    assertEquals(CustomerController.State.INITIAL, stationLogic.getController().getState());
 	}
 
-	
+	 
 	@Test
 	public void testDenyStationUse() {
 	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
