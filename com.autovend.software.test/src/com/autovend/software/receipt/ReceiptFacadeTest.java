@@ -41,6 +41,7 @@ import java.util.Map;
 
 import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.OverloadException;
+import com.autovend.devices.ReceiptPrinter;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.products.BarcodedProduct;
@@ -104,10 +105,10 @@ public class ReceiptFacadeTest {
 		facade.register(new ReceiptEventListenerStub());
 		
 		try {
-			station.printer.addInk(100);
+			station.printer.addInk(ReceiptPrinter.MAXIMUM_INK);
 		} catch (OverloadException e) {}
 		try {
-			station.printer.addPaper(100);
+			station.printer.addPaper(ReceiptPrinter.MAXIMUM_PAPER);
 		} catch (OverloadException e) {}
 		
 		Map<Product, Double> cart = new HashMap<>();		
@@ -123,10 +124,10 @@ public class ReceiptFacadeTest {
 		facade.register(new ReceiptEventListenerStub());
 		
 		try {
-			station.printer.addInk(100);
+			station.printer.addInk(ReceiptPrinter.MAXIMUM_INK);
 		} catch (OverloadException e) {}
 		try {
-			station.printer.addPaper(100);
+			station.printer.addPaper(ReceiptPrinter.MAXIMUM_PAPER);
 		} catch (OverloadException e) {}	
 		
 		Map<Product, Double> cart = new HashMap<>();		
@@ -142,10 +143,10 @@ public class ReceiptFacadeTest {
 		facade.register(new ReceiptEventListenerStub());
 		
 		try {
-			station.printer.addInk(100);
+			station.printer.addInk(ReceiptPrinter.MAXIMUM_INK);
 		} catch (OverloadException e) {}
 		try {
-			station.printer.addPaper(100);
+			station.printer.addPaper(ReceiptPrinter.MAXIMUM_PAPER);
 		} catch (OverloadException e) {}	
 		
 		Map<Product, Double> cart = new HashMap<>();		
@@ -155,10 +156,6 @@ public class ReceiptFacadeTest {
 		assertTrue(printSuccess);
 	}
 	@Test
-	public void testPrintReceiptUnknown() {
-		
-	}
-	@Test
 	public void testLowInk() {
 		facade.register(new ReceiptEventListenerStub());
 		
@@ -166,7 +163,7 @@ public class ReceiptFacadeTest {
 			station.printer.addInk(1);
 		} catch (OverloadException e) {}
 		try {
-			station.printer.addPaper(100);
+			station.printer.addPaper(ReceiptPrinter.MAXIMUM_PAPER);
 		} catch (OverloadException e) {}
 		
 		Map<Product, Double> cart = new HashMap<>();		
@@ -182,7 +179,7 @@ public class ReceiptFacadeTest {
 		facade.register(new ReceiptEventListenerStub());
 		
 		try {
-			station.printer.addInk(100);
+			station.printer.addInk(ReceiptPrinter.MAXIMUM_INK);
 		} catch (OverloadException e) {}
 		try {
 			station.printer.addPaper(1);
@@ -204,7 +201,7 @@ public class ReceiptFacadeTest {
 			station.printer.addInk(100);
 		} catch (OverloadException e) {}
 		try {
-			station.printer.addPaper((1 << 10) + 1);
+			station.printer.addPaper(ReceiptPrinter.MAXIMUM_PAPER + 1);
 		} catch (OverloadException e) {}
 		
 		Map<Product, Double> cart = new HashMap<>();		
@@ -220,7 +217,7 @@ public class ReceiptFacadeTest {
 		facade.register(new ReceiptEventListenerStub());
 		
 		try {
-			station.printer.addInk((1 << 20) + 1);
+			station.printer.addInk(ReceiptPrinter.MAXIMUM_INK + 1);
 		} catch (OverloadException e) {}
 		try {
 			station.printer.addPaper(100);
