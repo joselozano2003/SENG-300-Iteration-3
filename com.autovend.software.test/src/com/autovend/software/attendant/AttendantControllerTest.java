@@ -28,6 +28,8 @@
  */
 package com.autovend.software.attendant;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -65,6 +67,14 @@ public class AttendantControllerTest {
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullList() {
 		new AttendantController(model, view);
+	}
+	
+	@Test
+	public void testAddCustomerStation() {
+		int initialSize = controller.getCustomerStations().size();
+	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
+	    controller.addCustomerStation(stationLogic);
+	    assertEquals(initialSize + 1, controller.getCustomerStations().size());
 	}
 
 }
