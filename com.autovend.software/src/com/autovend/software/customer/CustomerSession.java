@@ -38,6 +38,7 @@ import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.item.TextSearchProduct;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,20 +47,30 @@ public class CustomerSession {
 	private double expectedWeight;
 	private BigDecimal totalCost;
 	private BigDecimal totalPaid;
+	private Map<Product, Double> heavyItems;
 
 	public CustomerSession() {
 		shoppingCart = new HashMap<>();
 		expectedWeight = 0.0;
 		totalCost = BigDecimal.ZERO;
 		totalPaid = BigDecimal.ZERO;
+		heavyItems = new HashMap<>();
 	}
 
 	public void removeItemFromCart(Product product, double quantityToRemove){
+		boolean itemIsHeavy = false;
+		if (heavyItems.containsKey(product)) {
+			itemIsHeavy = true;
+		}
+
 		if (product instanceof BarcodedProduct) {
 			for (Product p : shoppingCart.keySet()){
 				if (p instanceof BarcodedProduct){
 					BarcodedProduct barcodedProduct = (BarcodedProduct) p;
 					if (barcodedProduct.getBarcode() == ((BarcodedProduct) product).getBarcode()){
+						if (!itemIsHeavy) {
+							expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
+						}
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
 						totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
 						expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
@@ -74,6 +85,9 @@ public class CustomerSession {
 					PLUCodedProduct pluCodedProduct = (PLUCodedProduct) p;
 					if (pluCodedProduct.getPLUCode() == ((PLUCodedProduct) product).getPLUCode()){
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						if (!itemIsHeavy) {
+							expectedWeight -= quantityToRemove;
+						}
 						totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
 						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
 						break;
@@ -97,6 +111,9 @@ public class CustomerSession {
 					TextSearchProduct textSearchProduct = (TextSearchProduct) p;
 					if (textSearchProduct.getName().equals(((TextSearchProduct) product).getName())){
 						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						if (!itemIsHeavy) {
+							expectedWeight -= textSearchProduct.getExpectedWeight() * quantityToRemove;
+						}
 						totalCost = totalCost.subtract(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
 						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
 						break;
@@ -141,9 +158,16 @@ public class CustomerSession {
 			totalCost = totalCost.add(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToAdd)));
 		}
 	}
-	
-	public void itemAddedToCartTooHeavyForScale(double weightInGrams) {
-		expectedWeight -= weightInGrams;
+		
+	public void addHeavyItem(BarcodedProduct item) {
+		if (heavyItems.containsKey(item)) {
+			double updatedQuantity = shoppingCart.get(item) + 1;
+			heavyItems.put(item, updatedQuantity);
+		} else {
+			heavyItems.put(item, 1.0);
+		}
+		expectedWeight -= item.getExpectedWeight();
+
 	}
 	
 	public void addPayment(BigDecimal amount) {

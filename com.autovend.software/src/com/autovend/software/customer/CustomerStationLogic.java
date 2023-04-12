@@ -75,6 +75,15 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 			listener.reactToRemoveItemRequest(product, quantity, this);
 		}
 	}
+	
+	// TODO: Connect to event from GUI
+	// React when the customer requests to remove an item.
+	// Sends request to the attendant
+	public void itemTooHeavyForBaggingAreaRequest(Product product) {
+		for (CustomerStationListener listener : listeners) {
+			listener.reactToItemTooHeavyRequest(product, this);
+		}
+	}
 
 
 	@Override
@@ -109,5 +118,9 @@ public class CustomerStationLogic extends AbstractFacade<CustomerStationListener
 		for (CustomerStationListener listener : listeners) {
 			listener.lowPaperAlert(this);
 		}
+	}
+	
+	public CustomerController getCustomerController() {
+		return controller;
 	}
 }
