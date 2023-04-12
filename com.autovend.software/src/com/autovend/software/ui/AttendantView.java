@@ -39,7 +39,6 @@ import javax.swing.JPanel;
 public class AttendantView extends JPanel {
 
 	public AddItemByTextSearchView textSearchView;
-	public RemoveItemView removeView;
 
 	public StationStatusView stationView;
 	
