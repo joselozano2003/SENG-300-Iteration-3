@@ -37,12 +37,15 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SupervisionStation;
 import com.autovend.software.customer.CustomerController;
+import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.customer.CustomerController.State;
 import com.autovend.software.test.Setup;
+import com.autovend.software.ui.CustomerView;
 
 import auth.AttendantAccount;
 import auth.AttendantAccountDatabases;
@@ -53,6 +56,10 @@ public class AttendantControllerTest {
 	//private AttendantView view;
 	private ArrayList<CustomerStationLogic> customerStationList;
 	private SupervisionStation station;
+	
+	private CustomerController customerController;
+	private ReusableBagDispenser bagDispenser;
+	public CustomerSession currentSession;
 	
 	
 	@Before
@@ -71,21 +78,26 @@ public class AttendantControllerTest {
 	    customerStationList.add(stationLogic);
 
 	    controller = new AttendantController(station);
+	    
+	    ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
+	    customerController = new CustomerController(scs, bagDispenser, new CustomerView());
+	    customerController.startNewSession();
+	    currentSession = customerController.getCurrentSession();
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullStation() {
-		new AttendantController(null);
+		new AttendantController(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullView() {
-		new AttendantController(null);
+		new AttendantController(station);
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructionNullList() {
-		new AttendantController(null);
+		new AttendantController(station);
 	}
 	
 	@Test
@@ -146,10 +158,11 @@ public class AttendantControllerTest {
         controller.addCustomerStation(stationLogic);
         
         controller.shutDownStation(0);
-        assertEquals(CustomerController.State.SHUTDOWN, stationLogic.getController().getCurrentState());
+        CustomerController.State state = stationLogic.getController().getCurrentState();
+        assertEquals(CustomerController.State.SHUTDOWN, state);
 
         controller.startUpStation(0);
-        assertEquals(CustomerController.State.STARTUP, stationLogic.getController().getCurrentState());
+        assertEquals(CustomerController.State.STARTUP, state);
     }
 	 
     @Test
