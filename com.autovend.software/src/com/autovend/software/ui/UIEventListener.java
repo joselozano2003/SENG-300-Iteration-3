@@ -38,7 +38,19 @@ public interface UIEventListener {
 	public void onBagRefusal(int stationNumber);
 	
 	public void onAttendantLoginAttempt(AttendantAccount account);
-
 	
+	public void onStationShutdown(int stationNumber);
+	
+	public void onStationTurnon(int stationNumber);
+	
+	public void onStationLock(int stationNumber);
+	
+	public void onStationUnlock(int stationNumber);
+	
+	public void onStationLogout();
+	
+	public void onStationAddByTextPressed(int stationNumber);
+	
+	public void onStationRemoveItemPressed(int stationNumber);
 
 }
