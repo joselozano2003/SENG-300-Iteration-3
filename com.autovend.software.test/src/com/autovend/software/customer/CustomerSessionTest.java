@@ -43,6 +43,7 @@ import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.item.TextSearchProduct;
 import com.autovend.software.test.Setup;
 
 public class CustomerSessionTest {
@@ -51,6 +52,7 @@ public class CustomerSessionTest {
 	private BarcodedProduct barcodedProduct;
 	private PLUCodedProduct pluCodedProduct;
 	private ReusableBagProduct reusableBagProduct;
+	private TextSearchProduct textSearchProduct;
 	
 	
 	@Before
@@ -59,6 +61,7 @@ public class CustomerSessionTest {
 		barcodedProduct = Setup.createBarcodedProduct123(12, 5, true);
 		pluCodedProduct = Setup.createPLUProduct1234(12, 1, true); //In CustomerSession Class, quantity to add was assumed to be the weight.
 		reusableBagProduct = new ReusableBagProduct();
+		textSearchProduct = new TextSearchProduct("Candy", "Mars", BigDecimal.valueOf(4), 2);
 	}
 
 //TESTING PAYMENT-COMPLETION.
@@ -232,7 +235,7 @@ public class CustomerSessionTest {
 			session.addPayment(BigDecimal.valueOf(70));
 			assertEquals(expected, session.getChangeDue());
 		}
-		
+	
 //TEST TO CHECK IF FAILED PAYMENTS ARE TRACKED PROPERLY
 		
 		@Test
@@ -263,7 +266,7 @@ public class CustomerSessionTest {
 			assertEquals(1000, session.getNumberOfFailedPayments());		
 		}
 		
-							
+					
 //TEST TO CHECK IF ITEM HAS BEEN ADDED TO CART	
 	
 		@Test
@@ -376,7 +379,6 @@ public class CustomerSessionTest {
 		}
 		
 //TEST TO CHECK IF TOTAL COST IS CALCULATED CORRECTLY
-		//
 		@Test
 		public void totalCostBeforeAnyPaymentTestOneProduct() {
 			session.addItemToCart(barcodedProduct, 1);
@@ -628,17 +630,298 @@ public class CustomerSessionTest {
 			assertEquals(99.0, session.getExpectedWeight(), 0.1);
 			
 			}
+	/**	
+//TESTING IF ITEM TOO HEAVY FOR SCALE IS DEDUCTED FROM WEIGHT
+		@Test
+		public void addOneTooHeavyBarcodedItemWeightTest() {
+				
+			session.addItemToCart(barcodedProduct, 1); // Weight of one item is 5, assuming 5 is too heavy here.	
+			session.itemAddedToCartTooHeavyForScale(5);
+										
+			assertEquals(0, session.getExpectedWeight(), 0.1);
+			
+			}
+		@Test
+		public void addTwoTooHeavyBarcodedItemWeightTest() {
+				
+			session.addItemToCart(barcodedProduct, 2); // Weight of one item is 5.	
+			session.itemAddedToCartTooHeavyForScale(10);
+										
+			assertEquals(0, session.getExpectedWeight(), 0.1);
+			
+		}
+		@Test
+		public void addOneHundredTooHeavyBarcodedItemWeightTest() {
+				
+			session.addItemToCart(barcodedProduct, 100); // Weight of one item is 5.	
+			session.itemAddedToCartTooHeavyForScale(500);
+										
+			assertEquals(0, session.getExpectedWeight(), 0.1);
+			
+	}
+	**/	
+//TESTING IF TOTAL COST FOR TEXT SEARCH PRODUCTS ARE CALCULATED CORRECTLY
+		//Making Payment on 1 item
+		@Test
+		public void customerPaymentTestOnetextSearchItem() {
+			
+			session.addItemToCart(textSearchProduct, 1); // 4 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+			
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(2));
+			assertEquals(BigDecimal.valueOf(2), session.getTotalPaid());
+			 
+			
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(2));
+			assertEquals(BigDecimal.valueOf(4), session.getTotalPaid());	
+		}
 		
+		//Making Payment on 2 items
+		@Test
+		public void customerPaymentTestTwoTextSearchItems() {
+			
+			session.addItemToCart(textSearchProduct, 2); //4 dollar worth product
+				
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+				
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(5));
+			assertEquals(BigDecimal.valueOf(5), session.getTotalPaid());
+				 
+				
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(3));
+			assertEquals(BigDecimal.valueOf(8), session.getTotalPaid());	
+			}
+		
+		//Making Payment on 20 items
+		@Test
+		public void customerPaymentTestTwentyTextSearchItems() {
+				
+			session.addItemToCart(textSearchProduct, 20); // 4 dollar worth product
+					
+			//Before payment, total paid amount is 0	
+			assertEquals(BigDecimal.valueOf(0), session.getTotalPaid());
+					
+			//After making payment
+			session.addPayment(BigDecimal.valueOf(73));
+			assertEquals(BigDecimal.valueOf(73), session.getTotalPaid());
+					 
+					
+			//Making full payment afterwards
+			session.addPayment(BigDecimal.valueOf(7));
+			assertEquals(BigDecimal.valueOf(80), session.getTotalPaid());	
+			}
+		
+		
+// TESTING IF BARCODED PRODUCT IS REMOVED FROM SHOPPING CART
+		
+		@Test
+		public void removeOneBarcodedProductTest() {
+			session.addItemToCart(barcodedProduct, 5);
+			session.removeItemFromCart(barcodedProduct, 1);
+			assertEquals(4, session.getShoppingCart().get(barcodedProduct), 0.1);
+		}
+		@Test
+		public void removeTwoBarcodedProductTest() {
+			session.addItemToCart(barcodedProduct, 5);
+			session.removeItemFromCart(barcodedProduct, 2);
+			assertEquals(3, session.getShoppingCart().get(barcodedProduct), 0.1);
+		}
+		@Test
+		public void removeOneHundredBarcodedProductTest() {
+			session.addItemToCart(barcodedProduct, 107);
+			session.removeItemFromCart(barcodedProduct, 100);
+			assertEquals(7, session.getShoppingCart().get(barcodedProduct), 0.1);
+		}
+		@Test
+		public void emptyCartBarcodedProductTest() {
+			session.addItemToCart(barcodedProduct, 6);
+			session.removeItemFromCart(barcodedProduct, 6);
+			assertEquals(0, session.getShoppingCart().get(barcodedProduct), 0.1);
+		}
+	
+//TESTING IF TOTAL COST IS UPDATED FOR BARCODED PRODUCT AFTER ITEM IS REMOVED
+		@Test
+		public void oneBarcodedProductRemovedTotalCostUpdatedTest() {
+			
+			session.addItemToCart(barcodedProduct, 10); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			BigDecimal expectedCostBeforeRemoving = new BigDecimal("120.00");
+			assertEquals(expectedCostBeforeRemoving, session.getTotalCost());
+			
+			//After removing item
+			session.removeItemFromCart(barcodedProduct, 1);;
+			BigDecimal expectedCostAfterRemoving = new BigDecimal("108.00");
+			assertEquals(expectedCostAfterRemoving, session.getTotalCost());			 						
+		}
+		@Test
+		public void TwoBarcodedProductRemovedTotalCostUpdatedTest() {
+			
+			session.addItemToCart(barcodedProduct, 10); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			BigDecimal expectedCostBeforeRemoving = new BigDecimal("120.00");
+			assertEquals(expectedCostBeforeRemoving, session.getTotalCost());
+			
+			//After removing item
+			session.removeItemFromCart(barcodedProduct, 2);;
+			BigDecimal expectedCostAfterRemoving = new BigDecimal("96.00");
+			assertEquals(expectedCostAfterRemoving, session.getTotalCost());			 						
+		}
+		@Test
+		public void fiftyOneBarcodedProductRemovedTotalCostUpdatedTest() {
+			
+			session.addItemToCart(barcodedProduct, 100); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			BigDecimal expectedCostBeforeRemoving = new BigDecimal("1200.00");
+			assertEquals(expectedCostBeforeRemoving, session.getTotalCost());
+			
+			//After removing item
+			session.removeItemFromCart(barcodedProduct, 51);;
+			BigDecimal expectedCostAfterRemoving = new BigDecimal("588.00");
+			assertEquals(expectedCostAfterRemoving, session.getTotalCost());			 						
+		}
+		
+		@Test
+		public void oneHundredBarcodedProductRemovedTotalCostUpdatedTest() {
+			
+			session.addItemToCart(barcodedProduct, 110); // 12 dollar worth product
+			
+			//Before payment, total paid amount is 0	
+			BigDecimal expectedCostBeforeRemoving = new BigDecimal("1320.00");
+			assertEquals(expectedCostBeforeRemoving, session.getTotalCost());
+			
+			//After removing item
+			session.removeItemFromCart(barcodedProduct, 100);;
+			BigDecimal expectedCostAfterRemoving = new BigDecimal("120.00");
+			assertEquals(expectedCostAfterRemoving, session.getTotalCost());			 						
+		}
+		
+// TESTING IF PLU CODED PRODUCT IS REMOVED FROM SHOPPING CART
+
+		@Test
+		public void removeOnePLUCodedProductTest() {
+			session.addItemToCart(pluCodedProduct, 5);
+			session.removeItemFromCart(pluCodedProduct, 1);
+			assertEquals(4, session.getShoppingCart().get(pluCodedProduct), 0.1);
+		}
+		@Test
+		public void removeTwoPLUCodedProductTest() {
+			session.addItemToCart(pluCodedProduct, 5);
+			session.removeItemFromCart(pluCodedProduct, 2);
+			assertEquals(3, session.getShoppingCart().get(pluCodedProduct), 0.1);
+		}
+		@Test
+		public void removeOneHundredPLUCodedProductTest() {
+			session.addItemToCart(pluCodedProduct, 108);
+			session.removeItemFromCart(pluCodedProduct, 100);
+			assertEquals(8, session.getShoppingCart().get(pluCodedProduct), 0.1);
+		}
+		@Test
+		public void emptyCartPLUCodedProductTest() {
+			session.addItemToCart(pluCodedProduct, 6);
+			session.removeItemFromCart(pluCodedProduct, 6);
+			assertEquals(0, session.getShoppingCart().get(pluCodedProduct), 0.1);
+		}
+		
+
+// TESTING RESUABLE BAG PRODUCT IS REMOVED FROM SHOPPING CART
+
+		@Test
+		public void removeOneReusableBagProductTest() {
+			session.addItemToCart(reusableBagProduct, 5);
+			session.removeItemFromCart(reusableBagProduct, 1);
+			assertEquals(4, session.getShoppingCart().get(reusableBagProduct), 0.1);
+		}
+		@Test
+		public void removeTwoReusableBagProductTest() {
+			session.addItemToCart(reusableBagProduct, 5);
+			session.removeItemFromCart(reusableBagProduct, 2);
+			assertEquals(3, session.getShoppingCart().get(reusableBagProduct), 0.1);
+		}
+		@Test
+		public void removeOneHundredReusableBagProductTest() {
+			session.addItemToCart(reusableBagProduct, 108);
+			session.removeItemFromCart(reusableBagProduct, 100);
+			assertEquals(8, session.getShoppingCart().get(reusableBagProduct), 0.1);
+		}
+		@Test
+		public void emptyCartReusableBagProductTest() {
+			session.addItemToCart(reusableBagProduct, 6);
+			session.removeItemFromCart(reusableBagProduct, 6);
+			assertEquals(0, session.getShoppingCart().get(reusableBagProduct), 0.1);
+		}
+
+// TESTING TEXT SEARCH PRODUCT IS REMOVED FROM SHOPPING CART
+
+		@Test
+		public void removeOneTextSearchProductTest() {
+			session.addItemToCart(textSearchProduct, 5);
+			session.removeItemFromCart(textSearchProduct, 1);
+			assertEquals(4, session.getShoppingCart().get(textSearchProduct), 0.1);
+		}
+		@Test
+		public void removeTwoTextSearchProductTest() {
+			session.addItemToCart(textSearchProduct, 5);
+			session.removeItemFromCart(textSearchProduct, 2);
+			assertEquals(3, session.getShoppingCart().get(textSearchProduct), 0.1);
+		}
+		@Test
+		public void removeOneHundredTextSearchProductTest() {
+			session.addItemToCart(textSearchProduct, 108);
+			session.removeItemFromCart(textSearchProduct, 100);
+			assertEquals(8, session.getShoppingCart().get(textSearchProduct), 0.1);
+		}
+		@Test
+		public void emptyCartTextSearchProductTest() {
+			session.addItemToCart(textSearchProduct, 6);
+			session.removeItemFromCart(textSearchProduct, 6);
+			assertEquals(0, session.getShoppingCart().get(textSearchProduct), 0.1);
+		}			
+	
 //TESTS FOR ADDING MEMBERSHIP 
 		@Test
 		public void membershipNumberTest() {
 			session.addMembershipNumber("30143490");
 			assertEquals("30143490", session.getMembershipNumber());
 		}
-		
 
-}		
-		
+// TEST TO SEE IF PAYMENT METHOD IS SET
+		@Test
+		public void setPaymentMethodCreditTest() {
+			session.setPaymentMethod("Credit Card");
+			assertEquals("Credit Card", session.getPaymentMethod());
+		}
+		@Test
+		public void setPaymentMethodDebitTest() {
+			session.setPaymentMethod("Debit Card");
+			assertEquals("Debit Card", session.getPaymentMethod());
+		}
+		@Test
+		public void setPaymentMethodCoinTest() {
+			session.setPaymentMethod("Coin");
+			assertEquals("Coin", session.getPaymentMethod());
+		}
+		@Test
+		public void setPaymentMethodBillTest() {
+			session.setPaymentMethod("Bill");
+			assertEquals("Bill", session.getPaymentMethod());
+		}
+		@Test
+		public void setPaymentMethodGiftCardTest() {
+			session.setPaymentMethod("Gift Card");
+			assertEquals("Gift Card", session.getPaymentMethod());
+		}
+
+}
 		
 
 	
