@@ -211,20 +211,21 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 
 	@Override
 	public void onStationShutdown(int stationNumber) {
-		// TODO Auto-generated method stub
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(State.SHUTDOWN);
 		
 	}
 
 	@Override
 	public void onStationTurnon(int stationNumber) {
-		// TODO Auto-generated method stub
+		CustomerController customerController = customerStations.get(stationNumber-1).getController();
+		customerController.setState(State.INITIAL);
 		
 	}
 
 	@Override
 	public void onStationLock(int stationNumber) {
 		CustomerController customerController = customerStations.get(stationNumber-1).getController();
-		customerController.stateSave = customerController.getCurrentState();
 		customerController.setState(State.DISABLED);
 	}
 

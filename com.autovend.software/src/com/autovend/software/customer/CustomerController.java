@@ -165,6 +165,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	 */
 
 	public void setState(State newState) {
+		this.stateSave = currentState;
 		this.currentState = newState;
 
 		switch (newState) {
