@@ -1,5 +1,7 @@
 package com.autovend.software.ui;
 
+import auth.AttendantAccount;
+
 public interface UIEventListener {
 
 	
@@ -21,11 +23,13 @@ public interface UIEventListener {
 
 	public void onSelectPaymentMethod(String payment);
 
+	public void onOverride(int stationNumber);
 	
+	public void onBagApproval(int stationNumber);
+
+	public void onBagRefusal(int stationNumber);
 	
-
-
-
+	public void onAttendantLoginAttempt(AttendantAccount account);
 
 	
 
