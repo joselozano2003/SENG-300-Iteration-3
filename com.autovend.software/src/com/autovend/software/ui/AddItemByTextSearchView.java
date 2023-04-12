@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,6 +36,7 @@ public class AddItemByTextSearchView extends JPanel {
 	
 	private List<ItemEventListener> observers;
 	
+	JFrame browsingFrame;
 	JPanel browsingPanel = this;
 	JPanel middlePanel;
 	JPanel cataloguePanel;
@@ -73,6 +75,10 @@ public class AddItemByTextSearchView extends JPanel {
 		this.listener = listener;
 		
 		Map<JButton, Product> productMap = ProductsDatabase2.Products_In_Visual_Catalogue_Database;
+		
+		browsingFrame = new JFrame("Add item by text search");
+		
+    	browsingFrame.add(this);
 		
     	cataloguePanel = new JPanel();
     	middlePanel = new JPanel();
@@ -120,7 +126,7 @@ public class AddItemByTextSearchView extends JPanel {
 		middlePanel.add(scrollBar);
 		middlePanel.add(Box.createGlue());
 		browsingPanel.add(Box.createGlue());
-		browsingPanel.setVisible(true);
+		browsingFrame.setVisible(true);
 		
 		for (JButton currentButton : productMap.keySet()) {
 			
