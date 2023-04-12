@@ -27,17 +27,20 @@ import com.autovend.products.Product;
 import com.autovend.software.item.ItemEventListener;
 import com.autovend.software.item.ProductsDatabase2;
 
-public class AddItemByTextSearchView extends JPanel {
+public class AddItemByTextSearchView extends JFrame {
 	
 	static int MAX_ITEMS = 20;
 	
 	// We'll have to create one of these classes for each station.
 	private UIEventListener listener;
-	
-	private List<ItemEventListener> observers;
-	
-	JFrame browsingFrame;
-	JPanel browsingPanel = this;
+
+	private List<BrowsingViewObserver> observers;
+
+	JButton backButton;
+	JLabel messageLabel;
+
+	JFrame browsingFrame = this;
+	JPanel browsingPanel;
 	JPanel middlePanel;
 	JPanel cataloguePanel;
 	JPanel letterPanel;
@@ -49,37 +52,31 @@ public class AddItemByTextSearchView extends JPanel {
 	JLabel searchLabel;
 	JPanel borderPanel;
 	JButton itemButtons[] = new JButton[MAX_ITEMS];
-	int num_items = 0;			// Actual number of items to display on screen.
-	
+	int num_items = 0; // Actual number of items to display on screen.
 
-	
 	// Character array to represent string entered so far by user.
 	ArrayList<Character> stringEntered = new ArrayList<Character>();
-	
-	static char[] letters = {'A', 'B', 'C', 'D', 'E', 'F',
-    	    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-    	    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-    JButton[] letterButtons = new JButton[letters.length];
-    JButton deleteButton;
-    
-    // Get collection of products to display.
-    static Collection<PLUCodedProduct> products = ProductDatabases.PLU_PRODUCT_DATABASE.values();
-	
-    // Catalogue currently being displayed to customer.
-    ArrayList<PLUCodedProduct> catalogue;
-    
-    // Tracks page number we're currently on in the catalogue.
-    int page_number = 1;
+
+	static char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+			'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+	JButton[] letterButtons = new JButton[letters.length];
+	JButton deleteButton;
+
+	// Get collection of products to display.
+	private Collection<PLUCodedProduct> products = ProductDatabases.PLU_PRODUCT_DATABASE.values();
+
+	// Catalogue currently being displayed to customer.
+	ArrayList<PLUCodedProduct> catalogue;
+
+	// Tracks page number we're currently on in the catalogue.
+	int page_number = 1;
 	
 	AddItemByTextSearchView(UIEventListener listener) {
 		this.listener = listener;
 		
 		Map<JButton, Product> productMap = ProductsDatabase2.Products_In_Visual_Catalogue_Database;
 		
-		browsingFrame = new JFrame("Add item by text search");
-		
-    	browsingFrame.add(this);
-		
+		browsingPanel = new JPanel();
     	cataloguePanel = new JPanel();
     	middlePanel = new JPanel();
     	borderPanel = new JPanel();
@@ -126,7 +123,7 @@ public class AddItemByTextSearchView extends JPanel {
 		middlePanel.add(scrollBar);
 		middlePanel.add(Box.createGlue());
 		browsingPanel.add(Box.createGlue());
-		browsingFrame.setVisible(true);
+		browsingPanel.setVisible(true);
 		
 		for (JButton currentButton : productMap.keySet()) {
 			
@@ -148,6 +145,9 @@ public class AddItemByTextSearchView extends JPanel {
 				}
 			});
 		}
+		
+		this.add(browsingPanel);
+		this.setVisible(true);
 	}
 	
 	public void notifyProductButtonPressedEvent(Product product) {
@@ -162,7 +162,7 @@ public class AddItemByTextSearchView extends JPanel {
 		close();
 	}
 	
-	public void register(ItemEventListener listener) {
+	public void register(BrowsingViewObserver listener) {
 		if (listener == null) return;
 		observers.add(listener);
 	}
