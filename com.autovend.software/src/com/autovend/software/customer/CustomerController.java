@@ -98,6 +98,9 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
+		
+		this.currentSession = new CustomerSession();
+
 
 		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
@@ -466,14 +469,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	@Override
 	public void onBagApproval(int stationNumber) {
 		// setState(STATE.ADDING_ITEMS);
-
 	}
 
 	@Override
 	public void onBagRefusal(int stationNumber) {
 		// setState(STATE.DISABLED); <- Should already be disabled (See: Adding Own Bags Use Case)
-
-
 	}
 
 	@Override

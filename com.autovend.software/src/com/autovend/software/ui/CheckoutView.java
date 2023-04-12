@@ -27,6 +27,8 @@ public class CheckoutView extends JPanel {
 	private JButton startPaymentButton;
 	private DefaultTableModel shoppingCartTableModel;
 
+	private JLabel totalLabel;
+
     /**
      * Constructor for the Check out view This also construct the 
      * basic GUI
@@ -152,10 +154,10 @@ public class CheckoutView extends JPanel {
 
         // Add components to the panel
         add(cartLabel);
-        add(totalLabel);
+       //xw add(totalLabel);
     }
     
-    /**
+    /**xw
      * Registers a UIEventListener to the list of observers.
      *
      * @param listener the UIEventListener to be added to the list of observers
@@ -240,15 +242,12 @@ public class CheckoutView extends JPanel {
      * @param session the CustomerSession containing the shopping cart to be updated
      */
     
-    public void updateShoppingCart(CustomerSession session) {
-        // Clear the current shopping cart table
-        shoppingCartTableModel.setRowCount(0);
-
-
+    
 
 	
 
 	public void updateShoppingCart(CustomerSession session) {
+		
 		BigDecimal totalPrice = BigDecimal.ZERO;
 		// Clear the current shopping cart table
 		shoppingCartTableModel.setRowCount(0);

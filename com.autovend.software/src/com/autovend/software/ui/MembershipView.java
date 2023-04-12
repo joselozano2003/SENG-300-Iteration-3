@@ -86,7 +86,7 @@ public class MembershipView extends JPanel {
 		for (MembershipViewObserver observer : observers) {
 			notificationLabel.setText("Thanks for entering membership number.");
 			observer.reactToMembershipCodeEntered(number);
-			;
+			
 		}
 	}
 

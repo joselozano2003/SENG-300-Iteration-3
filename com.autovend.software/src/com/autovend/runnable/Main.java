@@ -138,6 +138,7 @@ public class Main {
 
 		Thread.sleep(3000);
 		customerView.membershipView.getInputField().setText("101010101");
+		Thread.sleep(3000);
 		customerView.membershipView.notifyMembershipNumberEntered("101010101");
 		customerView.membershipView.notifyGoBackToCheckout();
 
@@ -148,7 +149,6 @@ public class Main {
 		Thread.sleep(4000);
 
 		
-		Thread.sleep(6000);
 		boolean scan1 = false;
 		while(!scan1) {
 			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));

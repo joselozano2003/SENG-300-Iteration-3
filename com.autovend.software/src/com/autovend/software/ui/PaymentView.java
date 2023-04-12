@@ -2,6 +2,8 @@ package com.autovend.software.ui;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.text.JTextComponent;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +21,8 @@ public class PaymentView extends JPanel {
 	private JButton creditOrDebitButton;
 	private JButton giftCardButton;
 	private JButton addMoreItemsButton;
+
+	private JLabel paymentMethodLabel;
 	/**
 	 * Payment view constructor and swing GUI construction for the Pay View 
 	 * 
