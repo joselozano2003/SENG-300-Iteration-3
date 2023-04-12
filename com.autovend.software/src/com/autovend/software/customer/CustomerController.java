@@ -123,6 +123,7 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// Make view visible
 		selfCheckoutStation.screen.setVisible(true);
 		selfCheckoutStation.screen.getFrame().add(customerView.startView);
+		this.currentSession = new CustomerSession();
 
 	}
 
