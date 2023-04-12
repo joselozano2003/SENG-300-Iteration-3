@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.*;
 
 import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.customer.CustomerController;
 
 import auth.AttendantAccount;
 
@@ -159,7 +160,11 @@ public class StationStatusView extends JPanel {
 	public void notifyRemoveItemButtonPressed(int stationNum) {
 		if (observers == null) return;
 		for (UIEventListener listener : observers) {
-			listener.onStationRemoveItemPressed(stationNum);
+			if (listener instanceof CustomerController) {
+				if (((CustomerController) listener).getCustomerStationNumber() == stationNum) {
+					listener.onStationRemoveItemPressed(stationNum);
+				}
+			}
 		}
 	}
 

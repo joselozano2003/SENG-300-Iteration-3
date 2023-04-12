@@ -91,6 +91,9 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	private CustomerView customerView;
 	
+	private static int NUMBER_OF_STATIONS = 0;
+	private int customerStationNumber;
+	
 //  private AttendantController attendantListener;  //
 
 	public enum State {
@@ -106,6 +109,9 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
+		this.setCustomerStationNumber(NUMBER_OF_STATIONS);
+		
+		NUMBER_OF_STATIONS++;
 		
 		this.currentSession = new CustomerSession();
 
@@ -635,6 +641,14 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 				listener.reactToLowPaperAlert();
 			}
 		}
+	}
+
+	public int getCustomerStationNumber() {
+		return customerStationNumber;
+	}
+
+	public void setCustomerStationNumber(int customerStationNumber) {
+		this.customerStationNumber = customerStationNumber;
 	}
 
 }
