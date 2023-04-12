@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.Product;
+import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.item.ItemFacade;
 import com.autovend.software.membership.MembershipFacade;
@@ -14,7 +16,7 @@ import com.autovend.software.payment.PaymentFacade;
 import com.autovend.software.receipt.ReceiptFacade;
 import com.autovend.software.ui.CustomerView;
 
-public class CustomerStationLogic {
+public class CustomerStationLogic extends AbstractFacade<CustomerStationListener> implements CustomerControllerListener{
 
 	//CustomerModel model;
 	CustomerView view;
@@ -25,6 +27,7 @@ public class CustomerStationLogic {
 	}
 
 	private CustomerStationLogic(SelfCheckoutStation station) {
+		super(station, new CustomerView());
 		// Initiate facades.
 	//	ItemFacade item = new ItemFacade(station, false);
 	//	PaymentFacade payment = new PaymentFacade(station, false);
@@ -58,6 +61,37 @@ public class CustomerStationLogic {
 		CustomerStationLogic self = CustomerStationLogic.installOn(station);
 		self.turnOnDisplay();
 
+	}
+
+	@Override
+	public void reactToDisableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToEnableStationRequest() {
+
+	}
+
+	@Override
+	public void reactToLowInkAlert() {
+
+	}
+
+	@Override
+	public void reactToLowPaperAlert() {
+
+	}
+
+	// TODO: Connect to event from GUI
+	// React when the customer requests to remove an item.
+	// Sends request to the attendant
+
+	@Override
+	public void removeItemRequest(Product product, double quantity, CustomerController controller) {
+		for (CustomerStationListener listener : listeners) {
+			listener.reactToRemoveItemRequest(product, quantity, this);
+		}
 	}
 
 }

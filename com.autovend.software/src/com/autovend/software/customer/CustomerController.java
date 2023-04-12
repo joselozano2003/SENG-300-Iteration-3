@@ -47,6 +47,7 @@ import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.AbstractFacade;
 import com.autovend.software.bagging.BaggingEventListener;
 import com.autovend.software.bagging.BaggingFacade;
 import com.autovend.software.bagging.ReusableBagProduct;
@@ -66,7 +67,7 @@ import com.autovend.software.ui.UIEventListener;
 
 import auth.AttendantAccount;
 
-public class CustomerController implements BaggingEventListener, ItemEventListener, PaymentEventListener,
+public class CustomerController extends AbstractFacade<CustomerControllerListener> implements BaggingEventListener, ItemEventListener, PaymentEventListener,
 		ReceiptEventListener, MembershipListener, UIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
@@ -81,6 +82,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 	private MembershipFacade membershipFacade;
 	List<PaymentFacade> paymentMethods;
 	List<ItemFacade> itemAdditionMethods;
+	private int inkUsed, paperUsed;
+	public int inkAdded, paperAdded;
+	boolean cardInserted;
+
+	final int ALERT_THRESHOLD = 10;
 
 	private CustomerView customerView;
 	
@@ -88,13 +94,14 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	public enum State {
 		INITIAL, ENTER_MEMBERSHIP, ADDING_OWN_BAGS, ADDING_ITEMS, CHECKING_WEIGHT, PAYING, DISPENSING_CHANGE,
-		PRINTING_RECEIPT, FINISHED, DISABLED
+		PRINTING_RECEIPT, FINISHED, DISABLED, SHUTDOWN, STARTUP
 	}
 
 	private State currentState;
 
 	public CustomerController(SelfCheckoutStation selfCheckoutStation, ReusableBagDispenser bagDispenser,
 			CustomerView customerView) {
+		super(selfCheckoutStation, customerView);
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
@@ -136,6 +143,13 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		// Make view visible
 		selfCheckoutStation.screen.setVisible(true);
 		selfCheckoutStation.screen.getFrame().add(customerView.startView);
+
+		inkUsed = 0;
+		paperUsed = 0;
+		inkAdded = 0;
+		paperAdded = 0;
+
+		cardInserted = false;
 
 	}
 	
@@ -221,8 +235,42 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 			selfCheckoutStation.handheldScanner.disable();
 			selfCheckoutStation.mainScanner.disable();
 			selfCheckoutStation.printer.disable();
-
 			break;
+		case SHUTDOWN:
+				selfCheckoutStation.baggingArea.disable();
+				selfCheckoutStation.scale.disable();
+				selfCheckoutStation.baggingArea.disable();
+				selfCheckoutStation.screen.disable();
+				selfCheckoutStation.printer.disable();
+				selfCheckoutStation.cardReader.disable();
+				selfCheckoutStation.mainScanner.disable();
+				selfCheckoutStation.handheldScanner.disable();
+				selfCheckoutStation.billInput.disable();
+				selfCheckoutStation.billOutput.disable();
+				selfCheckoutStation.billStorage.disable();
+				selfCheckoutStation.coinSlot.disable();
+				selfCheckoutStation.coinTray.disable();
+				selfCheckoutStation.coinStorage.disable();
+				selfCheckoutStation.coinValidator.disable();
+				break;
+		case STARTUP:
+				selfCheckoutStation.baggingArea.enable();
+				selfCheckoutStation.scale.enable();
+				selfCheckoutStation.baggingArea.enable();
+				selfCheckoutStation.printer.enable();
+				selfCheckoutStation.cardReader.enable();
+				selfCheckoutStation.mainScanner.enable();
+				selfCheckoutStation.handheldScanner.enable();
+				selfCheckoutStation.billInput.enable();
+				selfCheckoutStation.billOutput.enable();
+				selfCheckoutStation.billStorage.enable();
+				selfCheckoutStation.coinSlot.enable();
+				selfCheckoutStation.coinTray.enable();
+				selfCheckoutStation.coinStorage.enable();
+				selfCheckoutStation.coinValidator.enable();
+				selfCheckoutStation.screen.disable();
+				// everything is on but screen is off, so it cannot be interacted with
+				break;
 		default:
 			break;
 
@@ -236,6 +284,11 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 		frame.revalidate();
 		frame.repaint();
 
+	}
+
+	public void startNewSession() {
+		currentSession = new CustomerSession();
+		setState(State.INITIAL);
 	}
 
 	public void onTransactionFinished() {
@@ -462,12 +515,12 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	@Override
 	public void cardInserted() {
-
+		cardInserted = true;
 	}
 
 	@Override
 	public void cardRemoved() {
-
+		cardInserted = false;
 	}
 
 	@Override
@@ -540,6 +593,47 @@ public class CustomerController implements BaggingEventListener, ItemEventListen
 
 	public State getCurrentState() {
 		return this.currentState;
+	}
+
+	public int getInkUsed(StringBuilder sb){
+		int inkCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (!Character.isWhitespace(c)) {
+				inkCount++;
+			}
+		}
+		return inkCount;
+	}
+
+	public int getPaperUsed(StringBuilder sb){
+		int paperCount = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (c == '\n') {
+				paperCount++;
+			}
+		}
+		return paperCount;
+	}
+
+	public void checkLevels(){
+		int inkLevel = inkAdded - inkUsed;
+		int paperLevel = paperAdded - paperUsed;
+
+		if (inkLevel < ALERT_THRESHOLD) {
+			setState(State.DISABLED);
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowInkAlert();
+			}
+		}
+
+		if (paperLevel < ALERT_THRESHOLD){
+			setState(State.DISABLED);
+			for (CustomerControllerListener listener : listeners) {
+				listener.reactToLowPaperAlert();
+			}
+		}
 	}
 
 }

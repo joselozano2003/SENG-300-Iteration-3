@@ -35,6 +35,7 @@ import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.item.TextSearchProduct;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -56,6 +57,58 @@ public class CustomerSession {
 		totalPaid = BigDecimal.ZERO;
 		membershipNumber = null;
 		numberOfFailedPayments = 0;
+	}
+
+	public void removeItemFromCart(Product product, double quantityToRemove){
+		if (product instanceof BarcodedProduct) {
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof BarcodedProduct){
+					BarcodedProduct barcodedProduct = (BarcodedProduct) p;
+					if (barcodedProduct.getBarcode() == ((BarcodedProduct) product).getBarcode()){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(barcodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= barcodedProduct.getExpectedWeight() * quantityToRemove;
+						break;
+					}
+				}
+			}
+		}
+		else if (product instanceof PLUCodedProduct) {
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof PLUCodedProduct){
+					PLUCodedProduct pluCodedProduct = (PLUCodedProduct) p;
+					if (pluCodedProduct.getPLUCode() == ((PLUCodedProduct) product).getPLUCode()){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(pluCodedProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
+						break;
+					}
+				}
+			}
+		}
+		else if (product instanceof ReusableBagProduct) {
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof ReusableBagProduct){
+					shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+					totalCost = totalCost.subtract(((ReusableBagProduct) p).getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+					expectedWeight -= ((ReusableBagProduct) p).getExpectedWeight() * quantityToRemove;
+					break;
+				}
+			}
+		}
+		else if (product instanceof TextSearchProduct) {
+			for (Product p : shoppingCart.keySet()){
+				if (p instanceof TextSearchProduct){
+					TextSearchProduct textSearchProduct = (TextSearchProduct) p;
+					if (textSearchProduct.getName().equals(((TextSearchProduct) product).getName())){
+						shoppingCart.put(p, shoppingCart.get(p) - quantityToRemove);
+						totalCost = totalCost.subtract(textSearchProduct.getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+						expectedWeight -= quantityToRemove; // Assuming quantityToRemove represents the weight for PLUCodedProduct
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	public void addItemToCart(Product product, double quantityToAdd) {
