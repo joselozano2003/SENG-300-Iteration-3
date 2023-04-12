@@ -135,26 +135,6 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 		return customerStations;
 	}
 
-	public void shutDownStation(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.SHUTDOWN);
-	}
-
-	public void startUpStation(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.STARTUP);
-	}
-
-	public void permitStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.INITIAL);
-	}
-
-	public void denyStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.DISABLED);
-	}
-
-	public void reEnableStationUse(int stationNumber) {
-		customerStations.get(stationNumber).getController().setState(CustomerController.State.ADDING_ITEMS);
-	}
-
 	public void adjustBills(int stationNumber, int bills, int amountToAdd) throws OverloadException {
 		SelfCheckoutStation station = customerStations.get(stationNumber).getController().getStation();
 		BillDispenser dispenser = station.billDispensers.get(bills);
@@ -219,7 +199,7 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	@Override
 	public void onStationTurnon(int stationNumber) {
 		CustomerController customerController = customerStations.get(stationNumber-1).getController();
-		customerController.setState(State.INITIAL);
+		customerController.setState(State.STARTUP);
 		
 	}
 
