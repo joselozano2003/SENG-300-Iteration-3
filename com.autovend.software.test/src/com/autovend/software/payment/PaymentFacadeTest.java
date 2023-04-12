@@ -29,6 +29,7 @@
 package com.autovend.software.payment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -63,12 +64,12 @@ public class PaymentFacadeTest {
 	
 	private BigDecimal changeCounter = new BigDecimal("0");
 	private int changeDispensedFailCounter = 0;
-	private int changeDispensedCounter = 0;
+	private boolean changeDispensedCounter = false;
 
 	@Before
 	public void setup() throws Exception {
 		station = Setup.createSelfCheckoutStation();
-		paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		paymentFacade = new PaymentFacade(station, false, new CustomerView());
 		
 		// Add 100 bills to each dispenser
 		Setup.fillBillDispensers(station, 100);
@@ -80,7 +81,7 @@ public class PaymentFacadeTest {
 	public void teardown() {
 		changeCounter = BigDecimal.ZERO;
 		changeDispensedFailCounter = 0;
-		changeDispensedCounter = 0;
+		changeDispensedCounter = false;
 	}
 	
 	/**
@@ -101,12 +102,12 @@ public class PaymentFacadeTest {
 	 */
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
-		new PaymentFacade(null, new CustomerView(), false);
+		new PaymentFacade(null, false, new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullView() {
-		new PaymentFacade(station, null, false);
+		new PaymentFacade(station, false, null);
 	}
 	
 	/**
@@ -163,6 +164,7 @@ public class PaymentFacadeTest {
 		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(0)));
+		assertFalse(changeDispensedCounter);
 	}
 	
 	/**
@@ -171,12 +173,14 @@ public class PaymentFacadeTest {
 	 */
 	@Test
 	public void testMultipleChange() {
+		paymentFacade.register(new PaymentEventListenerStub());
 		BillDispenserObserverStub bdstub = new BillDispenserObserverStub();
 		station.billDispensers.forEach((k,v) -> v.register(bdstub));
 		CoinDispenserObserverStub cdstub = new CoinDispenserObserverStub();
 		station.coinDispensers.forEach((k,v) -> v.register(cdstub));
 		paymentFacade.dispenseChange(BigDecimal.valueOf(16.55));
 		assertTrue(changeCounter.equals(BigDecimal.valueOf(16.55)));
+		assertTrue(changeDispensedCounter);
 	}
 	
 	/**
@@ -234,7 +238,7 @@ public class PaymentFacadeTest {
 	@Test
 	public void changeWhenBillDispenserDisabledTest() {
 		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
-		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false, new CustomerView());
 		paymentFacade.register(new PaymentEventListenerStub());
 		station.billDispensers.get(5).disable();
 		paymentFacade.dispenseChange(BigDecimal.valueOf(5.00));
@@ -248,7 +252,7 @@ public class PaymentFacadeTest {
 	@Test
 	public void changeWhenCoinDispenserDisabledTest() {
 		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
-		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false, new CustomerView());
 		paymentFacade.register(new PaymentEventListenerStub());
 		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
@@ -262,7 +266,7 @@ public class PaymentFacadeTest {
 	@Test
 	public void changeWhenBillDispenserDisabledNoListenerTest() {
 		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
-		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false, new CustomerView());
 		station.billDispensers.get(5).disable();
 		paymentFacade.dispenseChange(BigDecimal.valueOf(5));
 		assertEquals(0, changeDispensedFailCounter);
@@ -275,7 +279,7 @@ public class PaymentFacadeTest {
 	@Test
 	public void changeWhenCoinDispenserDisabledNoListenerTest() {
 		SelfCheckoutStation station = Setup.createSelfCheckoutStation();
-		PaymentFacade paymentFacade = new PaymentFacade(station, new CustomerView(), false);
+		PaymentFacade paymentFacade = new PaymentFacade(station, false, new CustomerView());
 		station.coinDispensers.get(BigDecimal.valueOf(0.05)).disable();
 		paymentFacade.dispenseChange(BigDecimal.valueOf(0.05));
 		assertEquals(0, changeDispensedFailCounter);
@@ -288,11 +292,6 @@ public class PaymentFacadeTest {
 	 * Override any event in this stub that you don't want to fail.
 	 */
 	public class PaymentEventListenerStub implements PaymentEventListener {
-		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
 		public void reactToEnableStationRequest() {fail();}
@@ -300,18 +299,24 @@ public class PaymentFacadeTest {
 		public void onPaymentAddedEvent(BigDecimal amount) {fail();}
 		@Override
 		public void onPaymentFailure() {fail();}
-		@Override
-		public void onChangeDispensedEvent() {
-			changeDispensedCounter++;
-		}
+
 		@Override
 		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
 			changeDispensedFailCounter++;
 		}
 		@Override
-		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		public void onLowCoins(CoinDispenser dispenser) {fail();}
 		@Override
-		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
+		public void onLowBills(BillDispenser dispenser) {fail();}
+		@Override
+		public void onChangeDispensedEvent(BigDecimal amount) {
+			//changeCounter = changeCounter.add(amount);
+			changeDispensedCounter = true;
+			}
+		@Override
+		public void cardInserted() {fail();}
+		@Override
+		public void cardRemoved() {fail();}
 	}
 	
 	public class CoinDispenserObserverStub implements CoinDispenserObserver {

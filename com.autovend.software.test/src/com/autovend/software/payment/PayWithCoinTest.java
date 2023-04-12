@@ -121,10 +121,6 @@ public class PayWithCoinTest {
 	 */
 	public class PaymentEventListenerStub implements PaymentEventListener {
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
 		public void reactToEnableStationRequest() {fail();}
@@ -135,12 +131,16 @@ public class PayWithCoinTest {
 		@Override
 		public void onPaymentFailure() {fail();}
 		@Override
-		public void onChangeDispensedEvent() {fail();}
+		public void onChangeDispensedEvent(BigDecimal amount) {fail();}
 		@Override
 		public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {fail();}
 		@Override
-		public void onLowCoins(CoinDispenser dispenser, Coin coin) {fail();}
+		public void onLowCoins(CoinDispenser dispenser) {fail();}
 		@Override
-		public void onLowBills(BillDispenser dispenser, Bill bill) {fail();}
+		public void onLowBills(BillDispenser dispenser) {fail();}
+		@Override
+		public void cardInserted() {fail();}
+		@Override
+		public void cardRemoved() {fail();}
 	}
 }

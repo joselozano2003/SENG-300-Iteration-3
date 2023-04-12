@@ -243,10 +243,6 @@ public class ReceiptFacadeTest {
 	 */
 	public class ReceiptEventListenerStub implements ReceiptEventListener {
 		@Override
-		public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
-		public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-		@Override
 		public void reactToDisableStationRequest() {fail();}
 		@Override
 		public void reactToEnableStationRequest() {fail();}
