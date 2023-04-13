@@ -29,7 +29,7 @@ import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.ui.CustomerView;
 
-public class Main {
+public class CashDemo {
 
 	public static void main(String[] args) throws InterruptedException, OverloadException {
 
@@ -168,7 +168,7 @@ public class Main {
 					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		}
 
-		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
+		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
 		Thread.sleep(4000);
 		customerView.checkoutView.notifyAddItemByPLUButtonPressed();
@@ -184,9 +184,12 @@ public class Main {
 		station.scale.add(pluUnit1);
 		Thread.sleep(2000);
 		station.scale.remove(pluUnit1);
+		
+		//To fix the weight discrepancy:
+		 station.baggingArea.add(pluUnit1);
+		
 
-		// station.scale.remove(new PriceLookUpCodedUnit(pluCode2, 5)); needs to be same
-		// instance station.baggingArea.add(new PriceLookUpCodedUnit(pluCode2, 5));
+		
 		customerView.checkoutView.notifyAddItemByBrowsingButtonPressed();
 
 		Thread.sleep(3000);
@@ -201,6 +204,9 @@ public class Main {
 		Thread.sleep(2000);
 		station.scale.remove(pluUnit2);
 		Thread.sleep(3000);
+		
+		station.baggingArea.add(pluUnit2);
+
 
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
 		Thread.sleep(1000);

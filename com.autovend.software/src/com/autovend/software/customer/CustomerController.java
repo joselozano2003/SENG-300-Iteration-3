@@ -67,8 +67,8 @@ import com.autovend.software.ui.PaymentView;
 
 import auth.AttendantAccount;
 
-public class CustomerController extends AbstractFacade<CustomerControllerListener> implements BaggingEventListener, ItemEventListener, PaymentEventListener,
-		ReceiptEventListener, MembershipListener, CustomerUIEventListener {
+public class CustomerController extends AbstractFacade<CustomerControllerListener> implements BaggingEventListener,
+		ItemEventListener, PaymentEventListener, ReceiptEventListener, MembershipListener, CustomerUIEventListener {
 
 	private SelfCheckoutStation selfCheckoutStation;
 	private ReusableBagDispenser bagDispener;
@@ -91,7 +91,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	private CustomerView customerView;
 	public State stateSave;
-	
+
 //  private AttendantController attendantListener;  //
 
 	public enum State {
@@ -107,9 +107,8 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		this.selfCheckoutStation = selfCheckoutStation;
 		this.bagDispener = bagDispenser;
 		this.customerView = customerView;
-		
-		this.currentSession = new CustomerSession();
 
+		this.currentSession = new CustomerSession();
 
 		this.currentState = State.INITIAL;
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
@@ -154,14 +153,13 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		cardInserted = false;
 
 	}
-	
-	/*  public void register(AttendantController attendantListener){
-	 * 	  this.attendantListener = attendantListener();
-	 *  }
+
+	/*
+	 * public void register(AttendantController attendantListener){
+	 * this.attendantListener = attendantListener(); }
 	 * 
-	 *  public void register(AttendantController attendantListener){
-	 *    this.attendantListener = null;
-	 *   }
+	 * public void register(AttendantController attendantListener){
+	 * this.attendantListener = null; }
 	 */
 
 	public void setState(State newState) {
@@ -240,40 +238,40 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			selfCheckoutStation.printer.disable();
 			break;
 		case SHUTDOWN:
-				selfCheckoutStation.baggingArea.disable();
-				selfCheckoutStation.scale.disable();
-				selfCheckoutStation.baggingArea.disable();
-				selfCheckoutStation.screen.disable();
-				selfCheckoutStation.printer.disable();
-				selfCheckoutStation.cardReader.disable();
-				selfCheckoutStation.mainScanner.disable();
-				selfCheckoutStation.handheldScanner.disable();
-				selfCheckoutStation.billInput.disable();
-				selfCheckoutStation.billOutput.disable();
-				selfCheckoutStation.billStorage.disable();
-				selfCheckoutStation.coinSlot.disable();
-				selfCheckoutStation.coinTray.disable();
-				selfCheckoutStation.coinStorage.disable();
-				selfCheckoutStation.coinValidator.disable();
-				break;
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.scale.disable();
+			selfCheckoutStation.baggingArea.disable();
+			selfCheckoutStation.screen.disable();
+			selfCheckoutStation.printer.disable();
+			selfCheckoutStation.cardReader.disable();
+			selfCheckoutStation.mainScanner.disable();
+			selfCheckoutStation.handheldScanner.disable();
+			selfCheckoutStation.billInput.disable();
+			selfCheckoutStation.billOutput.disable();
+			selfCheckoutStation.billStorage.disable();
+			selfCheckoutStation.coinSlot.disable();
+			selfCheckoutStation.coinTray.disable();
+			selfCheckoutStation.coinStorage.disable();
+			selfCheckoutStation.coinValidator.disable();
+			break;
 		case STARTUP:
-				selfCheckoutStation.baggingArea.enable();
-				selfCheckoutStation.scale.enable();
-				selfCheckoutStation.baggingArea.enable();
-				selfCheckoutStation.printer.enable();
-				selfCheckoutStation.cardReader.enable();
-				selfCheckoutStation.mainScanner.enable();
-				selfCheckoutStation.handheldScanner.enable();
-				selfCheckoutStation.billInput.enable();
-				selfCheckoutStation.billOutput.enable();
-				selfCheckoutStation.billStorage.enable();
-				selfCheckoutStation.coinSlot.enable();
-				selfCheckoutStation.coinTray.enable();
-				selfCheckoutStation.coinStorage.enable();
-				selfCheckoutStation.coinValidator.enable();
-				selfCheckoutStation.screen.disable();
-				// everything is on but screen is off, so it cannot be interacted with
-				break;
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.scale.enable();
+			selfCheckoutStation.baggingArea.enable();
+			selfCheckoutStation.printer.enable();
+			selfCheckoutStation.cardReader.enable();
+			selfCheckoutStation.mainScanner.enable();
+			selfCheckoutStation.handheldScanner.enable();
+			selfCheckoutStation.billInput.enable();
+			selfCheckoutStation.billOutput.enable();
+			selfCheckoutStation.billStorage.enable();
+			selfCheckoutStation.coinSlot.enable();
+			selfCheckoutStation.coinTray.enable();
+			selfCheckoutStation.coinStorage.enable();
+			selfCheckoutStation.coinValidator.enable();
+			selfCheckoutStation.screen.disable();
+			// everything is on but screen is off, so it cannot be interacted with
+			break;
 		default:
 			break;
 
@@ -295,13 +293,8 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	public void onTransactionFinished() {
-		try {
-			Thread.sleep(6000);
-		} catch (InterruptedException e) {
 
-		}
-
-		// updateView(customerView.startView);
+		updateView(customerView.startView);
 
 	}
 
@@ -348,9 +341,9 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	@Override
 	public void onFinishAddingOwnBags() {
 		setState(State.DISABLED);
-		
+
 		// attendantListener.notifyFinishAddingOwnBagsRequest();
-		
+
 		// Require attendant approval before changing state
 		// Signal attendant to approve the added bags (e.g., via attendantIO)
 	}
@@ -374,7 +367,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		// attendantListener.notifyBagsDispensedFailure();
 	}
 
-	
 	@Override
 	public void reactToDisableStationRequest() {
 		// comes from the attendant
@@ -438,9 +430,14 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onReceiptPrintedEvent(StringBuilder receiptText) {
-
-		setState(State.FINISHED);
 		customerView.paymentView.updateReceipt(receiptText.toString());
+
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+
+		}
+		setState(State.FINISHED);
 
 	}
 
@@ -464,7 +461,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	@Override
-	public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {		
+	public void onChangeDispensedFailure(BigDecimal totalChangeLeft) {
 		// attendantListener.notifyRemainingChangeLeft(totalChangeLeft);
 
 	}
@@ -488,8 +485,6 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	}
 
-
-
 	@Override
 	public void reactToValidMembershipEntered(String number) {
 		currentSession.addMembershipNumber(number);
@@ -502,19 +497,21 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
-		// 
+		//
 
 	}
 
 	@Override
 	public void onLowCoins(CoinDispenser dispenser) {
-		// attendantListener.notifyAdjustCoinsForChange(this.customerController, dispenser);
+		// attendantListener.notifyAdjustCoinsForChange(this.customerController,
+		// dispenser);
 
 	}
 
 	@Override
 	public void onLowBills(BillDispenser dispenser) {
-		// attendantListener.notifyAdjustCoinsForChange(this.selfCheckoutStation, dispenser);
+		// attendantListener.notifyAdjustCoinsForChange(this.selfCheckoutStation,
+		// dispenser);
 	}
 
 	@Override
@@ -534,13 +531,14 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	@Override
 	public void onBagRefusal(int stationNumber) {
-		// setState(STATE.DISABLED); <- Should already be disabled (See: Adding Own Bags Use Case)
+		// setState(STATE.DISABLED); <- Should already be disabled (See: Adding Own Bags
+		// Use Case)
 	}
-	
+
 	public CustomerSession getCurrentSession() {
 		return this.currentSession;
 	}
-	
+
 	public SelfCheckoutStation getStation() {
 		return this.selfCheckoutStation;
 	}
@@ -553,7 +551,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		return this.currentState;
 	}
 
-	public int getInkUsed(StringBuilder sb){
+	public int getInkUsed(StringBuilder sb) {
 		int inkCount = 0;
 		for (int i = 0; i < sb.length(); i++) {
 			char c = sb.charAt(i);
@@ -564,7 +562,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		return inkCount;
 	}
 
-	public int getPaperUsed(StringBuilder sb){
+	public int getPaperUsed(StringBuilder sb) {
 		int paperCount = 0;
 		for (int i = 0; i < sb.length(); i++) {
 			char c = sb.charAt(i);
@@ -575,7 +573,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		return paperCount;
 	}
 
-	public void checkLevels(){
+	public void checkLevels() {
 		int inkLevel = inkAdded - inkUsed;
 		int paperLevel = paperAdded - paperUsed;
 
@@ -586,7 +584,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 			}
 		}
 
-		if (paperLevel < ALERT_THRESHOLD){
+		if (paperLevel < ALERT_THRESHOLD) {
 			setState(State.DISABLED);
 			for (CustomerControllerListener listener : listeners) {
 				listener.reactToLowPaperAlert();

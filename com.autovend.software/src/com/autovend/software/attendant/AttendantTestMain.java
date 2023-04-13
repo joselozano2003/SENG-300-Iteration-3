@@ -1,4 +1,4 @@
-package com.autovend.runnable;
+package com.autovend.software.attendant;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -24,7 +24,6 @@ import com.autovend.devices.TouchScreen;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
-import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;

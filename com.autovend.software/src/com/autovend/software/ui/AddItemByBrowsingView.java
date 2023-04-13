@@ -171,6 +171,9 @@ public class AddItemByBrowsingView extends JPanel {
 			currentButton.setPreferredSize(new Dimension(400, 200));
 			currentButton.setOpaque(true);
 			currentButton.setContentAreaFilled(false);
+			currentButton.setFont(new Font("Arial", Font.PLAIN, 14));
+            currentButton.setForeground(Color.BLACK);
+            currentButton.setBackground(new Color(230, 230, 230));
 
 
 			if (productGot instanceof PLUCodedProduct) {
@@ -186,6 +189,7 @@ public class AddItemByBrowsingView extends JPanel {
 				}
 			});
 		}
+		
 
 	}
 	
@@ -234,5 +238,9 @@ public class AddItemByBrowsingView extends JPanel {
 			listener.goBackToCheckout();
 		}
 	}
+	
+	
+	
+	
 
 }

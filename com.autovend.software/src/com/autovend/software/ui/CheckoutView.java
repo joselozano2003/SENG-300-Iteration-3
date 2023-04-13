@@ -257,7 +257,6 @@ public class CheckoutView extends JPanel {
 		BigDecimal totalPrice = BigDecimal.ZERO;
 		// Clear the current shopping cart table
 		shoppingCartTableModel.setRowCount(0);
-
 		// Add the updated shopping cart items to the table
 		for (Map.Entry<Product, Double> entry : session.getShoppingCart().entrySet()) {
 			Product product = entry.getKey();
