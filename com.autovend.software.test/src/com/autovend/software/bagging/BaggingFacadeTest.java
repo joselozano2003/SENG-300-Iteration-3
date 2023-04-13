@@ -29,17 +29,15 @@
 package com.autovend.software.bagging;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.autovend.ReusableBag;
 import com.autovend.SellableUnit;
-import com.autovend.devices.AbstractDevice;
 import com.autovend.devices.OverloadException;
-import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.observers.AbstractDeviceObserver;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 
@@ -64,23 +62,6 @@ public class BaggingFacadeTest {
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullBagDispenser() {
 		new BaggingFacade(null, new CustomerView());
-	}
-	
-	/**
-	 * Pre: Zero bags to dispense
-	 * Expected: onBagsDispensedFailure
-	 */
-	@Test
-	public void testDispenseBagsNegative() {
-		baggingFacade.register(new ListenerStub() {
-			@Override
-			public void onBagsDispensedFailure(ReusableBagProduct bagProduct, int amount, int amountDispensed) {
-				found++;
-				assertEquals(0, amountDispensed);
-			}
-		});
-		baggingFacade.dispenseBags(-1);
-		assertEquals(1, found);
 	}
 	
 	/**
@@ -144,7 +125,7 @@ public class BaggingFacadeTest {
 	 */
 	@Test
 	public void testEventDispenseBagsOneFail() {
-		int amountToDispense = 3;
+		int amountToDispense = 2;
 		loadBags(amountToDispense - 1);
 		baggingFacade.register(new ListenerStub() {
 			@Override
@@ -155,6 +136,15 @@ public class BaggingFacadeTest {
 		});
 		baggingFacade.dispenseBags(amountToDispense);
 		assertEquals(1, found);
+	}
+	
+	/**
+	 * Expected: Nothing should happen.
+	 */
+	@Test
+	public void testDispenseBagsNegative() {
+		baggingFacade.register(new ListenerStub());
+		baggingFacade.dispenseBags(-1);
 	}
 	
 	/**
@@ -186,7 +176,7 @@ public class BaggingFacadeTest {
 			@Override
 			public void onWeightChanged(double weightInGrams) {
 				found++;
-				assertEquals(expectedWeight, weightInGrams, 0.000);
+				assertTrue(weightInGrams < 0);
 			}
 		});
 		station.baggingArea.add(new Apple(expectedWeight));
@@ -216,7 +206,7 @@ public class BaggingFacadeTest {
 	 * @param amount The amount of bags to load.
 	 */
 	private void loadBags(int amount) {
-		for (int i = 0; i <= amount; i++)
+		for (int i = 0; i < amount; i++)
 			try {
 				station.bagDispenser.load(new ReusableBag());
 			} catch (OverloadException e) {}

@@ -56,15 +56,10 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 	}
 
 	@Override
-	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-
-	}
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
-	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-
-	}
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {}
 
 	@Override
 	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
@@ -75,36 +70,25 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 
 	@Override
 	public void reactToOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-
+		for (BaggingEventListener listener : listeners)
+			listener.onWeightChanged(-1);
 	}
 
 	@Override
-	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
-		// TODO Auto-generated method stub
-
-	}
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {}
 
 	@Override
-	public void bagDispensed(ReusableBagDispenser dispenser) {
-		// TODO Auto-generated method stub
-
-	}
+	public void bagDispensed(ReusableBagDispenser dispenser) {}
 
 	@Override
-	public void outOfBags(ReusableBagDispenser dispenser) {
-		// TODO Auto-generated method stub
-
-	}
+	public void outOfBags(ReusableBagDispenser dispenser) {}
 
 	@Override
-	public void bagsLoaded(ReusableBagDispenser dispenser, int count) {
-		// TODO Auto-generated method stub
-
-	}
+	public void bagsLoaded(ReusableBagDispenser dispenser, int count) {}
 
 	public void dispenseBags(int amount) {
 		int successfullyDispensed = 0;
+		boolean fail = false;
 		while (amount > 0) {
 			try {
 				station.bagDispenser.dispense();
@@ -114,11 +98,12 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 			} catch (EmptyException e) {
 				for (BaggingEventListener listener : listeners)
 					listener.onBagsDispensedFailure(bagProduct, amount, successfullyDispensed);
+				fail = true;
 				break;
 			}
 		}
 		
-		if (amount == 0) {
+		if (!fail && amount == 0) {
 			for (BaggingEventListener listener : listeners)
 				listener.onBagsDispensedEvent(bagProduct, successfullyDispensed);		
 		}

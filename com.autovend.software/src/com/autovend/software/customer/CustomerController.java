@@ -477,7 +477,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		if (currentState == State.ADDING_OWN_BAGS) {
 			// do nothing
 		} else {
-			if (expectedWeightEqualsActual) {
+			if (weightInGrams >= 0 && expectedWeightEqualsActual) {
 				setState(State.ADDING_ITEMS);
 			} else {
 				setState(State.DISABLED);
