@@ -42,6 +42,8 @@ public class AttendantView extends JPanel {
 
 	public StationStatusView stationView;
 	
+	public LoginView loginView;
+	
 	
 	
 
