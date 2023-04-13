@@ -480,6 +480,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 				setState(State.ADDING_ITEMS);
 			} else {
 				setState(State.DISABLED);
+				customerView.checkoutView.displayWeightDiscrepancy();
 				// attendantListener.notifyWeightDiscrepancy();
 			}
 

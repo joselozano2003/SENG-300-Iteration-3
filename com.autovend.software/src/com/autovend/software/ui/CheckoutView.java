@@ -27,7 +27,7 @@ public class CheckoutView extends JPanel {
 	private JButton startPaymentButton;
 	private DefaultTableModel shoppingCartTableModel;
 
-	private JLabel totalLabel;
+	private JLabel issueLabel;
 
     /**
      * Constructor for the Check out view This also construct the 
@@ -44,6 +44,12 @@ public class CheckoutView extends JPanel {
         setMaximumSize(new Dimension(1280, 720));
         setPreferredSize(new Dimension(1280, 720));
         setSize(new Dimension(1280, 720));
+        
+        issueLabel = new JLabel("");
+        issueLabel.setFont(new Font("Lucida Grande", Font.BOLD, 20));
+        issueLabel.setForeground(new Color(255, 255, 255));
+        issueLabel.setBounds(100, 700, 400, 30);
+        add(issueLabel);
 
 		// Labels
 		JLabel cartLabel = new JLabel("Current Items in Cart:");
@@ -275,5 +281,9 @@ public class CheckoutView extends JPanel {
 
 		shoppingCartTableModel.addRow(new Object[] { "Total:", "", totalPrice });
 
+	}
+	
+	public void displayWeightDiscrepancy() {
+		issueLabel.setText("Weight Discrepancy Detected");
 	}
 }

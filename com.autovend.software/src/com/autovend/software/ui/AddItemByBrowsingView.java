@@ -169,6 +169,9 @@ public class AddItemByBrowsingView extends JPanel {
 
 			cataloguePanel.add(currentButton);
 			currentButton.setPreferredSize(new Dimension(400, 200));
+			currentButton.setOpaque(true);
+			currentButton.setContentAreaFilled(false);
+
 
 			if (productGot instanceof PLUCodedProduct) {
 				PLUCodedProduct pluProduct = (PLUCodedProduct) productGot;
