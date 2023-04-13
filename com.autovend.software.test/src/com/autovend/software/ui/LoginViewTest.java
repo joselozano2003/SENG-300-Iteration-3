@@ -1,4 +1,4 @@
-package com.autovend.software.ui;
+package com.autovend.software.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.autovend.products.Product;
 import com.autovend.software.ui.LoginView;
+import com.autovend.software.ui.StationStatusView;
 import com.autovend.software.ui.UIEventListener;
 
 import auth.AttendantAccount;
@@ -154,5 +155,11 @@ public class LoginViewTest {
 	}
 	
 	
+	@Test
+	public void testStationStatusView() {
+		// Didn't have time to complete testing for this class. Simple test
+		// displaying GUI.
+		StationStatusView.main(null);
+	}
 
 }
