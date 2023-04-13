@@ -66,17 +66,16 @@ public class Main {
 		PriceLookUpCode pluCode4 = new PriceLookUpCode(code6);
 		PLUCodedProduct pluProduct4 = new PLUCodedProduct(pluCode4, "kiwis", new BigDecimal("3.00"));
 		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode4, pluProduct4);
-		
+
 		Numeral[] code7 = { Numeral.four, Numeral.four, Numeral.four, Numeral.four };
 		PriceLookUpCode pluCode5 = new PriceLookUpCode(code7);
 		PLUCodedProduct pluProduct5 = new PLUCodedProduct(pluCode5, "pears", new BigDecimal("1.00"));
 		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode5, pluProduct5);
-		
-		Numeral[] code8 = { Numeral.five, Numeral.five, Numeral.five, Numeral.five};
+
+		Numeral[] code8 = { Numeral.five, Numeral.five, Numeral.five, Numeral.five };
 		PriceLookUpCode pluCode6 = new PriceLookUpCode(code8);
 		PLUCodedProduct pluProduct6 = new PLUCodedProduct(pluCode6, "oranges", new BigDecimal("1.25"));
 		ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode6, pluProduct6);
-		
 
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct2);
@@ -84,8 +83,6 @@ public class Main {
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct4);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct5);
 		ProductsDatabase2.Products_In_Visual_Catalogue_Database.put(new JButton(), pluProduct6);
-
-		
 
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
 		BigDecimal[] coinDenoms = { new BigDecimal("0.05"), new BigDecimal("0.10"), new BigDecimal("0.25"),
@@ -142,36 +139,35 @@ public class Main {
 		customerView.membershipView.notifyMembershipNumberEntered("101010101");
 		customerView.membershipView.notifyGoBackToCheckout();
 
-		
-		
 		Thread.sleep(4000);
 		customerView.startView.notifyStartButtonPressed();
 		Thread.sleep(4000);
 
-		
 		boolean scan1 = false;
-		while(!scan1) {
-			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		while (!scan1) {
+			scan1 = station.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		Thread.sleep(2000);
 
-		scan1 = false;  
-		while(scan1 == false) {
-		scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		scan1 = false;
+		while (scan1 == false) {
+			scan1 = station.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		}
-		
+
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
-		
-		
+
 		Thread.sleep(2000);
 
 		scan1 = false;
-		while(scan1 == false) {
-			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+		while (scan1 == false) {
+			scan1 = station.mainScanner
+					.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		}
-		
+
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
 
 		Thread.sleep(4000);
@@ -192,7 +188,7 @@ public class Main {
 		// station.scale.remove(new PriceLookUpCodedUnit(pluCode2, 5)); needs to be same
 		// instance station.baggingArea.add(new PriceLookUpCodedUnit(pluCode2, 5));
 		customerView.checkoutView.notifyAddItemByBrowsingButtonPressed();
-		
+
 		Thread.sleep(3000);
 		customerView.browsingView.notifyProductSelected(pluProduct4);
 		Thread.sleep(3000);
@@ -217,10 +213,10 @@ public class Main {
 		Thread.sleep(2000);
 		customerView.paymentView.notifyPaymentMethod("Cash");
 		Thread.sleep(2000);
-
+		
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);
-		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));		
+		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);

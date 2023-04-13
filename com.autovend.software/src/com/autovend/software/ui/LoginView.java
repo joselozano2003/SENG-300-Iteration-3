@@ -1,6 +1,7 @@
 package com.autovend.software.ui;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -8,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import com.autovend.software.attendant.AttendantController;
 
 import auth.AttendantAccount;
 
@@ -21,14 +24,16 @@ public class LoginView extends JPanel {
 	private JLabel errorLabel;
 	private JButton loginButton;
 	
-	List<CustomerUIEventListener> listeners;
+	private List<AttendantUIEventListener> listeners;
 	
 	/**
-	 * Constructor for the Log in View wich contructs the Swing 
+	 * Constructor for the Log in View which constructs the Swing 
 	 * GUI and functionality for the Buttons 
 	 */
 
 	public static void main(String[] args) {
+		
+		
 		JFrame testFrame = new JFrame();
 		LoginView testView = new LoginView();
 		testFrame.add(testView);
@@ -42,6 +47,8 @@ public class LoginView extends JPanel {
 	}
 	
 	public LoginView() {
+		
+		listeners = new ArrayList<>();
 
 		this.setLayout(new GridLayout(3, 2));
 		
@@ -56,7 +63,7 @@ public class LoginView extends JPanel {
 			// When button is pressed, have UI event listeners react to loginEvent.
 			if (listeners == null) return;
 			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
-			//for (CustomerUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
+			for (AttendantUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
 		});
 
 
@@ -86,6 +93,10 @@ public class LoginView extends JPanel {
 		failPanel.add(failLabel, BorderLayout.CENTER);
 		failFrame.setVisible(true);
 		failFrame.validate();
+	}
+	
+	public void register(AttendantUIEventListener listener) {
+		listeners.add(listener);
 	}
 
 }

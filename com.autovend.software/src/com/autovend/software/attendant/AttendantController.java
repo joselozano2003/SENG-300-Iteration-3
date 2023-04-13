@@ -34,6 +34,9 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import com.autovend.Bill;
 import com.autovend.Coin;
 import com.autovend.devices.*;
@@ -49,6 +52,7 @@ import auth.AttendantAccount;
 import auth.AuthFacade;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.ui.AttendantUIEventListener;
+import com.autovend.software.ui.AttendantView;
 
 public class AttendantController implements CustomerStationListener, AttendantUIEventListener{
 
@@ -56,18 +60,25 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	private AttendantModel model;
 	private AuthFacade auth;
 	private ArrayList<HashMap<Product, Double>> removedProductsRequest;
+	private AttendantAccount stationAccount;
+	private SupervisionStation superStation;
+	private AttendantView aView;
+	private int currentTextStation;
 
-	public AttendantController(SupervisionStation supervisionStation) {
+	public AttendantController(SupervisionStation supervisionStation, AttendantView attView) {
 		this.auth = new AuthFacade();
 		customerStations = new ArrayList<CustomerController>();
 		removedProductsRequest = new ArrayList<HashMap<Product, Double>>();
+		superStation = supervisionStation;
+		aView = attView;
 	}
 	public boolean startLogIn(AttendantAccount attendantAccount) {
 		return auth.logIn(attendantAccount);
 	}
 
-	public boolean startLogOut(AttendantAccount attendantAccount) {
-		return auth.logOut(attendantAccount);
+	public boolean startLogOut() {
+		if (stationAccount == null) return false;
+		return auth.logOut(stationAccount);
 	}
 
 	public boolean startAddAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
@@ -119,6 +130,15 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 		} catch (OverloadException e) {
 			//TODO: Show attendant screen that too much paper was tried to be added
 		}
+	}
+	
+	public void updateView(JPanel newView) {
+		JFrame frame = superStation.screen.getFrame();
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(newView);
+		frame.revalidate();
+		frame.repaint();
+		System.out.print("swapping to " + newView);
 	}
 
 	public void removeItemfromStation(int stationNumber, Product product, double quantity) {
@@ -192,7 +212,6 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	public void onStationShutdown(int stationNumber) {
 		CustomerController customerController = customerStations.get(stationNumber-1);
 		customerController.setState(State.SHUTDOWN);
-		
 	}
 
 	@Override
@@ -219,18 +238,24 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 
 	@Override
 	public void onAttendantLoginAttempt(AttendantAccount account) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("a");
+		if (startLogIn(account)) {
+			System.out.println("working");
+			updateView(aView.stationView);
+		}
 	}
 
 	@Override
 	public void onStationLogout() {
 		// TODO Auto-generated method stub
+		auth.logOut(null);
 		
 	}
 	@Override
 	public void onStationAddByTextPressed(int value) {
-		// how does this fit??
+		currentTextStation = value;
+		updateView(aView.textSearchView);
+		System.out.printf("appa");
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.ui.AttendantView;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.StationStatusView;
 
@@ -36,12 +37,12 @@ public class AttendantTestMain {
 
 	public static void main(String[] args) throws InterruptedException, OverloadException {
 	
-
-		TouchScreen touchScreen = new TouchScreen();
-		StationStatusView stationView = new StationStatusView(2);
+		AttendantView stationView = new AttendantView(1);
 		
-		touchScreen.getFrame().add(stationView);
-		touchScreen.setVisible(true);
+
+		SupervisionStation attendantStation = new SupervisionStation();
+		attendantStation.screen.getFrame().add(stationView.loginView);
+		attendantStation.screen.getFrame().setVisible(true);
 		
 		
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
@@ -51,7 +52,7 @@ public class AttendantTestMain {
 		int scaleSensitivity = 1;
 		SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenoms, coinDenoms,
 				scaleMaximumWeight, scaleSensitivity);
-		SupervisionStation attendantStation = new SupervisionStation();
+		
 		ReusableBagDispenser dispenser = new ReusableBagDispenser(100);
 
 		int n = 0;
@@ -91,11 +92,13 @@ public class AttendantTestMain {
 
 		CustomerController customerController = new CustomerController(station, dispenser, customerView);
 		
-		AttendantController attendantController = new AttendantController(attendantStation);
+		AttendantController attendantController = new AttendantController(attendantStation, stationView);
 		
 		
 		CustomerStationLogic logic = new CustomerStationLogic(station);
-		attendantController.addCustomerStation(null);
+		attendantController.addCustomerStation(customerController);
+		stationView.loginView.register(attendantController);
+		stationView.textSearchView.register(attendantController);
 		
 		
 		

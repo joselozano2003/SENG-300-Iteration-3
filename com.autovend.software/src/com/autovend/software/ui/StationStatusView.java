@@ -92,7 +92,7 @@ public class StationStatusView extends JPanel {
 					+ " " + (i + 1) + ": " + "Working normally" + "...");
 			overrideButtons[i] = new JButton("Override");
 			addByTextButtons[i] = new JButton("Add Item By Name");
-			removeItemButtons[i] = new JButton("Remove Item");
+			removeItemButtons[i] = new JButton("Approve Removal");
 			lockStationButtons[i] = new JButton("Lock Station");
 			unlockStationButtons[i] = new JButton("Unlock Station");
 			shutdownStationButtons[i] = new JButton("Shutdown Station");
@@ -103,52 +103,61 @@ public class StationStatusView extends JPanel {
 			overrideButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyOverrideButtonPressed(buttonIndex);
+					notifyOverrideButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			addByTextButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyItemByTextButtonPressed(buttonIndex);
+					notifyItemByTextButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			removeItemButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyRemoveItemButtonPressed(buttonIndex);
+					notifyRemoveItemButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			lockStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyLockButtonPressed(buttonIndex);
+					notifyLockButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			unlockStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyEnableButtonPressed(buttonIndex);
+					notifyEnableButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			shutdownStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyShutdownButtonPressed(buttonIndex);
+					notifyShutdownButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			turnonStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyStationTurnonButtonPressed(buttonIndex);
+					notifyStationTurnonButtonPressed(buttonIndex + 1);
 				}
 			});
-
+			
+			
+			logOutButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					logoutButtonPressed();
+				}
+			});
+			
+			
 			mainPanel.add(attendantPanel);
 			attendantPanel.add(discrepancyLabels[i]);
 			attendantPanel.add(overrideButtons[i]);
@@ -173,7 +182,14 @@ public class StationStatusView extends JPanel {
 	// BUTTON LISTENERS //
 	//////////////////////
 
-
+	
+	public void logoutButtonPressed() {
+		if (observers == null) return;
+		for (AttendantUIEventListener listener : observers) {
+			listener.startLogOut();
+		}
+	}
+	
 	public void register(AttendantUIEventListener listener) {
 		observers.add(listener);
 	}
@@ -225,6 +241,16 @@ public class StationStatusView extends JPanel {
 		for (AttendantUIEventListener listener : observers) {
 			listener.onStationUnlock(stationNum);
 		}
+	}
+	
+	public void changeErrorLabel(int stationNum, String eMessage) {
+		discrepancyLabels[stationNum] = new JLabel("Station"
+				+ " " + (stationNum + 1) + ": " + eMessage + "!");
+	}
+	
+	public void resetErrorLabel(int stationNum) {
+		discrepancyLabels[stationNum] = new JLabel("Station"
+				+ " " + (stationNum + 1) + ": " + "Working normally" + "...");
 	}
 
 
