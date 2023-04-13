@@ -128,62 +128,62 @@ public class StationStatusView extends JPanel {
 
 			final int buttonIndex = i;
 
-			overrideButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyOverrideButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			addByTextButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyItemByTextButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			removeItemButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyRemoveItemButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			lockStationButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyLockButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			unlockStationButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyEnableButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			shutdownStationButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyShutdownButtonPressed(buttonIndex + 1);
-				}
-			});
-
-			turnonStationButtons[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					notifyStationTurnonButtonPressed(buttonIndex + 1);
-				}
-			});
-			
-			
-			logOutButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					logoutButtonPressed();
-				}
-			});
+//			overrideButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyOverrideButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			addByTextButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyItemByTextButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			removeItemButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyRemoveItemButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			lockStationButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyLockButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			unlockStationButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyEnableButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			shutdownStationButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyShutdownButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//
+//			turnonStationButtons[i].addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					notifyStationTurnonButtonPressed(buttonIndex + 1);
+//				}
+//			});
+//			
+//			
+//			logOutButton.addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					logoutButtonPressed();
+//				}
+//			});
 			
 			
 			mainPanel.add(attendantPanel);
@@ -211,75 +211,75 @@ public class StationStatusView extends JPanel {
 	//////////////////////
 
 	
-	public void logoutButtonPressed() {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.startLogOut();
-		}
-	}
-	
-	public void register(AttendantUIEventListener listener) {
-		observers.add(listener);
-	}
-
-	public void notifyRemoveItemButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationRemoveItemPressed(stationNum);
-		}
-	}
-
-	public void notifyOverrideButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onOverride(stationNum);
-		}
-	}
-
-	public void notifyItemByTextButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationAddByTextPressed(stationNum);
-		}
-	}
-
-	public void notifyShutdownButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationShutdown(stationNum);
-		}
-	}
-
-	public void notifyStationTurnonButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationTurnon(stationNum);
-		}
-	}
-
-	public void notifyLockButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationLock(stationNum);
-		}
-	}
-
-	public void notifyEnableButtonPressed(int stationNum) {
-		if (observers == null) return;
-		for (AttendantUIEventListener listener : observers) {
-			listener.onStationUnlock(stationNum);
-		}
-	}
-	
-	public void changeErrorLabel(int stationNum, String eMessage) {
-		discrepancyLabels[stationNum] = new JLabel("Station"
-				+ " " + (stationNum + 1) + ": " + eMessage + "!");
-	}
-	
-	public void resetErrorLabel(int stationNum) {
-		discrepancyLabels[stationNum] = new JLabel("Station"
-				+ " " + (stationNum + 1) + ": " + "Working normally" + "...");
-	}
+//	public void logoutButtonPressed() {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.startLogOut();
+//		}
+//	}
+//	
+//	public void register(AttendantUIEventListener listener) {
+//		observers.add(listener);
+//	}
+//
+//	public void notifyRemoveItemButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationRemoveItemPressed(stationNum);
+//		}
+//	}
+//
+//	public void notifyOverrideButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onOverride(stationNum);
+//		}
+//	}
+//
+//	public void notifyItemByTextButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationAddByTextPressed(stationNum);
+//		}
+//	}
+//
+//	public void notifyShutdownButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationShutdown(stationNum);
+//		}
+//	}
+//
+//	public void notifyStationTurnonButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationTurnon(stationNum);
+//		}
+//	}
+//
+//	public void notifyLockButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationLock(stationNum);
+//		}
+//	}
+//
+//	public void notifyEnableButtonPressed(int stationNum) {
+//		if (observers == null) return;
+//		for (AttendantUIEventListener listener : observers) {
+//			listener.onStationUnlock(stationNum);
+//		}
+//	}
+//	
+//	public void changeErrorLabel(int stationNum, String eMessage) {
+//		discrepancyLabels[stationNum] = new JLabel("Station"
+//				+ " " + (stationNum + 1) + ": " + eMessage + "!");
+//	}
+//	
+//	public void resetErrorLabel(int stationNum) {
+//		discrepancyLabels[stationNum] = new JLabel("Station"
+//				+ " " + (stationNum + 1) + ": " + "Working normally" + "...");
+//	}
 
 
 }

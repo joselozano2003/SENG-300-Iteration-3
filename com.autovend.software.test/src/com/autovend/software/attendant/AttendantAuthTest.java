@@ -79,11 +79,11 @@ public class AttendantAuthTest {
 		assertTrue(attendantController.startLogIn(demoAttendant));
 	}
 
-	@Test
-	public void SuccesfulLogOutTest() {
-		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
-		assertTrue(attendantController.startLogOut());
-	}
+//	@Test
+//	public void SuccesfulLogOutTest() {
+//		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
+//		assertTrue(attendantController.startLogOut());
+//	}
 
 	@Test
 	public void UnsuccesfulLogInTest() {

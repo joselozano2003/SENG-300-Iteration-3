@@ -1,4 +1,4 @@
-package com.autovend.software.test;
+package com.autovend.software.ui;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

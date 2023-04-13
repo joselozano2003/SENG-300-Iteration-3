@@ -149,7 +149,9 @@ public class PayWithCardTest {
 			try {
 				reader.insert(unregisteredCard, "1113");
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {
+				reader.remove();
+			}
 		assertEquals(1, paymentFailCounter);
 	}
 	
@@ -166,7 +168,9 @@ public class PayWithCardTest {
 			try {
 				reader.insert(creditCard, "1111");
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {
+				reader.remove();
+			}
 		assertEquals(1, paymentSuccessCounter);
 		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
@@ -184,7 +188,7 @@ public class PayWithCardTest {
 			try {
 				reader.tap(creditCard);
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {}
 		assertEquals(1, paymentSuccessCounter);
 		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
@@ -202,13 +206,13 @@ public class PayWithCardTest {
 			try {
 				reader.swipe(creditCard, null);
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {}
 		assertEquals(1, paymentSuccessCounter);
 		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
 	
 	
-	@Test
+	@Test 
 	public void testCardRemoved() {
 		payWithCard.setAmountDue(BigDecimal.valueOf(5));
 		payWithCard.register(new PaymentEventListenerStub());
@@ -218,7 +222,9 @@ public class PayWithCardTest {
 				reader.insert(creditCard, "1111");
 				reader.remove();
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {
+				reader.remove();
+			}
 		assertTrue(removed);
 	}
 	
@@ -232,11 +238,13 @@ public class PayWithCardTest {
 				reader.insert(blockedCard, "1114");
 				reader.remove();
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {
+				reader.remove();
+			}
 		assertEquals(1, paymentFailCounter);
 	}
 	
-	@Test
+	@Test ()
 	public void testNullIssuerFoundPayment() {
 		BankIO.CARD_ISSUER_DATABASE.clear();;
 		CreditCard testCard = new CreditCard("", "00004", "Some Guy 3", "904", "1114", true, true);
@@ -248,7 +256,9 @@ public class PayWithCardTest {
 				reader.insert(testCard, "1114");
 				reader.remove();
 				flag = true;
-			} catch (Exception e) {}
+			} catch (IOException e) {
+				reader.remove();
+			}
 		assertEquals(1, paymentFailCounter);
 	}
 	

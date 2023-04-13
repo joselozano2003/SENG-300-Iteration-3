@@ -132,6 +132,25 @@ public class PayWithBillTest {
 	}
 	
 	/**
+	 * Try to register and deregister listeners, and ensure they
+	 * announce events properly.
+	 */
+	@Test
+	public void testListeners() {
+		payWithBill.register(new PaymentEventListenerStub());
+		Bill testBill = new Bill(5, Setup.getCurrency());
+		try {
+			station.billInput.accept(testBill);
+		} catch (DisabledException | OverloadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertEquals(BigDecimal.valueOf(5), paymentCounter);
+		
+		
+	}
+	
+	/**
 	 * Assert that these hardware events don't announce to listeners.
 	 */
 	@Test
