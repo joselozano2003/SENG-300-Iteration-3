@@ -21,10 +21,10 @@ public class LoginView extends JPanel {
 	private JLabel errorLabel;
 	private JButton loginButton;
 	
-	List<CustomerUIEventListener> listeners;
+	List<AttendantUIEventListener> listeners;
 	
 	/**
-	 * Constructor for the Log in View wich contructs the Swing 
+	 * Constructor for the Log in View which constructs the Swing 
 	 * GUI and functionality for the Buttons 
 	 */
 
@@ -56,7 +56,7 @@ public class LoginView extends JPanel {
 			// When button is pressed, have UI event listeners react to loginEvent.
 			if (listeners == null) return;
 			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
-			//for (CustomerUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
+			for (AttendantUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
 		});
 
 
