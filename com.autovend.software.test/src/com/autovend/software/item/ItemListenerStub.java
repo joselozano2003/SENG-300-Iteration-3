@@ -13,10 +13,6 @@ import com.autovend.products.Product;
  */
 class ItemListenerStub implements ItemEventListener {
 	@Override
-	public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-	@Override
-	public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {fail();}
-	@Override
 	public void reactToDisableStationRequest() {fail();}
 	@Override
 	public void reactToEnableStationRequest() {fail();}

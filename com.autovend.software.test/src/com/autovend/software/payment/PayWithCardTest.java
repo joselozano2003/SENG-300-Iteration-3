@@ -29,6 +29,7 @@
 package com.autovend.software.payment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ public class PayWithCardTest {
 	private BigDecimal paymentCounter = new BigDecimal("0");
 	private int paymentFailCounter = 0;
 	private int paymentSuccessCounter = 0;
+	private boolean removed = false;
 	
 	// Flag used to rerun methods prone to hardware failure
 	private boolean flag;
@@ -156,7 +158,7 @@ public class PayWithCardTest {
 	 * Expect onPaymentAddedEvent passing in amount paid.
 	 */
 	@Test
-	public void PayWithValidCreditTap() {
+	public void PayWithValidCreditInsert() {
 		payWithCard.setAmountDue(BigDecimal.valueOf(5));
 		payWithCard.register(new PaymentEventListenerStub());
 		CardReader reader = station.cardReader;
@@ -168,6 +170,33 @@ public class PayWithCardTest {
 		assertEquals(1, paymentSuccessCounter);
 		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
+	@Test
+	public void testCardRemoved() {
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(creditCard, "1111");
+				reader.remove();
+				flag = true;
+			} catch (Exception e) {}
+		assertTrue(removed);
+	}
+	@Test
+	public void testCreditBlocked() {
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(blockedCard, "1114");
+				reader.remove();
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentFailCounter);
+	}
+	
 	
 	
 	/*--------------- STUBS ---------------*/
@@ -205,7 +234,7 @@ public class PayWithCardTest {
 		}
 		@Override
 		public void cardRemoved() {
-			// TODO Auto-generated method stub
+			removed = true;
 			
 		}
 	}

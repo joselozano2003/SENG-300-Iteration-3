@@ -38,6 +38,7 @@ import org.junit.Test;
 
 import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.test.Setup;
@@ -103,7 +104,7 @@ public class ByPLUCodeTest {
 		
 		byPLUCode.reactToPLUCodeEntered("1234");
 		
-		instance.register(new ItemListenerStub() {
+		byPLUCode.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -125,7 +126,7 @@ public class ByPLUCodeTest {
 		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
 		PLUCodedProduct PLUProd456 = Setup.createPLUProduct56789(3.57, 1, true);
 		
-		instance.register(new ItemListenerStub() {
+		byPLUCode.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -143,40 +144,8 @@ public class ByPLUCodeTest {
 		assertEquals(expected, found);
 	}
 	
-	/*
-	 * Attempt to getting a PLUCodedProduct with a null PLUCode but it won't be possible..
-	 */
-	
-	/*
-	@Test
-	public void testValidAndInvalidPLUProcessing() {
-		int expected = 2;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
-		PLUCodedProduct PLUProd456 = Setup.createPLUProduct56789(3.57, 1, false);
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(PLUProd123, product);
-				}
-			}
-			
-			@Override 
-			public void onItemNotFoundEvent() {
-				found++;
-		}});
-		
-		byPLUCode.processPLUInput("1234", 2);
-		byPLUCode.processPLUInput("56789", 1);
-		
-		assertEquals(expected, found);
-	}
-	*/
-	
 	/**
-	 * Tests the event when the weight is changed during a PLUCode scan
+	 * Tests the event when the weight is changed during a PLUCode lookup
 	 */
 	@Test
 	public void testEventReactToWeightChanged() {
@@ -184,7 +153,7 @@ public class ByPLUCodeTest {
 		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
 		byPLUCode.reactToPLUCodeEntered("1234");
 		
-		instance.register(new ItemListenerStub() {
+		byPLUCode.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -198,17 +167,82 @@ public class ByPLUCodeTest {
 	}
 	
 	/**
+	 * Tests the event when the weight is not changed during a PLUCode lookup
+	 */
+	@Test
+	public void testEventReactToNOWeightChange() {
+		int expected = 0;
+		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
+		byPLUCode.reactToPLUCodeEntered("1234");
+		
+		byPLUCode.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+				if (found == 1) {
+					assertEquals(PLUProd123, product);
+				}
+			}});
+		
+		byPLUCode.reactToWeightChangedEvent(station.scale, 0);
+		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Tests the event when the weight is changed during a PLUCode lookup for a null product
+	 */
+	@Test
+	public void testEventReactToWeightChangeNullProd() {
+		int expected = 0;
+		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(11.99, 3, true);
+		
+		byPLUCode.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+				if (found == 1) {
+					assertEquals(PLUProd123, product);
+				}
+			}});
+		
+		byPLUCode.reactToWeightChangedEvent(station.scale, 7);
+		assertEquals(expected, found);
+	}
+	/**
 	 * Assert that these hardware events don't announce to listeners.
 	 */
 	@Test
 	public void testMethodsNoEvents() {
+		int expected = 4;
 		//Will fail if any listener event is entered.
-		instance.register(new ItemListenerStub());
+		byPLUCode.register(new ItemListenerStub() {
+			@Override
+			public void reactToDisableStationRequest() {
+				found++;
+			}
+			@Override
+			public void reactToEnableStationRequest() {
+				found++;
+			}
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}
+			@Override
+			public void onItemNotFoundEvent() {
+				found++;
+			}
+			@Override
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				found++;
+			}	
+		});
+
+		byPLUCode.register(new ItemListenerStub());
 		byPLUCode.reactToEnabledEvent(station.scale);
 		byPLUCode.reactToDisabledEvent(station.scale);
 		byPLUCode.reactToOverloadEvent(station.scale);
 		byPLUCode.reactToOutOfOverloadEvent(station.scale);
-		
-		assertEquals(byPLUCode.getListeners(), instance.getListeners());	
+		assertNotEquals(expected, found);		
 	}
 }

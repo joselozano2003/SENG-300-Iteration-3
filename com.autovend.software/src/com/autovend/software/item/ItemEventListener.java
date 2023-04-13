@@ -37,9 +37,9 @@ public interface ItemEventListener extends AbstractEventListener {
 	 * Signals an event in which a product was successfully added.
 	 * @param product
 	 */
-	void onItemAddedEvent(Product product, double quantity);
+	public void onItemAddedEvent(Product product, double quantity);
 
-	void onItemNotFoundEvent();
+	public void onItemNotFoundEvent();
 
-	void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
+	public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i);
 }
