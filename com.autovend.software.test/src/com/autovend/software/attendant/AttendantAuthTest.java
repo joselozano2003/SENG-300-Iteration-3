@@ -16,6 +16,7 @@ import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.attendant.AttendantModel;
 //import com.autovend.software.attendant.AttendantView;
 import com.autovend.software.customer.CustomerStationLogic;
+import com.autovend.software.ui.*;
 
 
 import auth.AttendantAccount;
@@ -26,10 +27,10 @@ public class AttendantAuthTest {
 
 	private static List<CustomerStationLogic> customerStations = new ArrayList<>();
 	private AttendantModel model = new AttendantModel();
-	//private AttendantView view = new AttendantView();
+	private AttendantView view = new AttendantView(4);
 	private SupervisionStation station = new SupervisionStation();
 
-	public AttendantController attendantController = new AttendantController(station);
+	public AttendantController attendantController = new AttendantController(station, view);
 
 	@Before
 	public void setUp() throws Exception {
@@ -81,7 +82,7 @@ public class AttendantAuthTest {
 	@Test
 	public void SuccesfulLogOutTest() {
 		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
-		assertTrue(attendantController.startLogOut(demoAttendant));
+		assertTrue(attendantController.startLogOut());
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class AttendantAuthTest {
 	@Test
 	public void UnsuccesfulLogOutTest() {
 		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
-		assertFalse(attendantController.startLogOut(fakeAttendant));
+		assertFalse(attendantController.startLogOut());
 	}
 
 	@Test
