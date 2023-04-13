@@ -179,6 +179,46 @@ public class PaymentView extends JPanel {
 	}
 	
 	/**
+	 * Returns the cashButton button component.
+	 *
+	 * @return the JButton representing the Add button
+	 */
+	
+	public JButton getCashButton() {
+		return this.cashButton;
+	}
+
+	/**
+	 * Returns the creditOrDebitButton button component.
+	 *
+	 * @return the JButton representing the Done button
+	 */
+	
+	public JButton getCreditOrDebitButton() {
+		return this.creditOrDebitButton;
+	}
+	
+	/**
+	 * Returns the giftCardButton button component.
+	 *
+	 * @return the JButton representing the Done button
+	 */
+	
+	public JButton getGiftCardButton() {
+		return this.giftCardButton;
+	}
+	
+	/**
+	 * Returns the addMoreItemsButton button component.
+	 *
+	 * @return the JButton representing the Done button
+	 */
+	
+	public JButton getAddMoreItemsButton() {
+		return this.addMoreItemsButton;
+	}
+	
+	/**
 	 * Notifies all registered UIEventListener objects of the selected payment method.
 	 *
 	 * @param paymentMethod the payment method selected by the user
