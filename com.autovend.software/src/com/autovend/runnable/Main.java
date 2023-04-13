@@ -30,8 +30,12 @@ import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.ui.CustomerView;
 
 public class Main {
+	public static int playSpeedMutiplier = 100;
 
 	public static void main(String[] args) throws InterruptedException, OverloadException {
+		
+		if (playSpeedMutiplier <= 0)
+			playSpeedMutiplier = 100;
 
 		// Create 1 product
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
@@ -123,25 +127,25 @@ public class Main {
 			}
 		}
 
-		station.printer.addInk(1000);
-		station.printer.addPaper(1000);
+		station.printer.addInk(10);
+		station.printer.addPaper(10);
 
 		CustomerView customerView = new CustomerView();
 
 		CustomerController customerController = new CustomerController(station, dispenser, customerView);
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 
 		customerView.startView.notifyAddMembershipButtonPressed();
 
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		customerView.membershipView.getInputField().setText("101010101");
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		customerView.membershipView.notifyMembershipNumberEntered("101010101");
 		customerView.membershipView.notifyGoBackToCheckout();
 
-		Thread.sleep(4000);
+		Thread.sleep(40*playSpeedMutiplier);
 		customerView.startView.notifyStartButtonPressed();
-		Thread.sleep(4000);
+		Thread.sleep(40*playSpeedMutiplier);
 
 		boolean scan1 = false;
 		while (!scan1) {
@@ -150,7 +154,7 @@ public class Main {
 		}
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 
 		scan1 = false;
 		while (scan1 == false) {
@@ -160,7 +164,7 @@ public class Main {
 
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 
 		scan1 = false;
 		while (scan1 == false) {
@@ -170,58 +174,58 @@ public class Main {
 
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-		Thread.sleep(4000);
+		Thread.sleep(40*playSpeedMutiplier);
 		customerView.checkoutView.notifyAddItemByPLUButtonPressed();
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		customerView.pluView.getInputField().setText("0000");
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		customerView.pluView.getAddButton().doClick();
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		customerView.pluView.getDoneButton().doClick();
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 
 		PriceLookUpCodedUnit pluUnit1 = new PriceLookUpCodedUnit(pluCode2, 5);
 		station.scale.add(pluUnit1);
-		Thread.sleep(2000);
+		Thread.sleep(20);
 		station.scale.remove(pluUnit1);
 
 		// station.scale.remove(new PriceLookUpCodedUnit(pluCode2, 5)); needs to be same
 		// instance station.baggingArea.add(new PriceLookUpCodedUnit(pluCode2, 5));
 		customerView.checkoutView.notifyAddItemByBrowsingButtonPressed();
 
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		customerView.browsingView.notifyProductSelected(pluProduct4);
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 
 		customerView.browsingView.notifyGoBackToCheckout();
 
 		PriceLookUpCodedUnit pluUnit2 = new PriceLookUpCodedUnit(pluCode4, 10);
 		station.scale.add(pluUnit2);
 		//
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		station.scale.remove(pluUnit2);
-		Thread.sleep(3000);
+		Thread.sleep(30);
 
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
-		Thread.sleep(1000);
+		Thread.sleep(10*playSpeedMutiplier);
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
-		Thread.sleep(1000);
+		Thread.sleep(10*playSpeedMutiplier);
 		customerView.checkoutView.notifyPurchaseBagsButtonPressed();
 
-		Thread.sleep(4000);
+		Thread.sleep(40*playSpeedMutiplier);
 		customerView.checkoutView.notifyStartPayingButtonPressed();
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		customerView.paymentView.notifyPaymentMethod("Cash");
-		Thread.sleep(2000);
+		Thread.sleep(20*playSpeedMutiplier);
 		
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
-		Thread.sleep(3000);
+		Thread.sleep(30*playSpeedMutiplier);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 
 	}

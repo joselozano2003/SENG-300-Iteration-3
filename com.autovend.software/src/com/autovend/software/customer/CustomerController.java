@@ -90,7 +90,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	final int ALERT_THRESHOLD = 10;
 
 	private CustomerView customerView;
-	private JFrame frame;;
+	private JFrame frame;
 	public State stateSave;
 	
 //  private AttendantController attendantListener;  //
@@ -297,7 +297,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 
 	public void onTransactionFinished() {
 		try {
-			Thread.sleep(6000);
+			Thread.sleep(600);
 		} catch (InterruptedException e) {
 
 		}
