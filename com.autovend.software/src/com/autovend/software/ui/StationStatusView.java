@@ -92,7 +92,7 @@ public class StationStatusView extends JPanel {
 					+ " " + (i + 1) + ": " + "Working normally" + "...");
 			overrideButtons[i] = new JButton("Override");
 			addByTextButtons[i] = new JButton("Add Item By Name");
-			removeItemButtons[i] = new JButton("Remove Item");
+			removeItemButtons[i] = new JButton("Approve Removal");
 			lockStationButtons[i] = new JButton("Lock Station");
 			unlockStationButtons[i] = new JButton("Unlock Station");
 			shutdownStationButtons[i] = new JButton("Shutdown Station");
