@@ -27,6 +27,35 @@
  * Tran, Kevin (30146900)
  */
 
+/* P3-4 Group Members
+ * 
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
+
 package com.autovend.software.customer;
 
 import org.junit.Before;
@@ -281,5 +310,51 @@ public class CustomerControllerTest {
     	controller.onChangeDispensedEvent(BigDecimal.valueOf(10));
     	assertEquals(State.PRINTING_RECEIPT, controller.getCurrentState());
     }
+  // TESTING IF MEMBERSHIP NUMBER IS ADDED
+    @Test
+    public void validMembershipAddedTest() {
+    	controller.reactToValidMembershipEntered("30143490");
+    	assertEquals("30143490", controller.getCurrentSession().getMembershipNumber());
+    }
+ // TESTING IF CARD IS INSERTED
+    @Test
+    public void cardInsertedTrueTest() {
+    	controller.cardInserted();
+    	assertEquals(true, controller.getCardInserted());
+    }
+ // TESTING IF CARD IS NOT INSERTED
+    @Test
+    public void cardRemovedTrueTest() {
+    	controller.cardRemoved();
+    	assertEquals(false, controller.getCardInserted());
+    }
+ // TESTING IF CURRENT VIEW IS CUSTOMER VIEW
+    @Test
+    public void currentViewTest() {   	
+    	assertEquals(controller.getCustomerView(), controller.getCurrentView());
+    }
+ // TESTING IF PAYMENT FAILURE IS BEING TRACKED FOR ONE FAILED PAYMENT
+    @Test
+    public void trackPaymentFailureOneTest() {   	
+    	controller.onPaymentFailure();
+    	assertEquals(1, controller.getCurrentSession().getNumberOfFailedPayments());
+    }
+ // TESTING IF PAYMENT FAILURE IS BEING TRACKED FOR TWO FAILED PAYMENT
+    @Test
+    public void trackPaymentFailureTwoTest() {   	
+    	controller.onPaymentFailure();
+    	controller.onPaymentFailure();
+    	assertEquals(2, controller.getCurrentSession().getNumberOfFailedPayments());
+    }
+ // TESTING IF PAYMENT FAILURE IS BEING TRACKED FOR ONE HUNDREDFAILED PAYMENT
+    @Test
+    public void trackPaymentFailureOneHundredTest() {   
+    	for(int i=0; i <100; i++) {
+    		controller.onPaymentFailure();
+    	}    	
+    	assertEquals(100, controller.getCurrentSession().getNumberOfFailedPayments());
+    }
+   
+    
 }
  
