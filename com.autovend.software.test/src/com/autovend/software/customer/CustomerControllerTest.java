@@ -261,5 +261,25 @@ public class CustomerControllerTest {
     	
     	assertEquals(State.FINISHED, controller.getCurrentState());
     }
+    
+// TESTING TO SEE IF RECEIPT PRINTER IS FIXED
+    @Test
+    public void receiptPrinterFixedTest() {
+    	controller.onReceiptPrinterFixed();
+    	assertEquals(State.PRINTING_RECEIPT, controller.getCurrentState());
+    }
+
+ // TESTING TO SEE IF RECEIPT PRINTER IS FIXED
+    @Test
+    public void receiptPrinterFailedTest() {
+    	controller.onReceiptPrinterFailed();
+    	assertEquals(State.DISABLED, controller.getCurrentState());
+    }
+ // TESTING TO SEE DISPENSED EVENT IS PRINTING RECEIPT
+    @Test
+    public void printingOnChangedDispensedEventTest() {
+    	controller.onChangeDispensedEvent(BigDecimal.valueOf(10));
+    	assertEquals(State.PRINTING_RECEIPT, controller.getCurrentState());
+    }
 }
  
