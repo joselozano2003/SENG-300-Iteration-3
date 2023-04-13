@@ -38,6 +38,7 @@ import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.products.Product;
 import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.customer.CustomerController.State;
@@ -53,6 +54,7 @@ public class CustomerControllerTest {
 	private ReusableBagDispenser bagDispenser;
 	private JPanel panel;
 	private ReusableBagProduct bagProduct;
+	private BarcodedProduct barcodedProduct;
 	
 	private JFrame frame;
 	
@@ -246,108 +248,34 @@ public class CustomerControllerTest {
     	controller.onItemAddedEvent(bagProduct, 9);    	
     	assertEquals(9.00, controller.getCurrentSession().getShoppingCart().get(bagProduct), 0.1);	
     }
-    
- /**   
-    
+  // TESTING TO SEE IF PAYMENT IS MADE DURING PAYMENT EVENT
     @Test
-    public void testAddMoreItems() {
+    public void paymentTestDuringPaymentEvent() {
+    	barcodedProduct = Setup.createBarcodedProduct123(12, 5, true);
+    	controller.getCurrentSession().addItemToCart(barcodedProduct, 2);
     	
+    	controller.onPaymentAddedEvent(BigDecimal.valueOf(9));
+    	BigDecimal expected = new BigDecimal("9"); 
+    	assertEquals(expected, controller.getCurrentSession().getTotalPaid());
     }
-    
+ // TESTING TO SEE IF PAYMENT IS COMPLETE MADE DURING PAYMENT EVENT
     @Test
-    public void testStartPaying() {
-		 
+    public void paymentCompleteTestDuringPaymentEvent() {
+    	barcodedProduct = Setup.createBarcodedProduct123(12, 5, true);
+    	controller.getCurrentSession().addItemToCart(barcodedProduct, 2);
     	
+    	controller.onPaymentAddedEvent(BigDecimal.valueOf(24));
+    	
+    	BigDecimal expected = new BigDecimal("24"); 
+    	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
     }
-    
+  // TESTING TO SEE IF RECEIPT HAS BEEN PRINTED
     @Test
-    public void testPurchaseBags() {
+    public void ReceiptPrintedTestDuringPaymentEvent() {       	
+    	StringBuilder receiptText = new StringBuilder();
+		controller.onReceiptPrintedEvent(receiptText);  	
     	
+    	assertEquals(State.FINISHED, controller.getCurrentState());
     }
-    
-    @Test
-    public void testOnBagsDispensedEvent() {
-    	
-    }
-    
-    @Test
-    public void testOnBagsDispensedFailure() {
-    	
-    }
-    
-    @Test 
-    public void testReactToDisableDeviceRequest(){
-    	
-    }
-    
-    @Test
-    public void testReactToEnableDeviceRequest() {
-    	
-    }
-    
-    @Test
-    public void testReactToDisableStationRequest(){
-    	
-    }
-    
-    @Test
-    public void testReactToEnableStationRequest() {
-    	
-    }
-    
-    @Test
-    public void testReactToHardwareFailure() {
-    	
-    }
-    
-    @Test
-    public void testOnItemAddedEvent() {
-    	
-    }
-    
-    @Test
-    public void testOnItemNotFoundEvent() {
-    	
-    }
-    
-    @Test
-    public void testOnPaymentAddedEvent() {
-    	
-    }
-    
-    @Test 
-    public void testOnPaymentFailure() {
-    	
-    }
-    
-    @Test
-    public void testOnReceiptPrintedEvent() {
-    	
-    }
-    
-    @Test 
-    public void testOnReceiptPrinterFixed() {
-    	
-    }
-    
-    @Test
-    public void testOnReceiptPrinterFailed() {
-    	
-    }
-    
-    @Test
-    public void testOnChangeDispensedEvent() {
-    	
-    }
-    
-    @Test
-    public void testOnChangeDispensedFailure() {
-    	
-    }
-    
-    @Test
-    public void testOnWeightChanged() {
-    	
-    }
-   **/
 }
+ 
