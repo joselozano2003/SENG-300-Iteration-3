@@ -148,7 +148,16 @@ public class StationStatusView extends JPanel {
 					notifyStationTurnonButtonPressed(buttonIndex);
 				}
 			});
-
+			
+			
+			logOutButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					logoutButtonPressed();
+				}
+			});
+			
+			
 			mainPanel.add(attendantPanel);
 			attendantPanel.add(discrepancyLabels[i]);
 			attendantPanel.add(overrideButtons[i]);
@@ -173,7 +182,14 @@ public class StationStatusView extends JPanel {
 	// BUTTON LISTENERS //
 	//////////////////////
 
-
+	
+	public void logoutButtonPressed() {
+		if (observers == null) return;
+		for (AttendantUIEventListener listener : observers) {
+			listener.onStationLogout();
+		}
+	}
+	
 	public void register(AttendantUIEventListener listener) {
 		observers.add(listener);
 	}
