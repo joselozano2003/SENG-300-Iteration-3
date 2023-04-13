@@ -21,6 +21,7 @@ import com.autovend.Coin;
  * <ul>
  * <li>two electronic scales (one in the bagging area and one near the scanner),
  * with a configurable maximum weight before it overloads;</li>
+ * <li>one reusable bag dispenser;</li>
  * <li>one touch screen;</li>
  * <li>one receipt printer;</li>
  * <li>one card reader;</li>
@@ -105,7 +106,7 @@ public class SelfCheckoutStation {
 	 * The touch screen.
 	 */
 	public final TouchScreen screen;
-
+	
 	/**
 	 * The printer.
 	 */
@@ -126,6 +127,16 @@ public class SelfCheckoutStation {
 	 */
 	public final BarcodeScanner handheldScanner;
 
+	/**
+	 * The reusable bag dispenser.
+	 */
+	public final ReusableBagDispenser bagDispenser;
+
+	/**
+	 * The default capacity of the reusable bag dispenser.
+	 */
+	public final static int BAG_DISPENSER_CAPACITY = 100;
+	
 	/**
 	 * The slot for inserting bills.
 	 */
@@ -258,6 +269,7 @@ public class SelfCheckoutStation {
 		cardReader = new CardReader();
 		mainScanner = new BarcodeScanner();
 		handheldScanner = new BarcodeScanner();
+		bagDispenser = new ReusableBagDispenser(BAG_DISPENSER_CAPACITY);
 
 		this.billDenominations = billDenominations;
 		billInput = new BillSlot(false);
