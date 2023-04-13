@@ -1,4 +1,4 @@
-package com.autovend.software.test;
+package com.autovend.software.ui;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.devices.OverloadException;
 import com.autovend.products.Product;
 import com.autovend.software.ui.LoginView;
 import com.autovend.software.ui.StationStatusView;
@@ -159,7 +160,12 @@ public class LoginViewTest {
 	public void testStationStatusView() {
 		// Didn't have time to complete testing for this class. Simple test
 		// displaying GUI.
-		StationStatusView.main(null);
+		try {
+			StationStatusView.main(null);
+		} catch (OverloadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
