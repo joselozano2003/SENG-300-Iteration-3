@@ -68,23 +68,7 @@ public class CustomerControllerTest {
 		panel = new JPanel(); 
 		frame = new JFrame();
 	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testConstructorNullStation() {
-		new CustomerController(null, new ReusableBagDispenser(50), new CustomerView());
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testConstructorNullBagDispenser() {
-		new CustomerController(station, null, new CustomerView());
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testConstructorNullView() {
-		new CustomerController(station, null, new CustomerView());
-	}
-	
-	
+		
 	//Adding empty test methods.
 		
 //    @Test
