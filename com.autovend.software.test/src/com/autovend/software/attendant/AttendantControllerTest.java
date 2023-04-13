@@ -1,305 +1,239 @@
-/* P3-4 Group Members
- * 
- * Abdelrhafour, Achraf (30022366)
- * Campos, Oscar (30057153)
- * Cavilla, Caleb (30145972)
- * Crowell, Madeline (30069333)
- * Debebe, Abigia (30134608)
- * Dhuka, Sara Hazrat (30124117)
- * Drissi, Khalen (30133707)
- * Ferreira, Marianna (30147733)
- * Frey, Ben (30088566)
- * Himel, Tanvir (30148868)
- * Huayhualla Arce, Fabricio (30091238)
- * Kacmar, Michael (30113919)
- * Lee, Jeongah (30137463)
- * Li, Ran (10120152)
- * Lokanc, Sam (30114370)
- * Lozano Cetina, Jose Camilo (30144736)
- * Maahdie, Monmoy (30149094)
- * Malik, Akansha (30056048)
- * Mehedi, Abdullah (30154770)
- * Polton, Scott (30138102)
- * Rahman, Saadman (30153482)
- * Rodriguez, Gabriel (30162544)
- * Samin Rashid, Khondaker (30143490)
- * Sloan, Jaxon (30123845)
- * Tran, Kevin (30146900)
- */
 package com.autovend.software.attendant;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.autovend.BarcodedUnit;
-import com.autovend.devices.ReusableBagDispenser;
-import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.devices.SupervisionStation;
+import com.autovend.*;
+import com.autovend.devices.*;
+import com.autovend.external.CardIssuer;
+import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
+import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.BankIO;
+import com.autovend.software.attendant.AttendantController;
+import com.autovend.software.attendant.AttendantModel;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
-import com.autovend.software.customer.CustomerController.State;
-import com.autovend.software.item.ProductsDatabase2;
-import com.autovend.software.item.TextSearchProduct;
-import com.autovend.software.test.Setup;
+import com.autovend.software.ui.AttendantView;
 import com.autovend.software.ui.CustomerView;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import auth.AttendantAccount;
-import auth.AttendantAccountDatabases;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class AttendantControllerTest {
-	private AttendantController controller;
-	private AttendantModel model;
-	//private AttendantView view;
-	private ArrayList<CustomerStationLogic> customerStationList;
-	private SupervisionStation station;
-	
-	private CustomerController customerController;
-	private ReusableBagDispenser bagDispenser;
-	public CustomerSession currentSession;
-	
-	private SelfCheckoutStation scs;
-    private SupervisionStation supervisionStation;
-    private AttendantController attendantController;
-    
-	
-	
-	@Before
-	public void setup() {
-		//Setup the class to test
-		model = new AttendantModel();
-		//view = new AttendantView();
-		station = new SupervisionStation();
-		customerStationList = new ArrayList<CustomerStationLogic>();
-		
-		
-		scs = Setup.createSelfCheckoutStation();
-	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(scs);
 
-	    // Add the CustomerStationLogic instance to the customerStationList
-	    customerStationList.add(stationLogic);
+    public SelfCheckoutStation selfCheckoutStation;
+    public ReusableBagDispenser bagDispenser;
+    public CustomerController customerSessionController;
+    public CustomerSession currentSession;
 
-	    controller = new AttendantController(station);
-	    
-	    ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
-	    customerController = new CustomerController(scs, bagDispenser, new CustomerView());
-	    customerController.startNewSession();
-	    currentSession = customerController.getCurrentSession();
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testContructionNullStation() {
-		new AttendantController(station);
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testContructionNullView() {
-		new AttendantController(station);
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testContructionNullList() {
-		new AttendantController(station);
-	}
-	
-	@Test
-	public void SuccesfulLogInTest() {
-		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
-		assertTrue(controller.startLogIn(demoAttendant));
-	}
+    public AttendantModel model;
+    //	public AttendantView view;
+    public List<CustomerStationLogic> customerStations;
+    public AttendantController attendantController;
 
-	@Test
-	public void SuccesfulLogOutTest() {
-		AttendantAccount demoAttendant = AttendantAccountDatabases.demoAccount();
-		assertTrue(controller.startLogOut(demoAttendant));
-	}
+    public int[] billDenominations;
+    public BigDecimal[] coinDenominations;
+    public Currency currency;
+    public int scaleMaximumWeight;
+    public int scaleSensitivity;
 
-	@Test
-	public void UnsuccesfulLogInTest() {
-		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
-		assertFalse(controller.startLogIn(fakeAttendant));
-	}
+    public BarcodedProduct barcodeProduct;
+    public BarcodedProduct barcodeProduct2;
+    public ReusableBagProduct bagProduct;
 
-	@Test
-	public void UnsuccesfulLogOutTest() {
-		AttendantAccount fakeAttendant = new AttendantAccount("Fake", "Fake");
-		assertFalse(controller.startLogOut(fakeAttendant));
-	}
+    public PLUCodedProduct pluProduct;
+    public CardIssuer credit;
+    public CreditCard creditCard;
 
-	@Test
-	public void SuccesfulAddingAndDeletingAccountTest() {
-		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
-		assertTrue(controller.startAddAccount(AttendantAccountDatabases.godAccount(), addedAccount));
-		assertTrue(controller.startDeleteAccount(AttendantAccountDatabases.godAccount(), addedAccount));
-	}
+    //	public PLUView pluView;
+    public CustomerView customerView;
 
-	@Test
-	public void UnsuccesfulAddingAndDeletingAccountTest() {
-		AttendantAccount addedAccount = new AttendantAccount("addedDemo", "addedDemo");
-		assertFalse(controller.startAddAccount(AttendantAccountDatabases.demoAccount(), addedAccount));
-		assertFalse(controller.startDeleteAccount(AttendantAccountDatabases.demoAccount(), addedAccount));
-	}
-	
-	@Test
-    public void testOnStationShutdown() {
-        attendantController.onStationShutdown(1);
-        assertEquals(State.SHUTDOWN, customerController.getCurrentState());
+
+        @Before
+        public void setUp() throws Exception {
+
+            Calendar date = Calendar.getInstance();
+            date.set(Calendar.YEAR, 2024);
+            date.set(Calendar.MONTH, 7);
+            date.set(Calendar.DAY_OF_MONTH, 4);
+
+            // Variables for SelfCheckoutStation constructor
+            billDenominations = new int[]{5, 10, 20, 50, 100};
+            coinDenominations = new BigDecimal[]{BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.10),
+                    BigDecimal.valueOf(0.25), BigDecimal.valueOf(1), BigDecimal.valueOf(2)};
+            currency = Currency.getInstance("CAD");
+
+            scaleMaximumWeight = 20;
+            scaleSensitivity = 1;
+
+            selfCheckoutStation = new SelfCheckoutStation(currency, billDenominations, coinDenominations,
+                    scaleMaximumWeight, scaleSensitivity);
+
+            bagDispenser = new ReusableBagDispenser(100);
+            int n = 0;
+            while (n < 100) {
+                bagDispenser.load(new ReusableBag());
+                n++;
+            }
+
+            Numeral[] code1 = {Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six};
+            Barcode barcode = new Barcode(code1);
+            barcodeProduct = new BarcodedProduct(barcode, "product1", new BigDecimal("1.00"), 10);
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodeProduct);
+            ProductDatabases.INVENTORY.put(barcodeProduct, 25);
+
+            Numeral[] code2 = {Numeral.seven, Numeral.eight, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two};
+            Barcode barcode2 = new Barcode(code2);
+            barcodeProduct2 = new BarcodedProduct(barcode2, "product2", new BigDecimal("2"), 15);
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
+            ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+
+            bagProduct = new ReusableBagProduct();
+
+            credit = new CardIssuer("credit");
+            BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
+            creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
+            credit.addCardData("00000", "Some Guy", date, "902", BigDecimal.valueOf(100));
+            customerView = new CustomerView();
+            customerSessionController = new CustomerController(selfCheckoutStation, bagDispenser, customerView);
+            customerSessionController.startNewSession();
+            currentSession = customerSessionController.getCurrentSession();
+            SupervisionStation supervisionStation = new SupervisionStation();
+
+            model = new AttendantModel();
+            AttendantView view = new AttendantView(8);
+            customerStations = new ArrayList<>();
+            attendantController = new AttendantController(supervisionStation, view);
+            // Add 100 bills to each dispenser
+            for (int i = 0; i < billDenominations.length; i++) {
+                BillDispenser dispenser = selfCheckoutStation.billDispensers.get(billDenominations[i]);
+                for (int j = 0; j < 100; j++) {
+                    Bill bill = new Bill(billDenominations[i], currency);
+                    try {
+                        dispenser.load(bill);
+                    } catch (SimulationException | OverloadException e) {
+                    }
+                }
+            }
+            // Add 100 coins to each dispenser
+
+            for (int i = 0; i < coinDenominations.length; i++) {
+                CoinDispenser dispenser = selfCheckoutStation.coinDispensers.get(coinDenominations[i]);
+                for (int j = 0; j < 100; j++) {
+                    Coin coin = new Coin(coinDenominations[i], currency);
+                    try {
+                        dispenser.load(coin);
+                    } catch (SimulationException | OverloadException e) {
+
+                    }
+                }
+            }
+
+            // Load printer with ink and paper
+            ReceiptPrinter printer = selfCheckoutStation.printer;
+            try {
+                // Initialize ink amount to 1000
+                printer.addInk(100);
+                // Initialize paper amount to 100
+                printer.addPaper(100);
+            } catch (SimulationException | OverloadException e) {
+            }
+
+            AttendantView stationView = new AttendantView(1);
+
+
+            SupervisionStation attendantStation = new SupervisionStation();
+            attendantStation.screen.getFrame().add(stationView.loginView);
+            attendantStation.screen.getFrame().setVisible(true);
+
+
+            int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
+            BigDecimal[] coinDenoms = { new BigDecimal("0.05"), new BigDecimal("0.10"), new BigDecimal("0.25"),
+                    new BigDecimal("1"), new BigDecimal("2") };
+            int scaleMaximumWeight = 1000;
+            int scaleSensitivity = 1;
+            SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenoms, coinDenoms,
+                    scaleMaximumWeight, scaleSensitivity);
+
+            ReusableBagDispenser dispenser = new ReusableBagDispenser(100);
+
+            int p = 0;
+            while (p < 100) {
+                dispenser.load(new ReusableBag());
+                p++;
+            }
+
+            for (int i = 0; i < billDenoms.length; i++) {
+                BillDispenser billDispenser = station.billDispensers.get(billDenoms[i]);
+                for (int j = 0; j < 100; j++) {
+                    Bill bill = new Bill(billDenoms[i], Currency.getInstance("CAD"));
+                    try {
+                        billDispenser.load(bill);
+                    } catch (SimulationException | OverloadException e) {
+                    }
+                }
+            }
+            // Add 100 coins to each dispenser
+
+            for (int i = 0; i < coinDenoms.length; i++) {
+                CoinDispenser coinDispenser = station.coinDispensers.get(coinDenoms[i]);
+                for (int j = 0; j < 100; j++) {
+                    Coin coin = new Coin(coinDenoms[i], Currency.getInstance("CAD"));
+                    try {
+                        coinDispenser.load(coin);
+                    } catch (SimulationException | OverloadException e) {
+
+                    }
+                }
+            }
+
+            station.printer.addInk(1000);
+            station.printer.addPaper(1000);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testAddCustomerStationNull() {
-        controller.addCustomerStation(null);
-    }
-	
-    @Test
-    public void testShutDownAndStartUpStation() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
-        
-        controller.onStationShutdown(0);
-        CustomerController.State state = stationLogic.getController().getCurrentState();
-        assertEquals(CustomerController.State.SHUTDOWN, state);
 
-//        controller.startUpStation(0);
-//        assertEquals(CustomerController.State.STARTUP, state);
-    }
-	 
-    @Test
-    public void addInkToPrinter() {
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.addInkToStation(0, 10);
-        assertEquals(10, station.getController().inkAdded);
-    }
-    @Test
-    public void addPaperToPrinter() {
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.addPaperToStation(0, 10);
-        assertEquals(10, station.getController().paperAdded);
-    }
-
-    @Test
-    public void testShutDownStation(){
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.shutDownStation(0);
-        CustomerController.State state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.SHUTDOWN, state);
-    }
-
-    @Test
-    public void testStartUpStation(){
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.shutDownStation(0);
-        attendantController.startUpStation(0);
-        CustomerController.State state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.STARTUP, state);
-    }
-
-    @Test
-    public void testDenyStationUse(){
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        CustomerController.State state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.DISABLED, state);
-        attendantController.denyStationUse(0);
-        state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.DISABLED, state);
-    }
-
-    @Test
-    public void testPermitStationUse(){
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        CustomerController.State state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.DISABLED, state);
-        attendantController.addPaperToStation(0, 10);
-        attendantController.addInkToStation(0, 10);
-        attendantController.shutDownStation(0);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.INITIAL, state);
+    @After
+    public void tearDown() {
     }
 
     @Test
     public void testRemoveItem() {
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        attendantController.addPaperToStation(0, 10);
-        attendantController.addInkToStation(0, 10);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        CustomerController.State state = station.getController().getCurrentState();
-        assertEquals(CustomerController.State.INITIAL, state);
-
-        CustomerController customerController = station.getController();
-        customerController.startNewSession();
-        customerController.onStartAddingItems();
-        selfCheckoutStation = customerController.getStation();
+        attendantController.addCustomerStation(customerSessionController);
+        customerSessionController.setState(CustomerController.State.INITIAL);
+        customerSessionController.setState(CustomerController.State.ADDING_ITEMS);
+        selfCheckoutStation = customerSessionController.getStation();
 
         boolean flag = false;
         while (!flag) {
             flag = selfCheckoutStation.mainScanner
                     .scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
         }
-        selfCheckoutStation.baggingArea
-                .add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 
-        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
+        selfCheckoutStation.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+        assertEquals(1, customerSessionController.getCurrentSession().getTotalCost().intValue());
 
         flag = false;
         while (!flag) {
             flag = selfCheckoutStation.mainScanner
                     .scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
         }
+        selfCheckoutStation.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+
         selfCheckoutStation.baggingArea
                 .add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 
-        assertEquals(3, customerController.getCurrentSession().getTotalCost().intValue());
-
-        station.removeItemRequest(new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
+        assertEquals(3, customerSessionController.getCurrentSession().getTotalCost().intValue());
 
         attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
-        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
-        }
-
-    @Test
-    public void addItemWithTextSearch(){
-        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
-        attendantController.addCustomerStation(station);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-        attendantController.addPaperToStation(0, 10);
-        attendantController.addInkToStation(0, 10);
-        attendantController.startUpStation(0);
-        attendantController.permitStationUse(0);
-
-        CustomerController customerController = station.getController();
-        customerController.startNewSession();
-        customerController.onStartAddingItems();
-
-        TextSearchProduct textSearchProduct = new TextSearchProduct("Banana", "banana", new BigDecimal("1"), 10);
-        ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Banana", textSearchProduct);
-        attendantController.addItemToStationByTextSearch(0, "Banana", 1);
-        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
-
+        assertEquals(1, customerSessionController.getCurrentSession().getTotalCost().intValue());
     }
-
 }

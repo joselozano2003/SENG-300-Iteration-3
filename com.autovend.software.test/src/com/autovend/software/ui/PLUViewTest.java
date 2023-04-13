@@ -51,15 +51,6 @@ import com.autovend.software.payment.PaymentEventListener;
  * Automated JUnit4 tests for the PLUView class
  */
 public class PLUViewTest {
-	/**
-	 * Plan:
-	 * - Test constructor
-	 * - Press addButton -> notifyItemAdded
-	 * 		- Stub PLUViewObserver that is used for this
-	 * - Press backButton -> stub ActionListener's actionPerformed (two stubs???)
-	 * 		- Looks like we should not stub this ActionListener, but rather the CustomerUIEventListener
-	 * - Getter methods are lower priority
-	 */
 	private PLUView pluView;
 	private boolean PLUCodeWasEntered;
 	private String PLUCodeEntered;
