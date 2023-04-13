@@ -170,6 +170,44 @@ public class PayWithCardTest {
 		assertEquals(1, paymentSuccessCounter);
 		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
+	
+	/**
+	 * Pay with a valid credit card, by tap.
+	 * Expect onPaymentAddedEvent passing in amount paid.
+	 */
+	@Test
+	public void PayWithValidCreditTap() {
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.tap(creditCard);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentSuccessCounter);
+		assertEquals(BigDecimal.valueOf(5), paymentCounter);
+	}
+	
+	/**
+	 * Pay with a valid credit card, by tap.
+	 * Expect onPaymentAddedEvent passing in amount paid.
+	 */
+	@Test
+	public void PayWithValidCreditSwipe() {
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.swipe(creditCard, null);
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentSuccessCounter);
+		assertEquals(BigDecimal.valueOf(5), paymentCounter);
+	}
+	
+	
 	@Test
 	public void testCardRemoved() {
 		payWithCard.setAmountDue(BigDecimal.valueOf(5));
@@ -183,6 +221,7 @@ public class PayWithCardTest {
 			} catch (Exception e) {}
 		assertTrue(removed);
 	}
+	
 	@Test
 	public void testCreditBlocked() {
 		payWithCard.setAmountDue(BigDecimal.valueOf(5));
@@ -195,6 +234,32 @@ public class PayWithCardTest {
 				flag = true;
 			} catch (Exception e) {}
 		assertEquals(1, paymentFailCounter);
+	}
+	
+	@Test
+	public void testNullIssuerFoundPayment() {
+		BankIO.CARD_ISSUER_DATABASE.clear();;
+		CreditCard testCard = new CreditCard("", "00004", "Some Guy 3", "904", "1114", true, true);
+		payWithCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(testCard, "1114");
+				reader.remove();
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentFailCounter);
+	}
+	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvents() {
+		payWithCard.register(new PaymentEventListenerStub());
+		payWithCard.reactToDisabledEvent(reader);
+		payWithCard.reactToEnabledEvent(reader);
 	}
 	
 	
