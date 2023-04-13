@@ -90,6 +90,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	final int ALERT_THRESHOLD = 10;
 
 	private CustomerView customerView;
+	private JFrame frame;;
 	public State stateSave;
 	
 //  private AttendantController attendantListener;  //
@@ -281,7 +282,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 	}
 
 	public void updateView(JPanel newView) {
-		JFrame frame = selfCheckoutStation.screen.getFrame();
+		frame = selfCheckoutStation.screen.getFrame();
 		frame.getContentPane().removeAll();
 		frame.getContentPane().add(newView);
 		frame.revalidate();
@@ -591,6 +592,12 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 				listener.reactToLowPaperAlert();
 			}
 		}
+	}
+	public JFrame getFrame() {
+		return frame;
+	}
+	public CustomerView getCustomerView() {
+		return customerView;
 	}
 
 }
