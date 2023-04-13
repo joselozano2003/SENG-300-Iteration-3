@@ -44,7 +44,7 @@ public class MainTest {
 	public void testMain() {
 		String[] args = new String[] {};
 		try {
-			Main.playSpeedMutiplier = 1;
+			Main.playSpeedMutiplier = 5;
 			Main.main(args);
 		} catch (InterruptedException e) {
 			fail();

@@ -30,9 +30,7 @@
 package com.autovend.runnable;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Currency;
-import java.util.List;
 
 import javax.swing.JButton;
 
@@ -54,7 +52,6 @@ import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
 import com.autovend.software.customer.CustomerController;
-import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;
 import com.autovend.software.ui.CustomerView;
 
