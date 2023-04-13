@@ -1,6 +1,8 @@
 package com.autovend.software.ui;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.autovend.software.attendant.AttendantController;
+import com.autovend.products.Product;
 
 import auth.AttendantAccount;
 
@@ -24,47 +26,36 @@ public class LoginView extends JPanel {
 	private JLabel errorLabel;
 	private JButton loginButton;
 	
-	private List<AttendantUIEventListener> listeners;
+	public String userEntered;
+	public String passEntered;
+	
+	public LoginListener loginListen;
+	
+	public List<UIEventListener> listeners;
+	
+	// Can be set during testing to not display windows and not get text from fields.
+	public boolean override = false;
 	
 	/**
-	 * Constructor for the Log in View which constructs the Swing 
+	 * Constructor for the Log in View wich contructs the Swing 
 	 * GUI and functionality for the Buttons 
 	 */
-
-	public static void main(String[] args) {
-		
-		
-		JFrame testFrame = new JFrame();
-		LoginView testView = new LoginView();
-		testFrame.add(testView);
-		testFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		testFrame.setUndecorated(true);
-		testFrame.setVisible(true);
-		testFrame.validate();
-
-		testView.LoginFailure();
-
-	}
 	
 	public LoginView() {
 		
-		listeners = new ArrayList<>();
+		loginFrame = new JFrame("Login view");
 
 		this.setLayout(new GridLayout(3, 2));
 		
-		JLabel userLabel = new JLabel("Username:");
-		JTextField userText = new JTextField();
-		JLabel passLabel = new JLabel("Password:");
-		JTextField passText = new JTextField();
-		JLabel errorLabel = new JLabel("");
-		JButton loginButton = new JButton("Login");
+		userLabel = new JLabel("Username:");
+		userText = new JTextField();
+		passLabel = new JLabel("Password:");
+		passText = new JTextField();
+		errorLabel = new JLabel("");
+		loginButton = new JButton("Login");
 		
-		loginButton.addActionListener(e -> {
-			// When button is pressed, have UI event listeners react to loginEvent.
-			if (listeners == null) return;
-			AttendantAccount account = new AttendantAccount(userText.getText(), passText.getText());
-			for (AttendantUIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
-		});
+		loginListen = new LoginListener();
+		loginButton.addActionListener(loginListen);
 
 
 		
@@ -74,11 +65,17 @@ public class LoginView extends JPanel {
 		this.add(passText);
 		this.add(errorLabel);
 		this.add(loginButton);
+		
+		loginFrame.add(this);
+    	
+    	loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+    	if (!override) loginFrame.setVisible(true);
 
 	}
 
 
-	public void LoginFailure() {
+	public void loginFailure() {
 		JFrame failFrame = new JFrame();
 		JPanel failPanel = new JPanel();
 		failPanel.setLayout(new BorderLayout());
@@ -95,8 +92,23 @@ public class LoginView extends JPanel {
 		failFrame.validate();
 	}
 	
-	public void register(AttendantUIEventListener listener) {
-		listeners.add(listener);
+	
+	public class LoginListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// When button is pressed, have UI event listeners react to loginEvent.
+			if (listeners == null) return;
+			if (!override) {
+				userEntered = userText.getText();
+				passEntered = passText.getText();
+			}
+			AttendantAccount account = new AttendantAccount(userEntered, passEntered);
+			for (UIEventListener listener : listeners) listener.onAttendantLoginAttempt(account);
+			
+		}
+
+		
 	}
 
 }
