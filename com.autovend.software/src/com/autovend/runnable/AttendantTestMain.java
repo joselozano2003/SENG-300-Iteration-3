@@ -28,6 +28,7 @@ import com.autovend.software.attendant.AttendantController;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.ui.AttendantView;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.software.ui.StationStatusView;
 
@@ -38,9 +39,9 @@ public class AttendantTestMain {
 	
 
 		TouchScreen touchScreen = new TouchScreen();
-		StationStatusView stationView = new StationStatusView(2);
+		AttendantView stationView = new AttendantView(1);
 		
-		touchScreen.getFrame().add(stationView);
+		touchScreen.getFrame().add(stationView.loginView);
 		touchScreen.setVisible(true);
 		
 		
@@ -91,11 +92,12 @@ public class AttendantTestMain {
 
 		CustomerController customerController = new CustomerController(station, dispenser, customerView);
 		
-		AttendantController attendantController = new AttendantController(attendantStation);
+		AttendantController attendantController = new AttendantController(attendantStation, stationView);
 		
 		
 		CustomerStationLogic logic = new CustomerStationLogic(station);
-		attendantController.addCustomerStation(null);
+		attendantController.addCustomerStation(customerController);
+		stationView.loginView.register(attendantController);
 		
 		
 		

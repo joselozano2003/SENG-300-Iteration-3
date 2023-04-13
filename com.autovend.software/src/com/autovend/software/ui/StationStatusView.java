@@ -103,49 +103,49 @@ public class StationStatusView extends JPanel {
 			overrideButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyOverrideButtonPressed(buttonIndex);
+					notifyOverrideButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			addByTextButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyItemByTextButtonPressed(buttonIndex);
+					notifyItemByTextButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			removeItemButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyRemoveItemButtonPressed(buttonIndex);
+					notifyRemoveItemButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			lockStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyLockButtonPressed(buttonIndex);
+					notifyLockButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			unlockStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyEnableButtonPressed(buttonIndex);
+					notifyEnableButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			shutdownStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyShutdownButtonPressed(buttonIndex);
+					notifyShutdownButtonPressed(buttonIndex + 1);
 				}
 			});
 
 			turnonStationButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					notifyStationTurnonButtonPressed(buttonIndex);
+					notifyStationTurnonButtonPressed(buttonIndex + 1);
 				}
 			});
 			
@@ -186,7 +186,7 @@ public class StationStatusView extends JPanel {
 	public void logoutButtonPressed() {
 		if (observers == null) return;
 		for (AttendantUIEventListener listener : observers) {
-			listener.onStationLogout();
+			listener.startLogOut();
 		}
 	}
 	

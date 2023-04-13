@@ -1,6 +1,7 @@
 package com.autovend.software.ui;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -8,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import com.autovend.software.attendant.AttendantController;
 
 import auth.AttendantAccount;
 
@@ -21,7 +24,7 @@ public class LoginView extends JPanel {
 	private JLabel errorLabel;
 	private JButton loginButton;
 	
-	List<AttendantUIEventListener> listeners;
+	private List<AttendantUIEventListener> listeners;
 	
 	/**
 	 * Constructor for the Log in View which constructs the Swing 
@@ -29,6 +32,8 @@ public class LoginView extends JPanel {
 	 */
 
 	public static void main(String[] args) {
+		
+		
 		JFrame testFrame = new JFrame();
 		LoginView testView = new LoginView();
 		testFrame.add(testView);
@@ -42,6 +47,8 @@ public class LoginView extends JPanel {
 	}
 	
 	public LoginView() {
+		
+		listeners = new ArrayList<>();
 
 		this.setLayout(new GridLayout(3, 2));
 		
@@ -86,6 +93,10 @@ public class LoginView extends JPanel {
 		failPanel.add(failLabel, BorderLayout.CENTER);
 		failFrame.setVisible(true);
 		failFrame.validate();
+	}
+	
+	public void register(AttendantUIEventListener listener) {
+		listeners.add(listener);
 	}
 
 }

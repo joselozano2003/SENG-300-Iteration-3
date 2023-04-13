@@ -28,5 +28,10 @@ public interface AttendantUIEventListener {
 	public void onStationAddByTextPressed(int stationNumber);
 	
 	public void onStationRemoveItemPressed(int stationNumber);
+
+	public boolean startLogOut();
+	
+	public boolean startLogIn(AttendantAccount aAccount);
+
 	
 }
