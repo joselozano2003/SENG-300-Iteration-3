@@ -1,5 +1,140 @@
+/* P3-4 Group Members
+ * 
+ * Abdelrhafour, Achraf (30022366)
+ * Campos, Oscar (30057153)
+ * Cavilla, Caleb (30145972)
+ * Crowell, Madeline (30069333)
+ * Debebe, Abigia (30134608)
+ * Dhuka, Sara Hazrat (30124117)
+ * Drissi, Khalen (30133707)
+ * Ferreira, Marianna (30147733)
+ * Frey, Ben (30088566)
+ * Himel, Tanvir (30148868)
+ * Huayhualla Arce, Fabricio (30091238)
+ * Kacmar, Michael (30113919)
+ * Lee, Jeongah (30137463)
+ * Li, Ran (10120152)
+ * Lokanc, Sam (30114370)
+ * Lozano Cetina, Jose Camilo (30144736)
+ * Maahdie, Monmoy (30149094)
+ * Malik, Akansha (30056048)
+ * Mehedi, Abdullah (30154770)
+ * Polton, Scott (30138102)
+ * Rahman, Saadman (30153482)
+ * Rodriguez, Gabriel (30162544)
+ * Samin Rashid, Khondaker (30143490)
+ * Sloan, Jaxon (30123845)
+ * Tran, Kevin (30146900)
+ */
+
 package com.autovend.software.ui;
 
-public class PaymentViewTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
+import org.junit.Test;
+
+public class PaymentViewTest {
+	private PaymentView pview;
+	private String paymentMethod;
+	private boolean addingItems;
+	
+	@Before
+	public void setup() {
+		pview = new PaymentView();
+		paymentMethod = "";
+		addingItems = false;
+	}
+	
+	
+	/**
+	 * Testing that the payment method does change
+	 * with respective button press
+	 */
+	@Test
+	public void testCashButton() {
+		pview.register(new CustomerUIEventListenerStub());
+		pview.getCashButton().doClick();
+		assertEquals("Cash", paymentMethod);
+	}
+	
+	/**
+	 * Testing that the payment method does change
+	 * with respective button press
+	 */
+	@Test
+	public void testCreditDebitButton() {
+		pview.register(new CustomerUIEventListenerStub());
+		pview.getCreditOrDebitButton().doClick();
+		assertEquals("Credit/Debit", paymentMethod);
+	}
+	
+	/**
+	 * Testing that the payment method does change
+	 * with respective button press
+	 */
+	@Test
+	public void testGiftCardButton() {
+		pview.register(new CustomerUIEventListenerStub());
+		pview.getGiftCardButton().doClick();
+		assertEquals("Gift Card", paymentMethod);
+	}
+	
+	@Test
+	public void testAddMoreItemsButton() {
+		pview.register(new CustomerUIEventListenerStub());
+		pview.getAddMoreItemsButton().doClick();
+		assertTrue(addingItems);
+	}
+	
+	
+/*------------------------- Stubs ------------------------*/
+	
+	/**Stubs primarily check if/how many times observer events occurred.
+	 * Tests should fail if an unexpected event is reported.
+	 * Override any event in this stub that you don't want to fail.
+	 */
+	public class CustomerUIEventListenerStub implements CustomerUIEventListener {
+		@Override
+		public void onStartAddingItems() {
+			addingItems = true;
+		}
+
+		@Override
+		public void onStartPaying() {}
+
+		@Override
+		public void onSelectAddItemByPLU() {}
+
+		@Override
+		public void onSelectAddItemByBrowsing() {}
+
+		@Override
+		public void onStartAddingOwnBags() {}
+
+		@Override
+		public void onFinishAddingOwnBags() {}
+
+		@Override
+		public void onAddMembershipNumber() {}
+
+		@Override
+		public void onPurchaseBags(int amount) {	}
+
+		@Override
+		public void goBackToCheckout() {}
+
+		@Override
+		public void onSelectPaymentMethod(String payment) {	
+			paymentMethod = payment;
+		}
+
+		@Override
+		public void onBagApproval(int stationNumber) {	}
+
+		@Override
+		public void onBagRefusal(int stationNumber) {}
+
+	}
 }

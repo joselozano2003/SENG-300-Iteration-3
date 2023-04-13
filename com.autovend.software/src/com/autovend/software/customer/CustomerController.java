@@ -601,4 +601,9 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		return customerView;
 	}
 
+	public boolean getCardInserted() {
+		
+		return cardInserted;
+	}
+
 }
