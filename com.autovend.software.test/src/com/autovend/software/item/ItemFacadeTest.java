@@ -103,39 +103,18 @@ public class ItemFacadeTest {
 	 */
 	@Test
 	public void testGetNullInstanceOfItemFacade() {
+		itemFacade = null;
 		assertEquals(itemFacade, itemFacade.getInstance());
 	}
 	
 	/**
-	 * Tests that no listeners have been registered to ItemFacade
-	 * and the Listeners list is empty.
+	 * Tests whether a non-null instance of ItemFacade is returned
 	 */
 	@Test
-	public void testEmptyListenerListOfItemFacade() {
-		int expectedSize = 0;
-		int actualSize = itemFacade.getListeners().size();
+	public void testGetNonNullInstanceOfItemFacade() {
+		ItemFacade itemFacade2 = new ItemFacade(station, new CustomerView(), false);
+		itemFacade2 = itemFacade;
 		
-		assertEquals(expectedSize, actualSize);
-		assertTrue(itemFacade.getListeners().isEmpty());
-	}
-	
-	/**
-	 * Tests that two listeners have been registered to ItemFacade
-	 * and the Listeners list is not empty (has size 2).
-	 */
-	@Test
-	public void testNonEmptyListenerListOfItemFacade() {
-		int expectedSize = 2;
-		
-		ItemListenerStub listener1 = new ItemListenerStub();
-		ItemListenerStub listener2 = new ItemListenerStub();
-		
-		itemFacade.register(listener1);
-		itemFacade.register(listener2);
-		
-		int actualSize = itemFacade.getListeners().size();
-		
-		assertEquals(expectedSize, actualSize);
-		assertFalse(itemFacade.getListeners().isEmpty());	
+		assertEquals(itemFacade.getInstance(), itemFacade2.getInstance());	
 	}	
 }

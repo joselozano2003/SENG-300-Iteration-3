@@ -106,7 +106,7 @@ public class ByScanningTest {
 		BarcodedProduct barcodedProduct123 = Setup.createBarcodedProduct123(1.00, 15, true);
 		BarcodedProduct barcodedProduct456 = Setup.createBarcodedProduct456(5.5, 20, true);
 		
-		instance.register(new ItemListenerStub() {
+		byScanning.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -128,7 +128,7 @@ public class ByScanningTest {
 		int expected = 1;
 		BarcodedProduct barcodedProduct1 = null;
 		
-		instance.register(new ItemListenerStub() {
+		byScanning.register(new ItemListenerStub() {
 			@Override
 			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
 				assertEquals(barcodedProduct1, barcodedProduct);
@@ -148,7 +148,7 @@ public class ByScanningTest {
 		BarcodedProduct barcodedProduct3 = Setup.createBarcodedProduct123(12.91, 5, true);
 		BarcodedProduct barcodedProduct4 = null;
 		
-		instance.register(new ItemListenerStub() {
+		byScanning.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				assertEquals(barcodedProduct3, product);
@@ -167,42 +167,36 @@ public class ByScanningTest {
 	}
 	
 	/**
-	 * Tests that the disabled device event is not announced to the listener
+	 * Assert that these hardware events don't announce to listeners.
 	 */
 	@Test
-	public void testEventDisabled() {
-		int expected = 1;
-		BarcodedProduct barcodedProduct1 = Setup.createBarcodedProduct123(12.91, 5, true);
-		
-		instance.register(new ItemListenerStub() {
+	public void testMethodsNoEvents() {
+		int expected = 2;
+		//Will fail if any listener event is entered.
+		byScanning.register(new ItemListenerStub() {
 			@Override
-			public void reactToDisableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+			public void reactToDisableStationRequest() {
 				found++;
 			}
-		});
-		
-		station.mainScanner.disable();
-		byScanning.reactToDisabledEvent(station.mainScanner);
-		assertNotEquals(expected, found);
-	}
-	
-	/**
-	 * Tests that the enabled device event is not announced to the listener
-	 */
-	@Test
-	public void testEventEnabled() {
-		int expected = 1;
-		BarcodedProduct barcodedProduct2 = Setup.createBarcodedProduct123(12.91, 5, true);
-		
-		instance.register(new ItemListenerStub() {
 			@Override
-			public void reactToEnableDeviceRequest(AbstractDevice<? extends AbstractDeviceObserver> device) {
+			public void reactToEnableStationRequest() {
 				found++;
 			}
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}
+			@Override
+			public void onItemNotFoundEvent() {
+				found++;
+			}
+			@Override
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				found++;
+			}	
 		});
-		
-		station.mainScanner.enable();
-		byScanning.reactToEnabledEvent(station.mainScanner);
-		assertNotEquals(expected, found);
+		byScanning.reactToEnabledEvent(station.scale);
+		byScanning.reactToDisabledEvent(station.scale);
+		assertNotEquals(expected, found);		
 	}
 }
