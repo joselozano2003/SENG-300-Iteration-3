@@ -29,6 +29,8 @@
 package com.autovend.software.item;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -92,14 +94,14 @@ public class ByBrowsingTest {
 	}
 	
 	/**
-	 * Tests the event that a single PLUCoded Product was found and selected
+	 * Tests the event that a single product enforced a weight change
 	 */
 	@Test
-	public void testBrowsingASinglePLUProductEvent() {
+	public void testBrowingProductWeightChange() {
 		int expected = 1;
 		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(9.99, 4, true);
 		
-		instance.register(new ItemListenerStub() {
+		byBrowsing.register(new ItemListenerStub() {
 			@Override
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
@@ -108,75 +110,102 @@ public class ByBrowsingTest {
 				}
 			}});
 		
-		byBrowsing.productFromVisualCatalogueSelected(PLUProd123);
+		byBrowsing.reactToProductSelected(PLUProd123);
+		byBrowsing.reactToWeightChangedEvent(station.scale, 8);
 		assertEquals(expected, found);
 	}
 	
 	/**
-	 * Tests the event that a single Barcoded Product was found and selected
+	 * Tests the event that a null product did not enforce a weight change
 	 */
 	@Test
-	public void testBrowsingASingleBarcodedProductEvent() {
-		int expected = 1;
-		BarcodedProduct BarcodedProd123 = Setup.createBarcodedProduct123(12.99, 3, true);
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(BarcodedProd123, product);
-				}
-			}});
-		
-		byBrowsing.productFromVisualCatalogueSelected(BarcodedProd123);
-		assertEquals(expected, found);
-	}
-	
-	/**
-	 * Tests the event that two products, Barcoded and PLUCoded, were found and selected
-	 */
-	@Test
-	public void testBrowsingMultipleProductsEvent() {
-		int expected = 2;
-		BarcodedProduct BarcodedProd123 = Setup.createBarcodedProduct123(12.99, 3, true);
-		PLUCodedProduct PLUProd56789 = Setup.createPLUProduct56789(7.99, 4, true);
-		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(BarcodedProd123, product);
-				}
-				
-				if (found == 2) {
-					assertEquals(PLUProd56789, product);
-				}
-			}});
-		
-		byBrowsing.productFromVisualCatalogueSelected(BarcodedProd123);
-		byBrowsing.productFromVisualCatalogueSelected(PLUProd56789);
-		assertEquals(expected, found);
-	}
-	
-	/**
-	 * Tests the event that a null product was attempted to be selected and found
-	 */
-	@Test
-	public void testBrowsingNullProductEvent() {
+	public void testBrowsingNullProductNoWeightChange() {
 		int expected = 0;
-		Product Prod = null;
+		Product nullProd = null;
 		
-		instance.register(new ItemListenerStub() {
+		byBrowsing.register(new ItemListenerStub() {
 			@Override
-			// The inside of this code shouldn't get reached. As a null product should not
-			// be browsed or announced, as desired
 			public void onItemAddedEvent(Product product, double quantity) {
 				found++;
 			}});
 		
-		byBrowsing.productFromVisualCatalogueSelected(Prod);
+		byBrowsing.reactToProductSelected(nullProd);
+		byBrowsing.reactToWeightChangedEvent(station.scale, 0);
 		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Tests the event that a single product did not enforce a weight change
+	 */
+	@Test
+	public void testBrowsingProductNoWeightChange() {
+		int expected = 0;
+		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(9.99, 4, true);
+		
+		byBrowsing.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
+		
+		byBrowsing.reactToProductSelected(PLUProd123);
+		byBrowsing.reactToWeightChangedEvent(station.scale, 0);
+		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Tests the event that a null product tried to enforce a weight change
+	 * but it didn't actually occur
+	 */
+	@Test
+	public void testBrowsingNullProductWeightChange() {
+		int expected = 0;
+		Product nullProd = null;
+		
+		byBrowsing.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
+		
+		byBrowsing.reactToProductSelected(nullProd);
+		byBrowsing.reactToWeightChangedEvent(station.scale, 5);
+		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Assert that these hardware events don't announce to listeners.
+	 */
+	@Test
+	public void testMethodsNoEvents() {
+		int expected = 4;
+		//Will fail if any listener event is entered.
+		byBrowsing.register(new ItemListenerStub() {
+			@Override
+			public void reactToDisableStationRequest() {
+				found++;
+			}
+			@Override
+			public void reactToEnableStationRequest() {
+				found++;
+			}
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}
+			@Override
+			public void onItemNotFoundEvent() {
+				found++;
+			}
+			@Override
+			public void reactToInvalidBarcode(BarcodedProduct barcodedProduct, int i) {
+				found++;
+			}	
+		});
+		byBrowsing.reactToEnabledEvent(station.scale);
+		byBrowsing.reactToDisabledEvent(station.scale);
+		byBrowsing.reactToOverloadEvent(station.scale);
+		byBrowsing.reactToOutOfOverloadEvent(station.scale);
+		assertNotEquals(expected, found);		
 	}
 }

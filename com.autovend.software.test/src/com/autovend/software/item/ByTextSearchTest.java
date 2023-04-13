@@ -30,6 +30,7 @@ package com.autovend.software.item;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -53,6 +54,7 @@ public class ByTextSearchTest {
 	private ByTextSearch byTextSearch;
 	private ItemFacade instance;
 	private int found;
+	private TextSearchProduct txtSearchProd;
 	
 	/**
 	 * Sets up the test suite. Runs before every method.
@@ -64,6 +66,8 @@ public class ByTextSearchTest {
 		station = Setup.createSelfCheckoutStation();
 		byTextSearch = new ByTextSearch(station, new CustomerView());
 		instance = new ItemFacade(station, new CustomerView(), false);
+		txtSearchProd = new TextSearchProduct("Fresh mozzerella cheese", "This is a good product", new BigDecimal
+				("15.99"), 3.0);
 	}
 	
 	/**
@@ -75,6 +79,8 @@ public class ByTextSearchTest {
 		byTextSearch = null;
 		instance = null;
 		found = 0;
+		txtSearchProd = null;
+		ProductsDatabase2.Products_Textsearch_Keywords_Database.clear();
 	}
 	
 	/**
@@ -94,32 +100,15 @@ public class ByTextSearchTest {
 	}
 	
 	/**
-	 * Tests that relevant search results are found for a single Barcoded Product
+	 * Tests that relevant search results are found for a single Product
 	 */
 	@Test
 	public void testTextSearchForSingleBarcodedProduct() {
 		int expectedSize = 1;
-		BarcodedProduct barcodedProd123 = Setup.createBarcodedProduct123(33.33, 5, false);
 		
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Product one", barcodedProd123);
+		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("mozzerella", txtSearchProd); 
 		
-		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("one");
-		
-		int actualSize = results.size();
-		assertEquals(expectedSize, actualSize);
-	}
-	
-	/**
-	 * Tests that relevant search results are found for a single PLUCoded Product
-	 */
-	@Test
-	public void testTextSearchForSinglePLUCodedProduct() {
-		int expectedSize = 1;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(12.97, 2, false);
-		
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Imported: Aged Mozzerella Cheese", PLUProd123);
-		
-		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("Mozzerella");
+		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("mozzerella");
 		
 		int actualSize = results.size();
 		assertEquals(expectedSize, actualSize);
@@ -131,69 +120,85 @@ public class ByTextSearchTest {
 	@Test
 	public void testTextSearchForMultipleProducts() {
 		int expectedSize1 = 1;
-		PLUCodedProduct PLUProd123 = Setup.createPLUProduct1234(12.97, 2, false);
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Imported: Aged Mozzerella Cheese", PLUProd123);
-		ArrayList<Product> results1 = byTextSearch.getProductsCorrespondingToTextSearch("Mozzerella");
-		int actualSize1 = results1.size();
+		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("mozzerella", txtSearchProd); 
+		
+		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("mozzerella");
+		
+		int actualSize1 = results.size();
+		
+		TextSearchProduct txtSearchProd2 = new TextSearchProduct("Tide Sport Laundry Detergent", "Clean clothes nice", 
+				new BigDecimal("27.99"), 8.0);
 		
 		int expectedSize2 = 1;
-		BarcodedProduct barcodedProd123 = Setup.createBarcodedProduct123(27.99, 8, false);
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Tide Sport Laundry Detergent", barcodedProd123);	
+	
+		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Sport detergent", txtSearchProd);
+		
 		ArrayList<Product> results2 = byTextSearch.getProductsCorrespondingToTextSearch("Sport");
+		
 		int actualSize2 = results2.size();
 		
+		// for first product
 		assertEquals(expectedSize1, actualSize1);
+		
+		// for second product
 		assertEquals(expectedSize2, actualSize2);
 	}
 	
 	/**
-	 * Tests that a relevant search result was found for a product
-	 * and the event announcement of product being selected from the search results
+	 * Tests that no relevant search results are found for a product
 	 */
 	@Test
-	public void testEventTextSearchProductSelected() {
-		int expectedEvent = 1;
+	public void testTextSearchForNoProduct() {
+		int expectedSize = 0;
 		
-		int expectedSize = 1;
-		BarcodedProduct barcodedProd123 = Setup.createBarcodedProduct123(27.99, 8, false);
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Tide Sport Laundry Detergent", barcodedProd123);	
-		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("Sport");
+		TextSearchProduct txtSearchProd2 = new TextSearchProduct("Driscol's organic raspberries", "good fruit", 
+				new BigDecimal("27.99"), 8.0);
+	
+		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("raspberries", txtSearchProd);
+		
+		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("blue");
+		
 		int actualSize = results.size();
 		
-		instance.register(new ItemListenerStub() {
-			@Override
-			public void onItemAddedEvent(Product product, double quantity) {
-				found++;
-				if (found == 1) {
-					assertEquals(barcodedProd123, product);
-				}
-			}});
-		
-		byTextSearch.productFromTextSearchSelected(barcodedProd123);
-		
 		assertEquals(expectedSize, actualSize);
-		assertEquals(expectedEvent, found);	
 	}
 	
 	/**
-	 * Tests that a relevant search result was found for a product
-	 * and no event announcement of a product being selected from the search results
+	 * Tests that a valid product has been selected from the text search
 	 */
 	@Test
-	public void testEventTextSearchNoProductSelected() {
-		int expectedEvent = 0;
+	public void testValidProductSelected() {
+		int expected = 1;
 		
-		int expectedSize = 1;
-		BarcodedProduct barcodedProd123 = Setup.createBarcodedProduct123(7.99, 8, false);
-		ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Driscol's organic raspberries", barcodedProd123);	
-		ArrayList<Product> results = byTextSearch.getProductsCorrespondingToTextSearch("rasp");
-		int actualSize = results.size();
+		BarcodedProduct barcodeProd123 = Setup.createBarcodedProduct123(9.99, 2, true);
 		
+		byTextSearch.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
 		
-		// Calling method without a registered listener
-		byTextSearch.productFromTextSearchSelected(barcodedProd123);
+		byTextSearch.productFromTextSearchSelected(barcodeProd123);
+		assertEquals(expected, found);
+	}
+	
+	/**
+	 * Tests an attempt to select a null product from the text search
+	 */
+	@Test
+	public void testNullProductSelected() {
+		int expected = 0;
 		
-		assertEquals(expectedSize, actualSize);
-		assertEquals(expectedEvent, found);	
+		BarcodedProduct barcodeProd123 = Setup.createBarcodedProduct123(9.99, 2, true);
+		barcodeProd123 = null;
+		
+		byTextSearch.register(new ItemListenerStub() {
+			@Override
+			public void onItemAddedEvent(Product product, double quantity) {
+				found++;
+			}});
+		
+		byTextSearch.productFromTextSearchSelected(barcodeProd123);
+		assertEquals(expected, found);
 	}	
 }
