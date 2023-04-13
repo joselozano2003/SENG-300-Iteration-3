@@ -32,23 +32,29 @@ package com.autovend.software.customer;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 import com.autovend.products.Product;
+import com.autovend.software.bagging.ReusableBagProduct;
 import com.autovend.software.customer.CustomerController.State;
 
 import java.math.BigDecimal;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class CustomerControllerTest {
 	private SelfCheckoutStation station;
 	private CustomerController controller;
 	private ReusableBagDispenser bagDispenser;
-	private JPanel addView;
+	private JPanel panel;
+	private ReusableBagProduct bagProduct;
+	
+	private JFrame frame;
 	
 	
 	@Before
@@ -57,6 +63,8 @@ public class CustomerControllerTest {
 		station = Setup.createSelfCheckoutStation();
 		ReusableBagDispenser bagDispenser = new ReusableBagDispenser(10);
 		controller = new CustomerController(station, bagDispenser, new CustomerView());
+		panel = new JPanel(); 
+		frame = new JFrame();
 	}
 	
 	@Test (expected = NullPointerException.class)
@@ -158,7 +166,86 @@ public class CustomerControllerTest {
     }
     
 //TEST TO SEE IF UPDATE VIEW IS WORKING PROPERLY
-   
+    //checking if the controller object's frame has the correct panel that is passed in, in the test case/
+    @Test
+    public void updateViewTest() {
+    	controller.updateView(panel);
+   	
+    	frame = controller.getFrame();
+    	assertTrue(frame.getContentPane().getComponents().length == 1);
+    	assertEquals(frame.getContentPane().getComponents()[0], panel);
+    }
+    
+// TESTING TO SEE IF IT CAN GO BACK TO CHECKOUT
+    //Checking if the frame is updated with checkoutView (Panel type)
+    @Test
+    public void goBackToCheckOutTest() {
+    	controller.goBackToCheckout();
+    	
+    	frame = controller.getFrame();
+    	assertTrue(frame.getContentPane().getComponents().length == 1);
+    	assertEquals(frame.getContentPane().getComponents()[0], controller.getCustomerView().checkoutView);
+    }
+    
+// TESTING IF WEIGHT IS CHECKED DURING BAH DISPENSED EVENT
+    @Test
+    public void weightCheckDuringBagDispensedEventTest() {
+    	bagProduct = new ReusableBagProduct();
+    	controller.onBagsDispensedEvent(bagProduct, 3);
+    	assertEquals(State.CHECKING_WEIGHT, controller.getCurrentState());
+    }
+// TESTING IF ITEM IS ADDED TO CART DURING BAG DISPENSED EVENT
+    @Test
+    public void addItemCheckDuringBagDispensedEventTest() {
+    	bagProduct = new ReusableBagProduct(); 	
+    	controller.onBagsDispensedEvent(bagProduct, 3);
+    	
+    	assertEquals(3.00, controller.getCurrentSession().getShoppingCart().get(bagProduct), 0.1);	
+    }
+    
+// TESTING TO CHECK IF PLU VIEW PANEL IS OBTAINED IN FRAME
+    @Test
+    public void addItemByPLUViewTest() {
+    	controller.onSelectAddItemByPLU();
+    	
+    	frame = controller.getFrame();
+    	assertTrue(frame.getContentPane().getComponents().length == 1);
+    	assertEquals(frame.getContentPane().getComponents()[0], controller.getCustomerView().pluView);
+    }
+ // TESTING TO CHECK IF BROWSING VIEW PANEL IS OBTAINED IN FRAME
+    @Test
+    public void browsingViewTest() {
+    	controller.onSelectAddItemByBrowsing();
+    	
+    	frame = controller.getFrame();
+    	assertTrue(frame.getContentPane().getComponents().length == 1);
+    	assertEquals(frame.getContentPane().getComponents()[0], controller.getCustomerView().browsingView);
+    }
+ // TESTING TO CHECK IF MEMBERSHIP VIEW PANEL IS OBTAINED IN FRAME WHEN ADDING MEMBERSHIP
+    @Test
+    public void membershipViewTest() {
+    	controller.onAddMembershipNumber();
+    	
+    	frame = controller.getFrame();
+    	assertTrue(frame.getContentPane().getComponents().length == 1);
+    	assertEquals(frame.getContentPane().getComponents()[0], controller.getCustomerView().membershipView);
+    }
+ // TESTING IF WEIGHT IS CHECKED DURING ITEM ADDED EVENT
+    @Test
+    public void weightCheckDuringItemAddEventTest() {
+    	bagProduct = new ReusableBagProduct(); 
+    	
+    	controller.onItemAddedEvent(bagProduct, 5);
+    	assertEquals(State.CHECKING_WEIGHT, controller.getCurrentState());
+    }
+ // TESTING IF ITEM IS ADDED TO CART DURING ADD ITEM EVENT
+    @Test
+    public void addItemCheckDuringAddItemEventTest() {
+    	bagProduct = new ReusableBagProduct(); 	
+    	
+    	controller.onItemAddedEvent(bagProduct, 9);    	
+    	assertEquals(9.00, controller.getCurrentSession().getShoppingCart().get(bagProduct), 0.1);	
+    }
     
  /**   
     
