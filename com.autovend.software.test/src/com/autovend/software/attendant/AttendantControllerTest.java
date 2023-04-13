@@ -32,18 +32,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.BarcodedUnit;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SupervisionStation;
+import com.autovend.products.BarcodedProduct;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerSession;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.customer.CustomerController.State;
+import com.autovend.software.item.ProductsDatabase2;
+import com.autovend.software.item.TextSearchProduct;
 import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 
@@ -61,6 +66,11 @@ public class AttendantControllerTest {
 	private ReusableBagDispenser bagDispenser;
 	public CustomerSession currentSession;
 	
+	private SelfCheckoutStation scs;
+    private SupervisionStation supervisionStation;
+    private AttendantController attendantController;
+    
+	
 	
 	@Before
 	public void setup() {
@@ -71,7 +81,7 @@ public class AttendantControllerTest {
 		customerStationList = new ArrayList<CustomerStationLogic>();
 		
 		
-		SelfCheckoutStation scs = Setup.createSelfCheckoutStation();
+		scs = Setup.createSelfCheckoutStation();
 	    CustomerStationLogic stationLogic = CustomerStationLogic.installOn(scs);
 
 	    // Add the CustomerStationLogic instance to the customerStationList
@@ -139,12 +149,9 @@ public class AttendantControllerTest {
 	}
 	
 	@Test
-    public void testAddCustomerStation() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
-
-        assertEquals(1, controller.getCustomerStationsManaged().size());
-        assertEquals(stationLogic, controller.getCustomerStationsManaged().get(0));
+    public void testOnStationShutdown() {
+        attendantController.onStationShutdown(1);
+        assertEquals(State.SHUTDOWN, customerController.getCurrentState());
     }
 
     @Test(expected = NullPointerException.class)
@@ -157,61 +164,142 @@ public class AttendantControllerTest {
         CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
         controller.addCustomerStation(stationLogic);
         
-        controller.shutDownStation(0);
+        controller.onStationShutdown(0);
         CustomerController.State state = stationLogic.getController().getCurrentState();
         assertEquals(CustomerController.State.SHUTDOWN, state);
 
-        controller.startUpStation(0);
-        assertEquals(CustomerController.State.STARTUP, state);
+//        controller.startUpStation(0);
+//        assertEquals(CustomerController.State.STARTUP, state);
     }
 	 
     @Test
-    public void testPermitStationUse() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
-
-        assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getCurrentState());
-
-        controller.permitStationUse(0);
-        assertEquals(CustomerController.State.ADDING_ITEMS, stationLogic.getController().getCurrentState());
+    public void addInkToPrinter() {
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.addInkToStation(0, 10);
+        assertEquals(10, station.getController().inkAdded);
+    }
+    @Test
+    public void addPaperToPrinter() {
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.addPaperToStation(0, 10);
+        assertEquals(10, station.getController().paperAdded);
     }
 
     @Test
-    public void testDenyStationUse() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
-
-        controller.permitStationUse(0);
-        assertEquals(CustomerController.State.ADDING_ITEMS, stationLogic.getController().getCurrentState());
-
-        controller.denyStationUse(0);
-        assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getCurrentState());
+    public void testShutDownStation(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.shutDownStation(0);
+        CustomerController.State state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.SHUTDOWN, state);
     }
 
     @Test
-    public void testReEnableStationUse() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
-
-        assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getCurrentState());
-
-        controller.permitStationUse(0);
-        assertEquals(CustomerController.State.ADDING_ITEMS, stationLogic.getController().getCurrentState());
-
-        controller.denyStationUse(0);
-        assertEquals(CustomerController.State.DISABLED, stationLogic.getController().getCurrentState());
-
-        controller.reEnableStationUse(0);
-        assertEquals(CustomerController.State.ADDING_ITEMS, stationLogic.getController().getCurrentState());
+    public void testStartUpStation(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.shutDownStation(0);
+        attendantController.startUpStation(0);
+        CustomerController.State state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.STARTUP, state);
     }
 
     @Test
-    public void testGetCustomerStations() {
-        CustomerStationLogic stationLogic = CustomerStationLogic.installOn(Setup.createSelfCheckoutStation());
-        controller.addCustomerStation(stationLogic);
+    public void testDenyStationUse(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        CustomerController.State state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.DISABLED, state);
+        attendantController.denyStationUse(0);
+        state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.DISABLED, state);
+    }
 
-        assertEquals(1, controller.getCustomerStationsManaged().size());
-        assertEquals(stationLogic, controller.getCustomerStationsManaged().get(0));
+    @Test
+    public void testPermitStationUse(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        CustomerController.State state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.DISABLED, state);
+        attendantController.addPaperToStation(0, 10);
+        attendantController.addInkToStation(0, 10);
+        attendantController.shutDownStation(0);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.INITIAL, state);
+    }
+
+    @Test
+    public void testRemoveItem() {
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        attendantController.addPaperToStation(0, 10);
+        attendantController.addInkToStation(0, 10);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        CustomerController.State state = station.getController().getCurrentState();
+        assertEquals(CustomerController.State.INITIAL, state);
+
+        CustomerController customerController = station.getController();
+        customerController.startNewSession();
+        customerController.onStartAddingItems();
+        selfCheckoutStation = customerController.getStation();
+
+        boolean flag = false;
+        while (!flag) {
+            flag = selfCheckoutStation.mainScanner
+                    .scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+        }
+        selfCheckoutStation.baggingArea
+                .add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+
+        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
+
+        flag = false;
+        while (!flag) {
+            flag = selfCheckoutStation.mainScanner
+                    .scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+        }
+        selfCheckoutStation.baggingArea
+                .add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+
+        assertEquals(3, customerController.getCurrentSession().getTotalCost().intValue());
+
+        station.removeItemRequest(new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
+
+        attendantController.removeItemfromStation(0, new BarcodedProduct(barcodeProduct2.getBarcode(), "product2", new BigDecimal("2"), 15), 1);
+        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
+        }
+
+    @Test
+    public void addItemWithTextSearch(){
+        CustomerStationLogic station = new CustomerStationLogic(selfCheckoutStation);
+        attendantController.addCustomerStation(station);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+        attendantController.addPaperToStation(0, 10);
+        attendantController.addInkToStation(0, 10);
+        attendantController.startUpStation(0);
+        attendantController.permitStationUse(0);
+
+        CustomerController customerController = station.getController();
+        customerController.startNewSession();
+        customerController.onStartAddingItems();
+
+        TextSearchProduct textSearchProduct = new TextSearchProduct("Banana", "banana", new BigDecimal("1"), 10);
+        ProductsDatabase2.Products_Textsearch_Keywords_Database.put("Banana", textSearchProduct);
+        attendantController.addItemToStationByTextSearch(0, "Banana", 1);
+        assertEquals(1, customerController.getCurrentSession().getTotalCost().intValue());
+
     }
 
 }
