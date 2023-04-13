@@ -37,12 +37,12 @@ public class AttendantTestMain {
 
 	public static void main(String[] args) throws InterruptedException, OverloadException {
 	
-
-		TouchScreen touchScreen = new TouchScreen();
 		AttendantView stationView = new AttendantView(1);
 		
-		touchScreen.getFrame().add(stationView.loginView);
-		touchScreen.setVisible(true);
+
+		SupervisionStation attendantStation = new SupervisionStation();
+		attendantStation.screen.getFrame().add(stationView.loginView);
+		attendantStation.screen.getFrame().setVisible(true);
 		
 		
 		int[] billDenoms = { 5, 10, 15, 20, 50, 100 };
@@ -52,7 +52,7 @@ public class AttendantTestMain {
 		int scaleSensitivity = 1;
 		SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenoms, coinDenoms,
 				scaleMaximumWeight, scaleSensitivity);
-		SupervisionStation attendantStation = new SupervisionStation();
+		
 		ReusableBagDispenser dispenser = new ReusableBagDispenser(100);
 
 		int n = 0;

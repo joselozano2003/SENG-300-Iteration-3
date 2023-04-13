@@ -137,6 +137,7 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 		frame.getContentPane().add(newView);
 		frame.revalidate();
 		frame.repaint();
+		System.out.print("swapping to " + newView);
 	}
 
 	public void removeItemfromStation(int stationNumber, Product product, double quantity) {
@@ -237,7 +238,9 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 
 	@Override
 	public void onAttendantLoginAttempt(AttendantAccount account) {
+		System.out.println("a");
 		if (startLogIn(account)) {
+			System.out.println("working");
 			updateView(aView.stationView);
 		}
 	}
