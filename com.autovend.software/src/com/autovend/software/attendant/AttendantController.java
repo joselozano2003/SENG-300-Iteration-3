@@ -63,6 +63,7 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	private AttendantAccount stationAccount;
 	private SupervisionStation superStation;
 	private AttendantView aView;
+	private int currentTextStation;
 
 	public AttendantController(SupervisionStation supervisionStation, AttendantView attView) {
 		this.auth = new AuthFacade();
@@ -211,7 +212,6 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	public void onStationShutdown(int stationNumber) {
 		CustomerController customerController = customerStations.get(stationNumber-1);
 		customerController.setState(State.SHUTDOWN);
-		
 	}
 
 	@Override
@@ -253,7 +253,9 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 	}
 	@Override
 	public void onStationAddByTextPressed(int value) {
-		// how does this fit??
+		currentTextStation = value;
+		updateView(aView.textSearchView);
+		System.out.printf("appa");
 	}
 
 	@Override

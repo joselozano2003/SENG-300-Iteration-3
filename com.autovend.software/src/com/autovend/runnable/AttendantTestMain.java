@@ -98,6 +98,7 @@ public class AttendantTestMain {
 		CustomerStationLogic logic = new CustomerStationLogic(station);
 		attendantController.addCustomerStation(customerController);
 		stationView.loginView.register(attendantController);
+		stationView.textSearchView.register(attendantController);
 		
 		
 		
