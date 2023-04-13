@@ -53,6 +53,7 @@ public class CustomerControllerTest {
 	private ReusableBagDispenser bagDispenser;
 	private JPanel panel;
 	private ReusableBagProduct bagProduct;
+	
 	private JFrame frame;
 	
 	
@@ -193,6 +194,14 @@ public class CustomerControllerTest {
     	controller.onBagsDispensedEvent(bagProduct, 3);
     	assertEquals(State.CHECKING_WEIGHT, controller.getCurrentState());
     }
+// TESTING IF ITEM IS ADDED TO CART DURING BAG DISPENSED EVENT
+    @Test
+    public void addItemCheckDuringBagDispensedEventTest() {
+    	bagProduct = new ReusableBagProduct(); 	
+    	controller.onBagsDispensedEvent(bagProduct, 3);
+    	
+    	assertEquals(3.00, controller.getCurrentSession().getShoppingCart().get(bagProduct), 0.1);	
+    }
     
 // TESTING TO CHECK IF PLU VIEW PANEL IS OBTAINED IN FRAME
     @Test
@@ -220,6 +229,22 @@ public class CustomerControllerTest {
     	frame = controller.getFrame();
     	assertTrue(frame.getContentPane().getComponents().length == 1);
     	assertEquals(frame.getContentPane().getComponents()[0], controller.getCustomerView().membershipView);
+    }
+ // TESTING IF WEIGHT IS CHECKED DURING ITEM ADDED EVENT
+    @Test
+    public void weightCheckDuringItemAddEventTest() {
+    	bagProduct = new ReusableBagProduct(); 
+    	
+    	controller.onItemAddedEvent(bagProduct, 5);
+    	assertEquals(State.CHECKING_WEIGHT, controller.getCurrentState());
+    }
+ // TESTING IF ITEM IS ADDED TO CART DURING ADD ITEM EVENT
+    @Test
+    public void addItemCheckDuringAddItemEventTest() {
+    	bagProduct = new ReusableBagProduct(); 	
+    	
+    	controller.onItemAddedEvent(bagProduct, 9);    	
+    	assertEquals(9.00, controller.getCurrentSession().getShoppingCart().get(bagProduct), 0.1);	
     }
     
  /**   
