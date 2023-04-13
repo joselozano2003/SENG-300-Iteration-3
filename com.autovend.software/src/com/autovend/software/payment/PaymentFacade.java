@@ -94,7 +94,7 @@ public class PaymentFacade extends AbstractFacade<PaymentEventListener> {
 	}
 
 	public void dispenseChange(BigDecimal changeDue) {
-		if (changeDue.compareTo(BigDecimal.ZERO) < 0) {
+		if (changeDue.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new IllegalArgumentException("Change required must be non-negative.");
 		}
 

@@ -418,8 +418,12 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		if (paymentComplete) {
 			customerView.paymentView.updateAmountDue("0.00");
 			customerView.paymentView.updateChangeDue(currentSession.getChangeDue().toString());
-
-			setState(State.DISPENSING_CHANGE);
+			if (currentSession.getPaymentMethod() == "Cash") {
+				System.out.println(currentSession.getPaymentMethod());
+				setState(State.DISPENSING_CHANGE);
+			} else {
+				setState(State.PRINTING_RECEIPT); 
+			}
 		} else {
 			customerView.paymentView.updateAmountDue(currentSession.getAmountLeft().toString());
 

@@ -162,7 +162,7 @@ public class Main {
 		}
 		
 		//INK AND PAPER (NONE FOR FIRST RUN)
-		station.printer.addInk(0);
+		station.printer.addInk(1000);
 		station.printer.addPaper(1000);
 
 		CustomerView customerView = new CustomerView();

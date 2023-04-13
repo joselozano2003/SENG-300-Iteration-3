@@ -154,6 +154,12 @@ public class CustomerSession {
 	public void setPaymentMethod(String paymentMethodToSet) {
 		this.paymentMethod = paymentMethodToSet;
 	}
+	
+	public String getPaymentMethod() {
+		return this.paymentMethod;
+	}
+	
+	
 
 	public Map<Product, Double> getShoppingCart() {
 		return shoppingCart;
