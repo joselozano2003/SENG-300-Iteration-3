@@ -1,5 +1,6 @@
 package com.autovend.software.payment;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.autovend.ChipFailureException;
 import com.autovend.CreditCard;
 import com.autovend.DebitCard;
 import com.autovend.GiftCard;
@@ -26,6 +28,8 @@ public class PayWithGiftCardTest {
 	private CardReader reader;
 	
 	private GiftCard giftCard;
+	private GiftCard notInDBCard;
+	private GiftCard noMoney;
 	private CardIssuer unregisteredIssuer;
 	private CreditCard unregisteredCard;
 	private CreditCard blockedCard;
@@ -52,19 +56,68 @@ public class PayWithGiftCardTest {
 		flag = false;
 		
 		giftCard = new GiftCard("Gift Card", "00000", "1111", Setup.getCurrency(),BigDecimal.valueOf(100));
+		notInDBCard = new GiftCard("No DB", "00001", "1112", Setup.getCurrency(),BigDecimal.valueOf(100));
+		noMoney = new GiftCard("No Money", "00002", "1113", Setup.getCurrency(),BigDecimal.valueOf(1));
+		
 		GiftCardDatabase.addCard("00000", giftCard);
+		GiftCardDatabase.addCard("00002", noMoney);
+		
 		
 	}
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullStation() {
+		new PayWithGiftCard(null, new CustomerView());
+	}
 	
+	@Test (expected = NullPointerException.class)
+	public void testContructorNullView() {
+		new PayWithGiftCard(station, null);
+	}
 	/**
 	 * Insert a valid gift card into the station's reader,
 	 * expecting a paymentAddedEvent and payment to be processed.
 	 */
 	@Test
 	public void testInsertValidGiftCard() {
-		
+		payWithGiftCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithGiftCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(giftCard, "1111");
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentSuccessCounter);
+		assertEquals(BigDecimal.valueOf(5), paymentCounter);
 	}
-	
+	@Test
+	public void testNoDBGiftCard() {
+		payWithGiftCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithGiftCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(notInDBCard, "1112");
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentFailCounter);
+	}
+	@Test
+	public void testNoMoney() {
+		payWithGiftCard.setAmountDue(BigDecimal.valueOf(5));
+		payWithGiftCard.register(new PaymentEventListenerStub());
+		CardReader reader = station.cardReader;
+		while (!flag)
+			try {
+				reader.insert(noMoney, "1113");
+				flag = true;
+			} catch (Exception e) {}
+		assertEquals(1, paymentFailCounter);
+	}
+	@Test
+	public void testChipFail() {
+
+	}
 	/*--------------- STUBS ---------------*/
 	
 	/**Stubs primarily check if/how many times observer events occurred.
@@ -95,13 +148,9 @@ public class PayWithGiftCardTest {
 		public void onLowBills(BillDispenser dispenser) {fail();}
 		@Override
 		public void cardInserted() {
-			// TODO Auto-generated method stub
-			
 		}
 		@Override
 		public void cardRemoved() {
-			removed = true;
-			
 		}
 	}
 }
