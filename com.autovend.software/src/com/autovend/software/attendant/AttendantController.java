@@ -219,6 +219,7 @@ public class AttendantController implements CustomerStationListener, AttendantUI
 
 	@Override
 	public void onAttendantLoginAttempt(AttendantAccount account) {
+		
 		// TODO Auto-generated method stub
 		
 	}

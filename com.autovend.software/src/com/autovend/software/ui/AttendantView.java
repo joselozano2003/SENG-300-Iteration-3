@@ -30,19 +30,33 @@ package com.autovend.software.ui;
 
 import javax.swing.JPanel;
 
+import com.autovend.devices.OverloadException;
+
 /**
  * AttendantView is a JPanel that serves as a container for various sub-views related to
  * managing items at a station. It contains three sub-views: StationTableView, AddItemByTextSearchView,
  * and RemoveItemView.
  */
 
-public class AttendantView extends JPanel {
+public class AttendantView {
 
 	public AddItemByTextSearchView textSearchView;
 
 	public StationStatusView stationView;
 	
 	public LoginView loginView;
+	
+	public AttendantView(int numStations) {
+		this.textSearchView = new AddItemByTextSearchView();
+		
+		try {
+			this.stationView = new StationStatusView(numStations);
+		} catch(OverloadException e) {
+			return;
+		}
+		
+		this.loginView = new LoginView();
+	}
 	
 	
 	
