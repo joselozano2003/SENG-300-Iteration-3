@@ -1,7 +1,9 @@
 package com.autovend.runnable;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import com.autovend.Barcode;
 import com.autovend.BarcodedUnit;
 import com.autovend.Bill;
 import com.autovend.Coin;
+import com.autovend.CreditCard;
 import com.autovend.Numeral;
 import com.autovend.PriceLookUpCode;
 import com.autovend.PriceLookUpCodedUnit;
@@ -21,9 +24,11 @@ import com.autovend.devices.OverloadException;
 import com.autovend.devices.ReusableBagDispenser;
 import com.autovend.devices.SelfCheckoutStation;
 import com.autovend.devices.SimulationException;
+import com.autovend.external.CardIssuer;
 import com.autovend.external.ProductDatabases;
 import com.autovend.products.BarcodedProduct;
 import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.BankIO;
 import com.autovend.software.customer.CustomerController;
 import com.autovend.software.customer.CustomerStationLogic;
 import com.autovend.software.item.ProductsDatabase2;
@@ -31,7 +36,7 @@ import com.autovend.software.ui.CustomerView;
 
 public class Main {
 
-	public static void main(String[] args) throws InterruptedException, OverloadException {
+	public static void main(String[] args) throws InterruptedException, OverloadException, IOException {
 
 		// Create 1 product
 		Numeral[] code1 = { Numeral.one, Numeral.two, Numeral.three, Numeral.four, Numeral.five, Numeral.six };
@@ -46,7 +51,21 @@ public class Main {
 		BarcodedProduct barcodeProduct2 = new BarcodedProduct(barcode2, "gum", new BigDecimal("2.50"), 15);
 		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodeProduct2);
 		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+		
+		// Create another product
+		Numeral[] code15 = { Numeral.seven, Numeral.five, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
+		Barcode barcode3 = new Barcode(code15);
+		BarcodedProduct barcodeProduct3 = new BarcodedProduct(barcode3, "cereal", new BigDecimal("2.50"), 15);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode3, barcodeProduct3);
+		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
 
+		// Create another product
+		Numeral[] code14 = { Numeral.seven, Numeral.five, Numeral.nine, Numeral.zero, Numeral.one, Numeral.two };
+		Barcode barcode4 = new Barcode(code14);
+		BarcodedProduct barcodeProduct4 = new BarcodedProduct(barcode4, "pickles", new BigDecimal("2.50"), 15);
+		ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode4, barcodeProduct4);
+		ProductDatabases.INVENTORY.put(barcodeProduct2, 40);
+		
 		Numeral[] code3 = { Numeral.one, Numeral.one, Numeral.one, Numeral.one };
 		PriceLookUpCode pluCode = new PriceLookUpCode(code3);
 		PLUCodedProduct pluProduct = new PLUCodedProduct(pluCode, "apples", new BigDecimal("1.00"));
@@ -94,8 +113,24 @@ public class Main {
 		int scaleSensitivity = 1;
 		SelfCheckoutStation station = new SelfCheckoutStation(Currency.getInstance("CAD"), billDenoms, coinDenoms,
 				scaleMaximumWeight, scaleSensitivity);
+		CardIssuer credit;
+		CreditCard creditCard;
 		ReusableBagDispenser dispenser = new ReusableBagDispenser(100);
-
+		
+		// Create some card issuers, cards and register them
+		credit = new CardIssuer("credit");
+		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
+		//creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
+		Calendar expiry = Calendar.getInstance();
+		expiry.set(2024, 5, 20);
+		//CreditCard card1 = new CreditCard("Type", "123456789", "Joe", "123", "1234", true, true);
+		//credit.addCardData("123456789", "Joe", expiry, "123", BigDecimal.valueOf(100));
+		
+		credit = new CardIssuer("credit");
+		BankIO.CARD_ISSUER_DATABASE.put("credit", credit);
+		creditCard = new CreditCard("credit", "00000", "Some Guy", "902", "1111", true, true);
+		credit.addCardData("00000", "Some Guy", expiry, "902", BigDecimal.valueOf(100));
+		
 		int n = 0;
 		while (n < 100) {
 			dispenser.load(new ReusableBag());
@@ -125,8 +160,9 @@ public class Main {
 				}
 			}
 		}
-
-		station.printer.addInk(1000);
+		
+		//INK AND PAPER (NONE FOR FIRST RUN)
+		station.printer.addInk(0);
 		station.printer.addPaper(1000);
 
 		CustomerView customerView = new CustomerView();
@@ -135,7 +171,8 @@ public class Main {
 		Thread.sleep(3000);
 
 		customerView.startView.notifyAddMembershipButtonPressed();
-
+		
+		//MEMBERSHIP
 		Thread.sleep(3000);
 		customerView.membershipView.getInputField().setText("101010101");
 		Thread.sleep(3000);
@@ -153,27 +190,37 @@ public class Main {
 		while(!scan1) {
 			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
 		}
+		//BarcodedUnit h = new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight());
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
-
+		//station.baggingArea.remove(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		//station.baggingArea.add(new BarcodedUnit(barcodeProduct.getBarcode(), barcodeProduct.getExpectedWeight()));
+		//station.baggingArea.add(h);
+		//station.baggingArea.remove(h);
+		
 		Thread.sleep(2000);
 
 		scan1 = false;  
 		while(scan1 == false) {
 		scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		}
-		
+		Thread.sleep(1000);
 		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
 		
+		//Thread.sleep(2000);
+		scan1 = false;  
+		while(scan1 == false) {
+		scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct4.getBarcode(), barcodeProduct4.getExpectedWeight()));
+		}
+		station.baggingArea.add(new BarcodedUnit(barcodeProduct4.getBarcode(), barcodeProduct4.getExpectedWeight()));
 		
-		Thread.sleep(2000);
-
 		scan1 = false;
 		while(scan1 == false) {
-			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct2.getExpectedWeight()));
+			scan1 = station.mainScanner.scan(new BarcodedUnit(barcodeProduct3.getBarcode(), barcodeProduct3.getExpectedWeight()));
 		}
 		
-		station.baggingArea.add(new BarcodedUnit(barcodeProduct2.getBarcode(), barcodeProduct.getExpectedWeight()));
+		station.baggingArea.add(new BarcodedUnit(barcodeProduct3.getBarcode(), barcodeProduct3.getExpectedWeight()));
 
+		//ADD ITEM PLU
 		Thread.sleep(4000);
 		customerView.checkoutView.notifyAddItemByPLUButtonPressed();
 		Thread.sleep(2000);
@@ -215,9 +262,12 @@ public class Main {
 		Thread.sleep(4000);
 		customerView.checkoutView.notifyStartPayingButtonPressed();
 		Thread.sleep(2000);
-		customerView.paymentView.notifyPaymentMethod("Cash");
+		//customerView.paymentView.notifyPaymentMethod("Cash");
+		customerView.paymentView.notifyPaymentMethod("Credit");
 		Thread.sleep(2000);
-
+		
+		//cash payment stuff
+		/*
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));		
@@ -227,6 +277,9 @@ public class Main {
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
 		Thread.sleep(3000);
 		station.billInput.accept(new Bill(10, Currency.getInstance("CAD")));
+		*/
+		//card payment stuff
+		station.cardReader.tap(creditCard);
 
 	}
 
