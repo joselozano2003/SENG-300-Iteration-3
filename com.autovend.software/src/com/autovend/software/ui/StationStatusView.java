@@ -226,6 +226,16 @@ public class StationStatusView extends JPanel {
 			listener.onStationUnlock(stationNum);
 		}
 	}
+	
+	public void changeErrorLabel(int stationNum, String eMessage) {
+		discrepancyLabels[stationNum] = new JLabel("Station"
+				+ " " + (stationNum + 1) + ": " + eMessage + "!");
+	}
+	
+	public void resetErrorLabel(int stationNum) {
+		discrepancyLabels[stationNum] = new JLabel("Station"
+				+ " " + (stationNum + 1) + ": " + "Working normally" + "...");
+	}
 
 
 }
