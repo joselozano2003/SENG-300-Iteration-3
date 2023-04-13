@@ -42,10 +42,13 @@ import com.autovend.software.customer.CustomerController.State;
 
 import java.math.BigDecimal;
 
+import javax.swing.JPanel;
+
 public class CustomerControllerTest {
 	private SelfCheckoutStation station;
 	private CustomerController controller;
 	private ReusableBagDispenser bagDispenser;
+	private JPanel addView;
 	
 	
 	@Before
@@ -87,7 +90,7 @@ public class CustomerControllerTest {
     }
     
 
-/////////////////////// Test for setting inital state
+// Test for setting inital state
     @Test
     public void setStateInitialTest() {
     	controller.setState(State.INITIAL);
@@ -132,6 +135,31 @@ public class CustomerControllerTest {
     	controller.setState(State.DISPENSING_CHANGE);
     	assertEquals(State.DISPENSING_CHANGE, controller.getCurrentState());
   }
+    @Test
+    public void finishAddingOwnBagTest() {
+    	controller.onFinishAddingOwnBags();
+    	assertEquals(State.DISABLED, controller.getCurrentState());
+    }
+    
+    @Test
+    public void setStateShutDownTest() {
+    	controller.setState(State.SHUTDOWN);
+    	assertEquals(State.SHUTDOWN, controller.getCurrentState());
+    }
+    @Test
+    public void setStateStartUpTest() {
+    	controller.setState(State.STARTUP);
+    	assertEquals(State.STARTUP, controller.getCurrentState());
+    }
+    @Test
+    public void startingNewSessionTest() {
+    	controller.startNewSession();
+    	assertEquals(State.INITIAL, controller.getCurrentState());
+    }
+    
+//TEST TO SEE IF UPDATE VIEW IS WORKING PROPERLY
+   
+    
  /**   
     
     @Test
