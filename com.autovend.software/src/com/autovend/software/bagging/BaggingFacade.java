@@ -43,18 +43,15 @@ import com.autovend.software.ui.CustomerView;
 public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 		implements ElectronicScaleObserver, ReusableBagDispenserObserver {
 
-	ReusableBagDispenser bagDispenser;
 	ReusableBagProduct bagProduct;
 
-	public BaggingFacade(SelfCheckoutStation station, ReusableBagDispenser bagDispenser, CustomerView customerView) {
+	public BaggingFacade(SelfCheckoutStation station, CustomerView customerView) {
 		super(station, customerView);
-		this.bagDispenser = bagDispenser;
 		bagProduct = new ReusableBagProduct();
 
 		// station.scale.register(this);
 		station.baggingArea.register(this);
-
-		this.bagDispenser.register(this);
+		station.bagDispenser.register(this);
 
 	}
 
@@ -110,7 +107,7 @@ public class BaggingFacade extends AbstractFacade<BaggingEventListener>
 		int successfullyDispensed = 0;
 		while (amount > 0) {
 			try {
-				bagDispenser.dispense();
+				station.bagDispenser.dispense();
 				amount--;
 				successfullyDispensed++;
 

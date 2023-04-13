@@ -44,7 +44,6 @@ import com.autovend.software.test.Setup;
 import com.autovend.software.ui.CustomerView;
 
 public class BaggingFacadeTest {
-	private ReusableBagDispenser bagDispenser;
 	private SelfCheckoutStation station;
 	private BaggingFacade baggingFacade;
 	private int found;
@@ -53,19 +52,18 @@ public class BaggingFacadeTest {
 	public void setup() {
 		//Setup the class to test
 		station = Setup.createSelfCheckoutStation();
-		bagDispenser = new ReusableBagDispenser(10);
-		baggingFacade = new BaggingFacade(station, bagDispenser, new CustomerView());
+		baggingFacade = new BaggingFacade(station, new CustomerView());
 		found = 0;
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullStation() {
-		new BaggingFacade(null, new ReusableBagDispenser(10), new CustomerView());
+		new BaggingFacade(null, new CustomerView());
 	}
 	
 	@Test (expected = NullPointerException.class)
 	public void testContructorNullBagDispenser() {
-		new BaggingFacade(null, new ReusableBagDispenser(10), new CustomerView());
+		new BaggingFacade(null, new CustomerView());
 	}
 	
 	/**
@@ -208,8 +206,8 @@ public class BaggingFacadeTest {
 	@Test
 	public void testMethodsNoEvents() {
 		baggingFacade.register(new ListenerStub());
-		baggingFacade.reactToDisabledEvent(bagDispenser);
-		baggingFacade.reactToEnabledEvent(bagDispenser);
+		baggingFacade.reactToDisabledEvent(station.bagDispenser);
+		baggingFacade.reactToEnabledEvent(station.bagDispenser);
 		baggingFacade.reactToOutOfOverloadEvent(station.baggingArea);
 	}
 	
@@ -220,7 +218,7 @@ public class BaggingFacadeTest {
 	private void loadBags(int amount) {
 		for (int i = 0; i <= amount; i++)
 			try {
-				bagDispenser.load(new ReusableBag());
+				station.bagDispenser.load(new ReusableBag());
 			} catch (OverloadException e) {}
 	}
 	

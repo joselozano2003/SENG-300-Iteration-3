@@ -116,7 +116,7 @@ public class CustomerController extends AbstractFacade<CustomerControllerListene
 		this.paymentFacade = new PaymentFacade(selfCheckoutStation, false, customerView);
 		this.itemFacade = new ItemFacade(selfCheckoutStation, customerView, false);
 		this.receiptPrinterFacade = new ReceiptFacade(selfCheckoutStation, customerView);
-		this.baggingFacade = new BaggingFacade(selfCheckoutStation, bagDispenser, customerView);
+		this.baggingFacade = new BaggingFacade(selfCheckoutStation, customerView);
 
 		this.membershipFacade = new MembershipFacade(selfCheckoutStation, customerView);
 
