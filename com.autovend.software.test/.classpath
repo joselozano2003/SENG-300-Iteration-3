@@ -8,6 +8,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="src" path="/com.autovend.software"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.autovend.hardware_0.3.4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
