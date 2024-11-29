@@ -28,16 +28,88 @@
  */
 package com.autovend.software.item;
 
-import com.autovend.devices.SelfCheckoutStation;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ByPLUCode extends ItemFacade  {
-    protected ByPLUCode(SelfCheckoutStation station) {
-		super(station);
+import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ElectronicScale;
+import com.autovend.devices.SelfCheckoutStation;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ElectronicScaleObserver;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.PLUCodedProduct;
+import com.autovend.software.ui.CustomerView;
+import com.autovend.software.ui.PLUView;
+import com.autovend.software.ui.PLUViewObserver;
+
+public class ByPLUCode extends ItemFacade implements PLUViewObserver, ElectronicScaleObserver {
+	private String currentPLUCode;
+
+	protected ByPLUCode(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView, true);
+		customerView.pluView.addObserver(this);
+		station.scale.register(this);
 	}
-    
-//	public void reactToPLUCodeEnteredEvent(PriceLookUpCode priceLookUpCode, double weightToPurchase) {
-//        PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(priceLookUpCode);
-//        double weight = weightToPurchase;
-//        //addItem()
-//    }
+
+	@Override
+	public void reactToPLUCodeEntered(String pluCode) {
+		this.currentPLUCode = pluCode;
+
+	}
+
+	public void processPLUInput(String stringToProcess, double quantity) {
+		Numeral[] numerals = new Numeral[stringToProcess.length()];
+
+		for (int i = 0; i < stringToProcess.length(); i++) {
+			byte number = Byte.parseByte(Character.toString(stringToProcess.charAt(i)));
+			Numeral numeral = Numeral.valueOf(number);
+			numerals[i] = numeral;
+		}
+
+		PLUCodedProduct pluCodedProduct = ProductDatabases.PLU_PRODUCT_DATABASE.get(new PriceLookUpCode(numerals));
+
+		for (ItemEventListener listener : listeners) {
+			listener.onItemAddedEvent(pluCodedProduct, quantity);
+			this.currentPLUCode = null;
+		}
+
+		{
+			for (ItemEventListener listener : listeners)
+				listener.onItemNotFoundEvent();
+		}
+	}
+
+	@Override
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
+		if (weightInGrams > 0 && currentPLUCode != null)
+			processPLUInput(currentPLUCode, weightInGrams);
+
+	}
+
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

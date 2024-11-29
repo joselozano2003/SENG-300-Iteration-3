@@ -30,24 +30,47 @@ package com.autovend.software.attendant;
 
 import java.util.List;
 
-import com.autovend.software.customer.CustomerStation;
+import com.autovend.devices.SupervisionStation;
+import com.autovend.products.Product;
+import com.autovend.software.customer.CustomerController;
+import com.autovend.software.item.ItemFacade;
+
+import auth.AttendantAccount;
+import auth.AuthFacade;
 
 public class AttendantController {
-	
-	private static List<CustomerStation> customerStations;
-	private AttendantModel model;
-	private AttendantView view;
 
-	public AttendantController(AttendantModel model, AttendantView view, List<CustomerStation> list) {
-		if (model == null || view == null || list == null)
-			throw new NullPointerException("Null arguments given");
-		this.model = model;
-		this.view = view;
-		customerStations = list;
-	}
-	
-	public void startupStation(/*station*/) {
+	private List<CustomerController> customerControllers;
+	private AttendantModel model;
+//	private AttendantView view;
+	private AuthFacade auth;
+	//testing
+
+	public AttendantController(SupervisionStation station ) {
 		
 	}
-	
+
+	public void startupStation(/* station */) {
+
+	}
+
+	public boolean startLogIn(AttendantAccount attendantAccount) {
+		return auth.logIn(attendantAccount);
+	}
+
+	public boolean startLogOut(AttendantAccount attendantAccount) {
+		return auth.logOut(attendantAccount);
+	}
+
+	public boolean startAddAccount(AttendantAccount attendantAccount, AttendantAccount addedAccount) {
+		return auth.addAccount(attendantAccount, addedAccount);
+	}
+
+	public boolean startDeleteAccount(AttendantAccount attendantAccount, AttendantAccount removeAccount) {
+		return auth.deleteAccount(attendantAccount, removeAccount);
+	}
+
+	public boolean startRemoveItem(ItemFacade item, Product product) {
+		return item.removeProduct(product);
+	}
 }

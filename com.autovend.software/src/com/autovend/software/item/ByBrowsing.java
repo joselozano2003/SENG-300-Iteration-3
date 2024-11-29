@@ -28,110 +28,74 @@
  */
 package com.autovend.software.item;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JButton;
-
+import com.autovend.Numeral;
+import com.autovend.PriceLookUpCode;
+import com.autovend.devices.AbstractDevice;
+import com.autovend.devices.ElectronicScale;
 import com.autovend.devices.SelfCheckoutStation;
-import com.autovend.products.BarcodedProduct;
+import com.autovend.devices.observers.AbstractDeviceObserver;
+import com.autovend.devices.observers.ElectronicScaleObserver;
+import com.autovend.external.ProductDatabases;
+import com.autovend.products.PLUCodedProduct;
 import com.autovend.products.Product;
+import com.autovend.software.ui.BrowsingViewObserver;
+import com.autovend.software.ui.CustomerView;
+import com.autovend.software.ui.PLUViewObserver;
 
 @SuppressWarnings("serial")
-public class ByBrowsing extends ItemFacade  {
-	
-	//Database for products shown on the visual catalogue and their corresponding JButton.
-	//The products displayed in the visual catalogue does not have a barcode or PLU code available to the customer. 
-	//Type BarcodedProduct is used for convenience, but the barcode is random and does not mean anything since these are not actually barcoded products.
-	public static Map<JButton, BarcodedProduct> Products_In_Visual_Catalogue_Database = new HashMap<>();
+public class ByBrowsing extends ItemFacade implements BrowsingViewObserver, ElectronicScaleObserver {
+	private Product currentSelectedProduct;
 
-	protected ByBrowsing(SelfCheckoutStation station) {
-		super(station);
+	protected ByBrowsing(SelfCheckoutStation station, CustomerView customerView) {
+		super(station, customerView, true);
+		station.scale.register(this);
+		customerView.browsingView.addObserver(this);
 	}
-	
+
 	/**
-	 * This method is called when a customer selects a product from the visual catalogue to add to their items to purchase.
+	 * Method is called when the customer gui detects a customer selecting an item
+	 * from the visual catalogue
 	 * 
-	 * @param product: product that the customer has selected from the visual catalogue
+	 * @param product: product the customer selected from the visual catalogue
 	 */
-	public void addProductFromVisualCataloguToItemList(BarcodedProduct product) {
-		if (product != null) {
-        	addProduct(product); //add item to item list
-			adjustExpectedWeight(product.getExpectedWeight()); //updated expected weight
-			adjustTotalCost(product.getPrice()); //updated total cost of item list
-			
-			//announce event of an item being added
-			for (ItemListener listener : listeners)
-				listener.reactToItemAdded(product);
-		} else {
-        	//announce event of a null product is trying to be added
-			for (ItemListener listener : listeners)
-				listener.reactToNullProductEvent(product);
-		}
-	}
-	
-	
 
-//	public void dispenseChange() {
-//
-//		BigDecimal changeDue = customerSession.getTotalPaid().subtract(customerSession.getTotalCost());
-//
-//		if (changeDue.compareTo(BigDecimal.ZERO) < 0) {
-//			throw new IllegalArgumentException("Change required must be non-negative.");
-//		}
-//
-//		// Dispense bills
-//		for (int i = selfCheckoutStation.billDenominations.length - 1; i >= 0; i--) {
-//			int billDenomination = selfCheckoutStation.billDenominations[i];
-//			BillDispenser billDispenser = selfCheckoutStation.billDispensers.get(billDenomination);
-//			BigDecimal billValue = BigDecimal.valueOf(billDenomination);
-//			while (changeDue.compareTo(billValue) >= 0 && billDispenser.size() > 0) {
-//				try {
-//					billDispenser.emit();
-//					changeDue = changeDue.subtract(billValue);
-//				} catch (DisabledException | OverloadException | EmptyException e) {
-//					for (PaymentListener listener : listeners) {
-//						listener.onChangeDispensedFailure();
-//					}
-//				}
-//			}
-//		}
-//
-//		// Dispense coins
-//		for (int i = selfCheckoutStation.coinDenominations.size() - 1; i >= 0; i--) {
-//			BigDecimal coinDenomination = selfCheckoutStation.coinDenominations.get(i);
-//			CoinDispenser coinDispenser = selfCheckoutStation.coinDispensers.get(coinDenomination);
-//
-//			while (changeDue.compareTo(coinDenomination) >= 0 && coinDispenser.size() > 0) {
-//
-//				try {
-//					coinDispenser.emit();
-//					changeDue = changeDue.subtract(coinDenomination);
-//				} catch (DisabledException | OverloadException | EmptyException e) {
-//					for (PaymentListener listener : listeners) {
-//						listener.onChangeDispensedFailure();
-//					}
-//				}
-//			}
-//		}
-//
-//		// Edge case for if the change due is less than the smallest coin denomination
-//		if (changeDue.compareTo(BigDecimal.ZERO) > 0) {
-//			BigDecimal smallestCoinDenomination = selfCheckoutStation.coinDenominations.get(0);
-//			CoinDispenser smallestCoinDispenser = selfCheckoutStation.coinDispensers.get(smallestCoinDenomination);
-//			try {
-//				smallestCoinDispenser.emit();
-//			} catch (DisabledException | OverloadException | EmptyException e) {
-//				for (PaymentListener listener : listeners) {
-//					listener.onChangeDispensedFailure();
-//				}
-//
-//			}
-//
-//		}
-//
-//		for (PaymentListener listener : listeners) {
-//			listener.onChangeDispensed();
-//		}
-	
+	@Override
+	public void reactToEnabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToDisabledEvent(AbstractDevice<? extends AbstractDeviceObserver> device) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToWeightChangedEvent(ElectronicScale scale, double weightInGrams) {
+		if (weightInGrams > 0 && currentSelectedProduct != null)
+			for (ItemEventListener listener : listeners)
+				listener.onItemAddedEvent(currentSelectedProduct, weightInGrams);
+		this.currentSelectedProduct = null;
+
+	}
+
+	@Override
+	public void reactToOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToOutOfOverloadEvent(ElectronicScale scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reactToProductSelected(Product product) {
+		this.currentSelectedProduct = product;
+
+	}
+
 }
